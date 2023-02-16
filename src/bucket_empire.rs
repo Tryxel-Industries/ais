@@ -1,7 +1,7 @@
 use std::borrow::BorrowMut;
 use std::cmp::{max, min, Ordering};
 use std::iter::Map;
-use std::ops::Add;
+use std::ops::{Add, Range};
 use std::slice::SliceIndex;
 use crate::enums::TrueFalseLabel::True;
 
@@ -86,6 +86,11 @@ pub trait Bucketable {
 // structs
 //
 
+enum ValueMatch{
+    Open,
+    Ranged(f64)
+}
+
 #[derive(Debug, Copy, Clone)]
 struct BucketValue {
     index: usize,
@@ -109,6 +114,7 @@ pub struct BucketKnight {
     buckets: Vec<Bucket>,
     dimension: usize,
 }
+
 
 pub struct BucketKing<T> {
     // he who rules the buckets
@@ -253,9 +259,15 @@ impl<T> BucketKing<T> {
             .map(|k| k.get_index_in_range(value_vec.get(k.dimension).unwrap(), 0.6)).collect();
             // .inspect(|x2| println!("dim {:?} to {:?} <> {:?}",x2.start_value, x2.end_value, x2.bucket_contents))
             // .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
-
-
         return roll_comparison(ret);
+
+    }
+    pub fn get_potential_matches_indexes_with_range(&self, value: &T, range: &f64) -> Option<Vec<usize>> {
+        let value_vec = (self.value_fn)(value);
+        let ret: Vec<Vec<usize>> = self.dimensional_knights.iter()
+            .map(|k| k.get_index_in_range(value_vec.get(k.dimension).unwrap(), *range)).collect();
+        return roll_comparison(ret);
+
     }
 
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {
