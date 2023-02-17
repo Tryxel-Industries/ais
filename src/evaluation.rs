@@ -1,7 +1,7 @@
 use crate::ais::ParamObj;
+use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 use crate::representation::{AntiGen, BCell, DimValueType};
 use rayon::prelude::*;
-use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 
 #[derive(Clone)]
 pub struct Evaluation {
@@ -9,29 +9,43 @@ pub struct Evaluation {
     wrongly_matched: Vec<usize>,
 }
 
-pub fn evaluate_b_cell(bk: &BucketKing<AntiGen>,_params: &ParamObj, antigens: &Vec<AntiGen>, b_cell: &BCell) -> Evaluation {
-    let dim_radus = b_cell.dim_values.iter().map(|dv| {
-        return match dv.value_type {
-            DimValueType::Disabled => {BucketEmpireOfficialRangeNotationSystemClasses::Open}
-            DimValueType::Open => {
-                let value = (b_cell.radius_constant/dv.multiplier)-dv.offset;
-                if dv.multiplier > 0.0{
-                    return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(value);
-                }else{
-                    return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(value);
+pub fn evaluate_b_cell(
+    bk: &BucketKing<AntiGen>,
+    _params: &ParamObj,
+    antigens: &Vec<AntiGen>,
+    b_cell: &BCell,
+) -> Evaluation {
+    let dim_radus = b_cell
+        .dim_values
+        .iter()
+        .map(|dv| {
+            return match dv.value_type {
+                DimValueType::Disabled => BucketEmpireOfficialRangeNotationSystemClasses::Open,
+                DimValueType::Open => {
+                    let value = (b_cell.radius_constant / dv.multiplier) - dv.offset;
+                    if dv.multiplier > 0.0 {
+                        return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(value);
+                    } else {
+                        return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(value);
+                    }
                 }
-            }
-            DimValueType::Circle => {
-                let value = (b_cell.radius_constant.sqrt()/dv.multiplier)-dv.offset;
-                return BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(value);
-            }
-        }
-    }).collect();
+                DimValueType::Circle => {
+                    let value = (b_cell.radius_constant.sqrt() / dv.multiplier) - dv.offset;
+                    return BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(value);
+                }
+            };
+        })
+        .collect();
 
-    let cell_values = b_cell.dim_values.iter().map(|cell| cell.offset).collect::<Vec<f64>>();
-    let mut idx_list = bk.get_potential_matches_indexes_with_raw_values(&cell_values, &dim_radus).unwrap();
+    let cell_values = b_cell
+        .dim_values
+        .iter()
+        .map(|cell| cell.offset)
+        .collect::<Vec<f64>>();
+    let mut idx_list = bk
+        .get_potential_matches_indexes_with_raw_values(&cell_values, &dim_radus)
+        .unwrap();
     idx_list.sort();
-
 
     let registered_antigens = antigens
         .iter()
@@ -68,7 +82,8 @@ pub fn merge_evaluation_matches(evaluations: Vec<&Evaluation>) -> Vec<usize> {
         .iter()
         .map(|e| e.matched_ids.iter().max().unwrap_or(&0))
         .max()
-        .unwrap() + 1;
+        .unwrap()
+        + 1;
     let merged =
         evaluations
             .iter()
@@ -115,17 +130,22 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>) -> Vec<(f64, E
             let n_wrong = eval.wrongly_matched.len() as f64;
             let n_right = eval.matched_ids.len() as f64;
 
+            let mut purity = n_right / n_wrong;
+            let mut accuracy = 1.0 / (n_wrong + n_right);
+            let mut crowdedness = 1.0 / (roll_shared as f64 / n_shared as f64);
 
-            let mut purity = n_right / n_wrong ;
-            let mut accuracy = 1.0 /(n_wrong+n_right);
-            let mut crowdedness = 1.0/(roll_shared as f64/n_shared as f64);
-
-            if ! purity.is_finite(){ purity = 0.0; }
-            if ! accuracy.is_finite(){ accuracy = 0.0; }
-            if ! crowdedness.is_finite(){ crowdedness = 0.0; }
+            if !purity.is_finite() {
+                purity = 0.0;
+            }
+            if !accuracy.is_finite() {
+                accuracy = 0.0;
+            }
+            if !crowdedness.is_finite() {
+                crowdedness = 0.0;
+            }
 
             // let score = crowdedness+purity+accuracy ;
-            let score = matched_sum/(n_wrong+1.0);
+            let score = matched_sum / (n_wrong + 1.0);
 
             return (score, eval, cell);
         })

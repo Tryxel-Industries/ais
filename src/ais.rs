@@ -1,10 +1,9 @@
-
+use crate::bucket_empire::BucketKing;
 use crate::evaluation::{evaluate_b_cell, score_b_cells, Evaluation};
 use crate::representation::{AntiGen, BCell, BCellFactory, DimValueType};
+use crate::selection::elitism_selection;
 use rayon::prelude::*;
 use std::collections::HashSet;
-use crate::bucket_empire::BucketKing;
-use crate::selection::elitism_selection;
 
 pub struct ParamObj {
     pub b_cell_pop_size: usize,
@@ -38,7 +37,7 @@ fn evaluate_population(
         .into_par_iter()
         .map(|b_cell| {
             // evaluate b_cells
-            let score = evaluate_b_cell(bk,params, antigens, &b_cell);
+            let score = evaluate_b_cell(bk, params, antigens, &b_cell);
             return (score, b_cell);
         })
         .collect();
@@ -70,13 +69,8 @@ impl ArtificialImmuneSystem {
             .map(|x| x.class_label)
             .collect::<HashSet<_>>();
 
-        let mut bk: BucketKing<AntiGen> = BucketKing::new(
-            n_dims,
-            (0.0,10.0),
-            10,
-            |ag| ag.id,
-            |ag| &ag.values,
-        );
+        let mut bk: BucketKing<AntiGen> =
+            BucketKing::new(n_dims, (0.0, 10.0), 10, |ag| ag.id, |ag| &ag.values);
 
         bk.add_values_to_index(antigens);
 
@@ -107,7 +101,7 @@ impl ArtificialImmuneSystem {
                 .for_each(|_| initial_population.push(cell_factory.generate_random_genome()));
         }
 
-        evaluated_pop = evaluate_population(&bk,params, initial_population, antigens);
+        evaluated_pop = evaluate_population(&bk, params, initial_population, antigens);
         scored_pop = score_b_cells(evaluated_pop);
 
         for i in 0..params.generations {
@@ -116,9 +110,8 @@ impl ArtificialImmuneSystem {
                 .map(|(score, _, _)| score)
                 .max_by(|a, b| a.total_cmp(b))
                 .unwrap();
-            train_hist.push(
-                scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64,
-            );
+            train_hist
+                .push(scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64);
             println!(
                 "iter: {:<5} avg score {:.6}, max score {:.6}",
                 i,
@@ -137,7 +130,7 @@ impl ArtificialImmuneSystem {
                 .map(|(score, _evaluation, b_cell)| {
                     let frac_score = score / max_score;
                     let mutated = mutate_fn(params, frac_score, b_cell);
-                    let evaluation = evaluate_b_cell(&bk,params, antigens, &mutated);
+                    let evaluation = evaluate_b_cell(&bk, params, antigens, &mutated);
                     return (evaluation, mutated);
                 })
                 .collect();
@@ -157,7 +150,7 @@ impl ArtificialImmuneSystem {
                 let missing = params.b_cell_pop_size - scored_pop.len();
                 let new_pop = (0..missing)
                     .map(|_| cell_factory.generate_random_genome())
-                    .map(|cell| (evaluate_b_cell(&bk,params, antigens, &cell), cell))
+                    .map(|cell| (evaluate_b_cell(&bk, params, antigens, &cell), cell))
                     .collect::<Vec<(Evaluation, BCell)>>();
 
                 evaluated_pop = scored_pop.into_iter().map(|(_a, b, c)| (b, c)).collect();
@@ -165,7 +158,7 @@ impl ArtificialImmuneSystem {
                 scored_pop = score_b_cells(evaluated_pop);
             }
         }
-        let (scored_pop, _drained) = elitism_selection(scored_pop,&150);
+        let (scored_pop, _drained) = elitism_selection(scored_pop, &150);
         self.b_cells = scored_pop
             .into_iter()
             .map(|(_score, _ev, cell)| cell)

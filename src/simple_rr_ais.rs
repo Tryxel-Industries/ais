@@ -1,9 +1,4 @@
-
-
-
-
-use crate::model::{NewsArticle};
-
+use crate::model::NewsArticle;
 
 struct SimpleRRAis {}
 

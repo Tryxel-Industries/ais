@@ -1,6 +1,6 @@
 use rand::distributions::{Distribution, Uniform};
 use rand::Rng;
-use std::ops::{RangeInclusive};
+use std::ops::RangeInclusive;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum DimValueType {
@@ -8,7 +8,6 @@ pub enum DimValueType {
     Open,
     Circle,
 }
-
 
 pub struct BCellFactory {
     n_dims: usize,
@@ -54,7 +53,7 @@ impl BCellFactory {
             allowed_value_types,
             use_multiplier,
             use_rand_radius,
-            class_labels
+            class_labels,
         };
     }
 
@@ -66,14 +65,16 @@ impl BCellFactory {
             let offset = self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng) * -1.0;
 
             let multiplier = if self.use_multiplier {
-               self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
-            } else { 1.0 };
+                self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
+            } else {
+                1.0
+            };
 
-            let value_type =
-                self.allowed_value_types
-                    .get(rng.gen_range(0..self.allowed_value_types.len()))
-                    .unwrap()
-                    .clone();
+            let value_type = self
+                .allowed_value_types
+                .get(rng.gen_range(0..self.allowed_value_types.len()))
+                .unwrap()
+                .clone();
             dim_multipliers.push(BCellDim {
                 multiplier,
                 offset,
@@ -82,16 +83,16 @@ impl BCellFactory {
         }
 
         let radius_constant = self.radius_range.sample(&mut rng);
-        let class_label  =
-            self.class_labels
-                .get(rng.gen_range(0..self.allowed_value_types.len()))
-                .unwrap()
-                .clone();
+        let class_label = self
+            .class_labels
+            .get(rng.gen_range(0..self.allowed_value_types.len()))
+            .unwrap()
+            .clone();
 
         return BCell {
             dim_values: dim_multipliers,
             radius_constant,
-            class_label
+            class_label,
         };
     }
 
@@ -104,13 +105,15 @@ impl BCellFactory {
 
             let multiplier = if self.use_multiplier {
                 self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
-            } else { 1.0 };
+            } else {
+                1.0
+            };
 
-            let value_type =
-                self.allowed_value_types
-                    .get(rng.gen_range(0..self.allowed_value_types.len()))
-                    .unwrap()
-                    .clone();
+            let value_type = self
+                .allowed_value_types
+                .get(rng.gen_range(0..self.allowed_value_types.len()))
+                .unwrap()
+                .clone();
             dim_multipliers.push(BCellDim {
                 multiplier,
                 offset,
@@ -118,14 +121,17 @@ impl BCellFactory {
             })
         }
 
-        let radius_constant = if self.use_rand_radius {self.radius_range.sample(&mut rng)} else {1.0};
-        let class_label  = antigen.class_label;
-
+        let radius_constant = if self.use_rand_radius {
+            self.radius_range.sample(&mut rng)
+        } else {
+            1.0
+        };
+        let class_label = antigen.class_label;
 
         return BCell {
             dim_values: dim_multipliers,
             radius_constant,
-            class_label
+            class_label,
         };
     }
 }
@@ -138,14 +144,13 @@ pub struct BCellDim {
     pub offset: f64,
     // the exponent
     pub value_type: DimValueType,
-
 }
 
 #[derive(Clone, Debug)]
 pub struct BCell {
     pub dim_values: Vec<BCellDim>,
     pub radius_constant: f64,
-    pub class_label: usize
+    pub class_label: usize,
 }
 
 impl BCell {
@@ -153,36 +158,42 @@ impl BCell {
     // initializers
     //
 
-    pub fn test_antigen(&self,antigen:  &AntiGen) -> bool{
+    pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
         let mut roll_sum: f64 = 0.0;
         for i in 0..antigen.values.len() {
             let b_dim = self.dim_values.get(i).unwrap();
             let antigen_dim_val = antigen.values.get(i).unwrap();
             roll_sum += match b_dim.value_type {
                 DimValueType::Disabled => 0.0,
-                DimValueType::Open => b_dim.multiplier*antigen_dim_val,
-                DimValueType::Circle => ((b_dim.multiplier*antigen_dim_val) + b_dim.offset).powi(2),
+                DimValueType::Open => b_dim.multiplier * antigen_dim_val,
+                DimValueType::Circle => {
+                    ((b_dim.multiplier * antigen_dim_val) + b_dim.offset).powi(2)
+                }
             };
         }
 
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if roll_sum <= self.radius_constant{
+        if roll_sum <= self.radius_constant {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 }
 
 #[derive(Clone)]
-pub struct AntiGen{
+pub struct AntiGen {
     pub id: usize,
     pub class_label: usize,
-    pub values: Vec<f64>
+    pub values: Vec<f64>,
 }
 
 impl AntiGen {
     pub fn new(id: usize, class_label: usize, values: Vec<f64>) -> Self {
-        Self { id, class_label, values }
+        Self {
+            id,
+            class_label,
+            values,
+        }
     }
 }

@@ -1,23 +1,20 @@
-
-
 use rand::{distributions::Distribution, Rng};
 
 use crate::ais::ParamObj;
 use crate::representation::{BCell, DimValueType};
 
-
-pub fn mutate(params: &ParamObj,score: f64, b_cell: BCell) -> BCell{
+pub fn mutate(params: &ParamObj, score: f64, b_cell: BCell) -> BCell {
     let mut rng = rand::thread_rng();
 
-    let mutated = match rng.gen_range(0..1){
-        0 => mutate_offset(params,b_cell, score ),
-        1 => mutate_multiplier(params,b_cell, score),
+    let mutated = match rng.gen_range(0..1) {
+        0 => mutate_offset(params, b_cell, score),
+        1 => mutate_multiplier(params, b_cell, score),
         // 2 => mutate_value_type(b_cell, score),
         _ => {
             panic!("invalid mut")
         }
     };
-    return mutated
+    return mutated;
 }
 pub fn get_rand_range(max: usize) -> (usize, usize) {
     let mut rng = rand::thread_rng();
@@ -32,15 +29,14 @@ pub fn get_rand_range(max: usize) -> (usize, usize) {
 }
 
 fn flip_coin() -> i32 {
-    if rand::random::<bool>(){
+    if rand::random::<bool>() {
         return -1;
     } else {
         return 1;
     }
 }
 
-pub fn mutate_multiplier(params: &ParamObj, mut genome: BCell, score: f64 ) -> BCell {
-
+pub fn mutate_multiplier(params: &ParamObj, mut genome: BCell, score: f64) -> BCell {
     //println!("genome dim value {:?}", genome.dim_values.iter().map(|v|v.multiplier).collect::<Vec<_>>());
     let mut rng = rand::thread_rng();
 
@@ -52,35 +48,33 @@ pub fn mutate_multiplier(params: &ParamObj, mut genome: BCell, score: f64 ) -> B
         .map(|(n, _x)| n)
         .collect();
 
-    if candidates_dims.len() == 0{
+    if candidates_dims.len() == 0 {
         // println!("no dims to mutate multiplier");
-        return genome
+        return genome;
     }
 
     let dim_to_mutate = rng.gen_range(0..candidates_dims.len());
 
     let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
 
-
     // this shifts the score value from [0, 1] to [0.1, 1]
-    let score_reduced_max = ((score*0.9) + 0.1) * params.offset_max_delta;
+    let score_reduced_max = ((score * 0.9) + 0.1) * params.offset_max_delta;
     let mut multi = score_reduced_max; //rng.gen_range(0.0..score_reduced_max);
-    if rng.gen_range(0.0..1.0) > params.offset_flip_prob{
+    if rng.gen_range(0.0..1.0) > params.offset_flip_prob {
         multi *= -1.0;
     }
 
-    if rng.gen_bool(0.5){
+    if rng.gen_bool(0.5) {
         multi += 1.0;
-
     }
 
-    change_dim.multiplier *=  multi;
+    change_dim.multiplier *= multi;
 
     // println!("genome dim value {:?}", genome.dim_values);
     // println!();
     //println!("genome dim value {:?}", genome.dim_values.iter().map(|v|v.multiplier).collect::<Vec<_>>());
     //println!();
-    return genome
+    return genome;
 }
 
 pub fn mutate_offset(params: &ParamObj, mut genome: BCell, score: f64) -> BCell {
@@ -94,9 +88,9 @@ pub fn mutate_offset(params: &ParamObj, mut genome: BCell, score: f64) -> BCell 
         .map(|(n, _x)| n)
         .collect();
 
-    if candidates_dims.len() == 0{
+    if candidates_dims.len() == 0 {
         // println!("no dims to mutate shift");
-        return genome
+        return genome;
     }
 
     let dim_to_mutate = rng.gen_range(0..candidates_dims.len());
@@ -104,15 +98,15 @@ pub fn mutate_offset(params: &ParamObj, mut genome: BCell, score: f64) -> BCell 
     let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
 
     // this shifts the score value from [0, 1] to [0.1, 1]
-    let score_reduced_max = ((score*0.9) + 0.1) * params.multiplier_max_delta;
+    let score_reduced_max = ((score * 0.9) + 0.1) * params.multiplier_max_delta;
     let mut multi = rng.gen_range(0.0..score_reduced_max);
-    if rng.gen_range(0.0..1.0) > params.multiplier_flip_prob{
+    if rng.gen_range(0.0..1.0) > params.multiplier_flip_prob {
         multi *= -1.0;
     }
 
-    change_dim.offset +=  multi;
+    change_dim.offset += multi;
 
-    return genome
+    return genome;
 }
 
 pub fn mutate_value_type(_params: ParamObj, mut genome: BCell, _score: f64) -> BCell {
@@ -122,13 +116,12 @@ pub fn mutate_value_type(_params: ParamObj, mut genome: BCell, _score: f64) -> B
 
     let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
 
-
     let dim_type = match rng.gen_range(0..=2) {
-            0 => DimValueType::Disabled,
-            1 => DimValueType::Open,
-            _ => DimValueType::Circle,
-        };
-    change_dim.value_type =  dim_type;
+        0 => DimValueType::Disabled,
+        1 => DimValueType::Open,
+        _ => DimValueType::Circle,
+    };
+    change_dim.value_type = dim_type;
 
-    return genome
+    return genome;
 }

@@ -1,6 +1,5 @@
-use std::iter::Map;
 use crate::enums::{Feature, TrueFalseLabel};
-
+use std::iter::Map;
 
 pub struct NewsArticle {
     article_id: i32,
@@ -25,9 +24,12 @@ pub struct EmbeddingElement {
 
 pub trait SimpleDistance {
     fn euclidean_distance(&self, other: &EmbeddingElement) -> f64;
-    fn is_within_box_distance_or_whatever_it_is_called(&self, other: &EmbeddingElement, box_distance: &f64) -> bool;
+    fn is_within_box_distance_or_whatever_it_is_called(
+        &self,
+        other: &EmbeddingElement,
+        box_distance: &f64,
+    ) -> bool;
 }
-
 
 impl SimpleDistance for EmbeddingElement {
     fn euclidean_distance(&self, other: &EmbeddingElement) -> f64 {
@@ -38,7 +40,11 @@ impl SimpleDistance for EmbeddingElement {
         return roll_sum.sqrt();
     }
 
-    fn is_within_box_distance_or_whatever_it_is_called(&self, other: &EmbeddingElement, box_distance: &f64) -> bool {
+    fn is_within_box_distance_or_whatever_it_is_called(
+        &self,
+        other: &EmbeddingElement,
+        box_distance: &f64,
+    ) -> bool {
         for i in 0..self.embedding.len() {
             let diff: f64 = self.embedding.get(i).unwrap() - other.embedding.get(i).unwrap();
             if diff.abs() > *box_distance {
@@ -48,4 +54,3 @@ impl SimpleDistance for EmbeddingElement {
         return true;
     }
 }
-

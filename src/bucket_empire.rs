@@ -1,8 +1,6 @@
+use std::cmp::Ordering;
 
-
-use std::cmp::{Ordering};
-
-use std::ops::{Add};
+use std::ops::Add;
 
 fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     //  a = 1,4,6,7,8
@@ -177,7 +175,7 @@ impl BucketKnight {
             BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(v) => {
                 let value_ub = *v;
                 for bucket in self.buckets.iter() {
-                    if  bucket.end_value <= value_ub {
+                    if bucket.end_value <= value_ub {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     }
                 }
@@ -306,8 +304,7 @@ impl<T> BucketKing<T> {
         ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
     ) -> Option<Vec<usize>> {
         let value_vec = (self.value_fn)(value);
-        return  self.get_potential_matches_indexes_with_raw_values(value_vec,ranges);
-
+        return self.get_potential_matches_indexes_with_raw_values(value_vec, ranges);
     }
 
     pub fn get_potential_matches_indexes_with_raw_values(
