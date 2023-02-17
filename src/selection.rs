@@ -1,14 +1,14 @@
-use std::ops::Deref;
+
 use rand::{
     distributions::{Distribution},
     Rng,
 };
-use rand::distributions::{WeightedError, WeightedIndex};
+
 use crate::ais::ParamObj;
 use crate::evaluation::Evaluation;
 use crate::representation::BCell;
 
-fn pick_n_random<T>(mut vec: Vec<T>, n: usize) -> Vec<T>{
+fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T>{
     let mut rng = rand::thread_rng();
 
     let mut idx_list = Vec::new();
@@ -21,13 +21,13 @@ fn pick_n_random<T>(mut vec: Vec<T>, n: usize) -> Vec<T>{
 
     idx_list.sort();
 
-    let picks =  vec.into_iter().enumerate().filter(|(idx, v)| idx_list.contains(idx)).map(|(a,b)| b).collect();
+    let picks =  vec.into_iter().enumerate().filter(|(idx, _v)| idx_list.contains(idx)).map(|(_a,b)| b).collect();
     return picks
 }
 
 
 
-pub fn selection(params: &ParamObj,population: Vec<(f64, Evaluation,BCell)>) -> Vec<(f64,Evaluation, BCell)>{
+pub fn selection(_params: &ParamObj,population: Vec<(f64, Evaluation,BCell)>) -> Vec<(f64,Evaluation, BCell)>{
     let (mut selected, drained) = elitism_selection(
         population,
         &200

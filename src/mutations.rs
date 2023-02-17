@@ -1,7 +1,7 @@
-use rand::distributions::{WeightedError, WeightedIndex};
-use rand::seq::SliceRandom;
+
+
 use rand::{distributions::Distribution, Rng};
-use std::cmp::max;
+
 use crate::ais::ParamObj;
 use crate::representation::{BCell, DimValueType};
 
@@ -48,8 +48,8 @@ pub fn mutate_multiplier(params: &ParamObj, mut genome: BCell, score: f64 ) -> B
         .dim_values
         .iter()
         .enumerate()
-        .filter(|(n, x)| !(x.value_type == DimValueType::Disabled))
-        .map(|(n, x)| n)
+        .filter(|(_n, x)| !(x.value_type == DimValueType::Disabled))
+        .map(|(n, _x)| n)
         .collect();
 
     if candidates_dims.len() == 0{
@@ -90,8 +90,8 @@ pub fn mutate_offset(params: &ParamObj, mut genome: BCell, score: f64) -> BCell 
         .dim_values
         .iter()
         .enumerate()
-        .filter(|(n, x)| x.value_type == DimValueType::Circle)
-        .map(|(n, x)| n)
+        .filter(|(_n, x)| x.value_type == DimValueType::Circle)
+        .map(|(n, _x)| n)
         .collect();
 
     if candidates_dims.len() == 0{
@@ -115,7 +115,7 @@ pub fn mutate_offset(params: &ParamObj, mut genome: BCell, score: f64) -> BCell 
     return genome
 }
 
-pub fn mutate_value_type(params: ParamObj, mut genome: BCell, score: f64) -> BCell {
+pub fn mutate_value_type(_params: ParamObj, mut genome: BCell, _score: f64) -> BCell {
     let mut rng = rand::thread_rng();
 
     let dim_to_mutate = rng.gen_range(0..genome.dim_values.len());

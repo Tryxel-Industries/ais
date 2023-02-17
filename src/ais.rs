@@ -1,4 +1,4 @@
-use crate::enums::TrueFalseLabel::True;
+
 use crate::evaluation::{evaluate_b_cell, score_b_cells, Evaluation};
 use crate::representation::{AntiGen, BCell, BCellFactory, DimValueType};
 use rayon::prelude::*;
@@ -117,12 +117,12 @@ impl ArtificialImmuneSystem {
                 .max_by(|a, b| a.total_cmp(b))
                 .unwrap();
             train_hist.push(
-                (scored_pop.iter().map(|(a, b, _)| a).sum::<f64>() / scored_pop.len() as f64),
+                scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64,
             );
             println!(
                 "iter: {:<5} avg score {:.6}, max score {:.6}",
                 i,
-                scored_pop.iter().map(|(a, b, _)| a).sum::<f64>() / scored_pop.len() as f64,
+                scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64,
                 max_score
             );
             // println!("pop size {:} ",scored_pop.len());
@@ -134,14 +134,14 @@ impl ArtificialImmuneSystem {
             let new_evaluated: Vec<(Evaluation, BCell)> = scored_pop
                 .clone()
                 .into_par_iter()
-                .map(|(score, evaluation, b_cell)| {
+                .map(|(score, _evaluation, b_cell)| {
                     let frac_score = score / max_score;
                     let mutated = mutate_fn(params, frac_score, b_cell);
                     let evaluation = evaluate_b_cell(&bk,params, antigens, &mutated);
                     return (evaluation, mutated);
                 })
                 .collect();
-            evaluated_pop = scored_pop.into_iter().map(|(a, b, c)| (b, c)).collect();
+            evaluated_pop = scored_pop.into_iter().map(|(_a, b, c)| (b, c)).collect();
             evaluated_pop.extend(new_evaluated);
 
             // let new_scored = score_population(params, mutated, antigens, eval_fn);
@@ -160,15 +160,15 @@ impl ArtificialImmuneSystem {
                     .map(|cell| (evaluate_b_cell(&bk,params, antigens, &cell), cell))
                     .collect::<Vec<(Evaluation, BCell)>>();
 
-                evaluated_pop = scored_pop.into_iter().map(|(a, b, c)| (b, c)).collect();
+                evaluated_pop = scored_pop.into_iter().map(|(_a, b, c)| (b, c)).collect();
                 evaluated_pop.extend(new_pop);
                 scored_pop = score_b_cells(evaluated_pop);
             }
         }
-        let (scored_pop, drained) = elitism_selection(scored_pop,&150);
+        let (scored_pop, _drained) = elitism_selection(scored_pop,&150);
         self.b_cells = scored_pop
             .into_iter()
-            .map(|(score, ev, cell)| cell)
+            .map(|(_score, _ev, cell)| cell)
             .collect();
         return train_hist;
     }

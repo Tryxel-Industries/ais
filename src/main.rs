@@ -3,18 +3,18 @@
 
 extern crate core;
 
-use std::collections::BinaryHeap;
+
 use std::time::Instant;
 use plotters::prelude::*;
 use rand::prelude::SliceRandom;
 use rand::Rng;
 use crate::ais::{ArtificialImmuneSystem, ParamObj};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{read_diabetes, read_iris};
-use crate::evaluation::evaluate_b_cell;
-use crate::model::{EmbeddingElement, NewsArticle};
+use crate::dataset_readers::{read_diabetes};
+
+
 use crate::mutations::mutate;
-use crate::representation::AntiGen;
+
 use crate::selection::selection;
 
 mod model;
@@ -60,7 +60,7 @@ fn bkt_test(){
             a: vals,
             idx: 99999};
 
-    let chk2 = check_val.clone();
+    let _chk2 = check_val.clone();
     the_king.add_values_to_index(&test_dat);
 
 

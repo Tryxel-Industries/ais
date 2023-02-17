@@ -1,8 +1,8 @@
-use std::ops::Index;
+
 use csv::StringRecord;
 use crate::representation::AntiGen;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize};
 
 #[derive(Debug, Deserialize)]
 struct RecordIris {

@@ -1,12 +1,12 @@
-use std::cmp::Ordering;
-use std::collections::BinaryHeap;
-use std::os::unix::raw::ino_t;
-use crate::enums::TrueFalseLabel;
-use crate::model::{EmbeddingElement, NewsArticle, SimpleDistance};
+
+
+
+
+use crate::model::{NewsArticle};
 
 
 struct SimpleRRAis {}
 
 impl SimpleRRAis {
-    pub fn train(articles: Vec<NewsArticle>) {}
+    pub fn train(_articles: Vec<NewsArticle>) {}
 }

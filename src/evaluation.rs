@@ -9,14 +9,14 @@ pub struct Evaluation {
     wrongly_matched: Vec<usize>,
 }
 
-pub fn evaluate_b_cell(bk: &BucketKing<AntiGen>,params: &ParamObj, antigens: &Vec<AntiGen>, b_cell: &BCell) -> Evaluation {
+pub fn evaluate_b_cell(bk: &BucketKing<AntiGen>,_params: &ParamObj, antigens: &Vec<AntiGen>, b_cell: &BCell) -> Evaluation {
     let dim_radus = b_cell.dim_values.iter().map(|dv| {
         return match dv.value_type {
             DimValueType::Disabled => {BucketEmpireOfficialRangeNotationSystemClasses::Open}
             DimValueType::Open => {
                 let value = (b_cell.radius_constant/dv.multiplier)-dv.offset;
                 if dv.multiplier > 0.0{
-                    return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(value);
+                    return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(value);
                 }else{
                     return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(value);
                 }

@@ -1,6 +1,6 @@
 use std::iter::Map;
 use crate::enums::{Feature, TrueFalseLabel};
-use crate::enums::TrueFalseLabel::False;
+
 
 pub struct NewsArticle {
     article_id: i32,

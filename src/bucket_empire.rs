@@ -1,9 +1,8 @@
-use crate::enums::TrueFalseLabel::True;
-use std::borrow::BorrowMut;
-use std::cmp::{max, min, Ordering};
-use std::iter::Map;
-use std::ops::{Add, Range};
-use std::slice::SliceIndex;
+
+
+use std::cmp::{Ordering};
+
+use std::ops::{Add};
 
 fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     //  a = 1,4,6,7,8
@@ -34,8 +33,8 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
         'row: for (n, list) in rest_of_lists.iter().enumerate() {
             'internal: loop {
-                let mut idx_val = current_idx_list.get_mut(n + 1).unwrap();
-                let mut max_idx_val = max_idx_list.get_mut(n + 1).unwrap();
+                let idx_val = current_idx_list.get_mut(n + 1).unwrap();
+                let max_idx_val = max_idx_list.get_mut(n + 1).unwrap();
 
                 if idx_val >= max_idx_val {
                     break 'outer;
@@ -50,9 +49,7 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
                 } else if value < check_val {
                     // if the value of the lover cols has a smaller value
                     // than the check val increase the lower col val
-                    // println!("befor {}",idx_val);
                     *idx_val = idx_val.add(1);
-                    // println!("after {}",idx_val);
                 } else {
                     // if the values are equal continue the iteration of the cols
                     break 'internal;
@@ -120,14 +117,14 @@ pub struct BucketKing<T> {
 //
 
 impl Bucket {
-    pub fn add_items(&mut self, items: Vec<BucketValue>) {
+    fn add_items(&mut self, items: Vec<BucketValue>) {
         self.bucket_contents.extend(items);
     }
-    pub fn add_item(&mut self, item: BucketValue) {
+    fn add_item(&mut self, item: BucketValue) {
         self.bucket_contents.push(item);
     }
 
-    pub fn sort(&mut self) {
+    fn sort(&mut self) {
         self.bucket_contents.sort_unstable_by_key(|k| k.index);
     }
 }
@@ -211,9 +208,9 @@ impl BucketKnight {
         }
         return None;
     }
-    pub fn add_items(&mut self, values: Vec<BucketValue>) {
+    fn add_items(&mut self, values: Vec<BucketValue>) {
         for value in values {
-            let mut bucket = self.get_bucket_mut(&value.value);
+            let bucket = self.get_bucket_mut(&value.value);
             bucket.unwrap().add_item(value);
         }
         self.sort_buckets();
@@ -263,7 +260,7 @@ impl<T> BucketKing<T> {
                     } else {
                         r_from + j as f64 * bucket_step
                     };
-                    let mut end_value = if j == (num_buckets - 1) {
+                    let end_value = if j == (num_buckets - 1) {
                         f64::MAX
                     } else {
                         r_from + (j + 1) as f64 * bucket_step
@@ -294,8 +291,6 @@ impl<T> BucketKing<T> {
         let ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
-            // .map(|k| k.get_bucket(value_vec.get(k.dimension).unwrap()).unwrap())
-            // .map(|k| k.get_buckets_in_range(value_vec.get(k.dimension).unwrap(),0.7)).flat_map(|x1| x1.into_iter())
             .map(|k| {
                 k.get_index_in_range(
                     value_vec.get(k.dimension).unwrap(),
@@ -303,8 +298,6 @@ impl<T> BucketKing<T> {
                 )
             })
             .collect();
-        // .inspect(|x2| println!("dim {:?} to {:?} <> {:?}",x2.start_value, x2.end_value, x2.bucket_contents))
-        // .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
         return roll_comparison(ret);
     }
     pub fn get_potential_matches_indexes_with_ranges(
@@ -313,17 +306,8 @@ impl<T> BucketKing<T> {
         ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
     ) -> Option<Vec<usize>> {
         let value_vec = (self.value_fn)(value);
-        let ret: Vec<Vec<usize>> = self
-            .dimensional_knights
-            .iter()
-            .map(|k| {
-                k.get_index_in_range(
-                    value_vec.get(k.dimension).unwrap(),
-                    ranges.get(k.dimension).unwrap(),
-                )
-            })
-            .collect();
-        return roll_comparison(ret);
+        return  self.get_potential_matches_indexes_with_raw_values(value_vec,ranges);
+
     }
 
     pub fn get_potential_matches_indexes_with_raw_values(
