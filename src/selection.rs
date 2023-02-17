@@ -1,27 +1,49 @@
-
+use std::ops::Deref;
 use rand::{
     distributions::{Distribution},
     Rng,
 };
 use rand::distributions::{WeightedError, WeightedIndex};
 use crate::ais::ParamObj;
+use crate::evaluation::Evaluation;
 use crate::representation::BCell;
 
-pub fn selection(params: &ParamObj,population: Vec<(f64,BCell)>) -> Vec<(f64, BCell)>{
-    return elitism_selection(
+fn pick_n_random<T>(mut vec: Vec<T>, n: usize) -> Vec<T>{
+    let mut rng = rand::thread_rng();
+
+    let mut idx_list = Vec::new();
+    while idx_list.len() < n {
+        let idx = rng.gen_range(0..vec.len());
+        if !idx_list.contains(&idx) {
+            idx_list.push(idx.clone());
+        }
+    }
+
+    idx_list.sort();
+
+    let picks =  vec.into_iter().enumerate().filter(|(idx, v)| idx_list.contains(idx)).map(|(a,b)| b).collect();
+    return picks
+}
+
+
+
+pub fn selection(params: &ParamObj,population: Vec<(f64, Evaluation,BCell)>) -> Vec<(f64,Evaluation, BCell)>{
+    let (mut selected, drained) = elitism_selection(
         population,
-        &50
+        &200
     );
+    selected.extend(pick_n_random(drained, 100).into_iter());
+    return selected
 
 }
 
 pub fn elitism_selection(
-    mut population: Vec<(f64, BCell)>,
+    mut population: Vec<(f64,Evaluation, BCell)>,
     num: &usize,
-) -> Vec<(f64, BCell)> {
+) -> (Vec<(f64,Evaluation, BCell)>, Vec<(f64,Evaluation, BCell)> ) {
 
 
-    population.sort_by(|(score_a, _), (score_b, _)| score_a.partial_cmp(score_b).unwrap());
+    population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.partial_cmp(score_b).unwrap());
 
     // let mut res_cells  = population.into_iter().map(|(a, b)| b).collect::<Vec<_>>();
     let mut res_cells  = population.into_iter().collect::<Vec<_>>();
@@ -30,28 +52,40 @@ pub fn elitism_selection(
     // return res_cells.drain(..num).collect();
 
 
-
-    return res_cells.drain((res_cells.len()-num)..res_cells.len()).collect();
+    let select: Vec<(f64,Evaluation, BCell)> = res_cells.drain((res_cells.len()-num)..res_cells.len()).collect();
+    if false {
+        println!("\n selected: ");
+        select.iter().for_each(|(x, _, y)| {
+            println!("score {:.5}, genome dim value {:?}", x,y.dim_values.iter().map(|v| v.multiplier).collect::<Vec<_>>());
+        });
+        println!("\n discard: ");
+        res_cells.iter().for_each(|(x, _, y)| {
+            println!("score {:.5}, genome dim value {:?}", x,y.dim_values.iter().map(|v| v.multiplier).collect::<Vec<_>>());
+        });
+        println!();
+    }
+    return (select, res_cells);
 }
-// pub fn tournament_pick<'a>(
-//     population: Vec<(f64, BCell)>,
+// pub fn tournament_pick(
+//     population: &Vec<(f64, BCell)>,
 //     num: &usize,
 //     tournament_size: &usize,
-//     pick_with_replacement: &bool,
+//     num_tournaments: &usize,
+//     picks_per_tournament: &usize,
 // ) -> Vec<BCell> {
 //     let mut rng = rand::thread_rng();
 //
 //     let mut idx_list = Vec::new();
 //     while idx_list.len() < *tournament_size {
 //         let idx = rng.gen_range(0..population.len());
-//         if *pick_with_replacement || !idx_list.contains(&idx) {
+//         if !idx_list.contains(&idx) {
 //             idx_list.push(idx.clone());
 //         }
 //     }
 //
 //     let mut tournament_pool: Vec<_> = idx_list
 //         .iter()
-//         .map(|idx| population.get(*idx).unwrap())
+//         .map(|idx| (idx,population.get(*idx).unwrap()[0]))
 //         .collect();
 //
 //     tournament_pool.sort_by(|(score_a, _), (score_b, _)| score_a.partial_cmp(score_b).unwrap());

@@ -1,10 +1,11 @@
+use std::ops::Index;
 use csv::StringRecord;
 use crate::representation::AntiGen;
 
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Deserialize)]
-struct Record {
+struct RecordIris {
     sepal_length: f64,
     sepal_width: f64,
     petal_length: f64,
@@ -21,7 +22,7 @@ pub fn read_iris() -> Vec<AntiGen>{
 
     let mut records = Vec::new();
     for res in reader.deserialize(){
-        let record: Record = res.unwrap();
+        let record: RecordIris = res.unwrap();
         records.push(record);
     }
     return records.into_iter().enumerate().map(|(n,record) | {
@@ -40,4 +41,65 @@ pub fn read_iris() -> Vec<AntiGen>{
             values: vec![record.sepal_length, record.sepal_width, record.petal_length, record.petal_width],
         };
     }).collect();
+}
+#[derive(Debug, Deserialize)]
+struct RecordDiabetes {
+    Pregnancies:f64,
+    Glucose:f64,
+    BloodPressure:f64,
+    SkinThickness:f64,
+    Insulin:f64,
+    BMI:f64,
+    DiabetesPedigreeFunction:f64,
+    Age:f64,
+    Outcome: usize
+}
+
+pub fn read_diabetes() -> Vec<AntiGen>{
+    let mut reader = csv::Reader::from_path("./datasets/diabetes/diabetes.csv").unwrap();
+
+    let mut records = Vec::new();
+    for res in reader.deserialize(){
+        let record: RecordDiabetes = res.unwrap();
+        records.push(record);
+    }
+    let mut antigens: Vec<AntiGen> = records.into_iter().enumerate().map(|(n,r) | {
+
+        return AntiGen{
+            id: n,
+            class_label: r.Outcome,
+            values: vec![r.Pregnancies, r.Glucose, r.BloodPressure, r.SkinThickness, r.Insulin, r.BMI, r.DiabetesPedigreeFunction, r.Age],
+        };
+    }).collect();
+
+    let mut max_v =  Vec::new();
+    let mut min_v =  Vec::new();
+    for i in 0..=7 {
+         max_v.push(antigens.iter()
+            .map(|x| x.values.get(i).unwrap())
+            .max_by(|a, b| a.total_cmp(b)).unwrap().clone());
+
+
+        min_v.push(antigens.iter()
+            .map(|x| x.values.get(i).unwrap())
+            .min_by(|a, b| a.total_cmp(b)).unwrap().clone());
+    }
+
+
+    antigens = antigens.into_iter().map(|mut ag| {
+        for i in 0..=7 {
+            let min = min_v.get(i).unwrap();
+            let max = max_v.get(i).unwrap();
+
+            let val = ag.values[i].clone();
+            ag.values[i] = ((val-min)/(max-min))*10.0;
+
+        }
+        return ag;
+    }).collect();
+
+
+
+    return antigens;
+
 }

@@ -63,7 +63,7 @@ impl BCellFactory {
 
         let mut dim_multipliers: Vec<BCellDim> = Vec::with_capacity(self.n_dims);
         for i in 0..self.n_dims {
-            let offset = self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng);
+            let offset = self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng) * -1.0;
 
             let multiplier = if self.use_multiplier {
                self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
@@ -100,7 +100,7 @@ impl BCellFactory {
 
         let mut dim_multipliers: Vec<BCellDim> = Vec::with_capacity(self.n_dims);
         for i in 0..self.n_dims {
-            let offset = antigen.values.get(i).unwrap().clone();
+            let offset = antigen.values.get(i).unwrap().clone() * -1.0;
 
             let multiplier = if self.use_multiplier {
                 self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
@@ -118,7 +118,7 @@ impl BCellFactory {
             })
         }
 
-        let radius_constant = self.radius_range.sample(&mut rng);
+        let radius_constant = if self.use_rand_radius {self.radius_range.sample(&mut rng)} else {1.0};
         let class_label  = antigen.class_label;
 
 

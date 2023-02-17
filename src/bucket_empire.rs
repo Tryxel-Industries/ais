@@ -1,13 +1,9 @@
+use crate::enums::TrueFalseLabel::True;
 use std::borrow::BorrowMut;
 use std::cmp::{max, min, Ordering};
 use std::iter::Map;
 use std::ops::{Add, Range};
 use std::slice::SliceIndex;
-use crate::enums::TrueFalseLabel::True;
-
-
-
-
 
 fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     //  a = 1,4,6,7,8
@@ -36,22 +32,21 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
         let mut found_match = true;
 
-        'row: for (n,list) in rest_of_lists.iter().enumerate(){
-            'internal: loop{
+        'row: for (n, list) in rest_of_lists.iter().enumerate() {
+            'internal: loop {
+                let mut idx_val = current_idx_list.get_mut(n + 1).unwrap();
+                let mut max_idx_val = max_idx_list.get_mut(n + 1).unwrap();
 
-                let mut idx_val = current_idx_list.get_mut(n+1).unwrap();
-                let mut max_idx_val = max_idx_list.get_mut(n+1).unwrap();
-
-                if idx_val >= max_idx_val{
+                if idx_val >= max_idx_val {
                     break 'outer;
                 }
 
                 let value = list.get(*idx_val).unwrap();
-                if value > check_val{
+                if value > check_val {
                     // if on of the lower cols has a bigger value than
                     // the check val the check val needs to be increased
                     found_match = false;
-                    break 'row
+                    break 'row;
                 } else if value < check_val {
                     // if the value of the lover cols has a smaller value
                     // than the check val increase the lower col val
@@ -60,18 +55,18 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
                     // println!("after {}",idx_val);
                 } else {
                     // if the values are equal continue the iteration of the cols
-                    break 'internal
+                    break 'internal;
                 }
             }
         }
 
-        if found_match{
+        if found_match {
             found_matches.push(check_val.clone());
         }
 
         first_idx += 1;
     }
-    println!("out: {:?}", found_matches);
+    // println!("out: {:?}", found_matches);
     return Some(found_matches);
 }
 //
@@ -81,14 +76,15 @@ pub trait Bucketable {
     fn get_dimensional_value(&self, dim: usize) -> &f64;
 }
 
-
 //
 // structs
 //
 
-enum ValueMatch{
+pub enum BucketEmpireOfficialRangeNotationSystemClasses {
     Open,
-    Ranged(f64)
+    Symmetric(f64),
+    UpperBound(f64),
+    LowerBound(f64),
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -99,26 +95,21 @@ struct BucketValue {
 
 pub struct Bucket {
     // The plebs of the bucket empire
-
     bucket_contents: Vec<BucketValue>,
     // inclusive
     start_value: f64,
     // exclusive
     end_value: f64,
-
 }
 
 pub struct BucketKnight {
     // The executive arm of the bucket empire
-
     buckets: Vec<Bucket>,
     dimension: usize,
 }
 
-
 pub struct BucketKing<T> {
     // he who rules the buckets
-
     dimensional_knights: Vec<BucketKnight>,
     index_fn: fn(&T) -> usize,
     value_fn: fn(&T) -> &Vec<f64>,
@@ -127,7 +118,6 @@ pub struct BucketKing<T> {
 //
 // impl
 //
-
 
 impl Bucket {
     pub fn add_items(&mut self, items: Vec<BucketValue>) {
@@ -158,16 +148,50 @@ impl BucketKnight {
         return None;
     }
 
-    pub fn get_index_in_range(&self, dimensional_value: &f64, range: f64) -> Vec<usize> {
-        let value_lb = dimensional_value.clone()-range;
-        let value_ub = dimensional_value.clone()+range;
-        let mut  ret: Vec<usize> = Vec::new();
+    pub fn get_index_in_range(
+        &self,
+        dimensional_value: &f64,
+        range: &BucketEmpireOfficialRangeNotationSystemClasses,
+    ) -> Vec<usize> {
+        let mut ret: Vec<usize> = Vec::new();
 
-        for bucket in self.buckets.iter() {
-            if bucket.end_value > value_lb && bucket.end_value <= value_ub {
-                ret.extend(bucket.bucket_contents.iter().map(|x1|x1.index).clone())
-            }else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
-                ret.extend(bucket.bucket_contents.iter().map(|x1|x1.index).clone())
+        match range {
+            BucketEmpireOfficialRangeNotationSystemClasses::Open => {
+                ret = self
+                    .buckets
+                    .iter()
+                    .map(|v| v.bucket_contents.iter())
+                    .flat_map(|v| v)
+                    .map(|v| v.index)
+                    .collect();
+            }
+            BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(v) => {
+                let value_lb = dimensional_value.clone() - v;
+                let value_ub = dimensional_value.clone() + v;
+
+                for bucket in self.buckets.iter() {
+                    if bucket.end_value > value_lb && bucket.end_value <= value_ub {
+                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
+                    } else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
+                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
+                    }
+                }
+            }
+            BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(v) => {
+                let value_ub = *v;
+                for bucket in self.buckets.iter() {
+                    if  bucket.end_value <= value_ub {
+                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
+                    }
+                }
+            }
+            BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(v) => {
+                let value_lb = *v;
+                for bucket in self.buckets.iter() {
+                    if bucket.start_value > value_lb {
+                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
+                    }
+                }
             }
         }
 
@@ -178,8 +202,9 @@ impl BucketKnight {
     pub fn get_bucket_mut(&mut self, dimensional_value: &f64) -> Option<&mut Bucket> {
         let value = dimensional_value;
         for bucket in self.buckets.iter_mut() {
+            // println!("value {:?}, start  {:?}, end {:?}, ",*value, bucket.start_value,bucket.end_value);
             if bucket.start_value < *value {
-                if bucket.end_value > *value {
+                if bucket.end_value >= *value {
                     return Some(bucket);
                 }
             }
@@ -196,10 +221,16 @@ impl BucketKnight {
 }
 
 impl<T> BucketKing<T> {
-    pub fn new(n_dims: usize, bucket_range: (f64,f64), num_buckets: i32, index_fn: fn(&T) -> usize, value_fn: fn(&T) -> &Vec<f64>) -> BucketKing<T>{
+    pub fn new(
+        n_dims: usize,
+        bucket_range: (f64, f64),
+        num_buckets: i32,
+        index_fn: fn(&T) -> usize,
+        value_fn: fn(&T) -> &Vec<f64>,
+    ) -> BucketKing<T> {
         // let mut bucket_knights: Vec<BucketKnight> = Vec::new();
         let (r_from, r_to) = bucket_range;
-        let bucket_step = ( r_from.max(r_to) - r_from.min(r_to))/num_buckets as f64;
+        let bucket_step = (r_from.max(r_to) - r_from.min(r_to)) / num_buckets as f64;
         // println!("bkt step {}", bucket_step);
         // for i in 0..n_dims {
         //     let mut buckets: Vec<Bucket> = Vec::new();
@@ -223,74 +254,121 @@ impl<T> BucketKing<T> {
         //     })
         // }
 
-        let bucket_knights: Vec<BucketKnight> = (0..n_dims).map(|i| {
-                      let mut buckets: Vec<Bucket> = Vec::new();
-            for j in 0..num_buckets {
+        let bucket_knights: Vec<BucketKnight> = (0..n_dims)
+            .map(|i| {
+                let mut buckets: Vec<Bucket> = Vec::new();
+                for j in 0..num_buckets {
+                    let start_value = if j == 0 {
+                        f64::MIN
+                    } else {
+                        r_from + j as f64 * bucket_step
+                    };
+                    let mut end_value = if j == (num_buckets - 1) {
+                        f64::MAX
+                    } else {
+                        r_from + (j + 1) as f64 * bucket_step
+                    };
+                    // println!("{} to {}", start_value,end_value);
 
-                let start_value = if j == 0 { f64::MIN } else { r_from + j as f64 * bucket_step };
-                let mut end_value =  if j == (num_buckets-1) { f64::MAX } else { r_from + (j + 1) as f64 * bucket_step };
-                // println!("{} to {}", start_value,end_value);
+                    buckets.push(Bucket {
+                        start_value,
+                        end_value,
+                        bucket_contents: Vec::new(),
+                    })
+                }
 
-                buckets.push(Bucket{
-                    start_value,
-                    end_value,
-                    bucket_contents: Vec::new(),
-                })
-
-            }
-
-            return BucketKnight{
-                dimension: i,
-                buckets
-            };
-        }).collect();
-        return BucketKing::<T>{
+                return BucketKnight {
+                    dimension: i,
+                    buckets,
+                };
+            })
+            .collect();
+        return BucketKing::<T> {
             value_fn,
             index_fn,
             dimensional_knights: bucket_knights,
-        }
-
+        };
     }
     pub fn get_potential_matches_indexes(&self, value: &T) -> Option<Vec<usize>> {
         let value_vec = (self.value_fn)(value);
-        let ret: Vec<Vec<usize>> = self.dimensional_knights.iter()
+        let ret: Vec<Vec<usize>> = self
+            .dimensional_knights
+            .iter()
             // .map(|k| k.get_bucket(value_vec.get(k.dimension).unwrap()).unwrap())
             // .map(|k| k.get_buckets_in_range(value_vec.get(k.dimension).unwrap(),0.7)).flat_map(|x1| x1.into_iter())
-            .map(|k| k.get_index_in_range(value_vec.get(k.dimension).unwrap(), 0.6)).collect();
-            // .inspect(|x2| println!("dim {:?} to {:?} <> {:?}",x2.start_value, x2.end_value, x2.bucket_contents))
-            // .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
+            .map(|k| {
+                k.get_index_in_range(
+                    value_vec.get(k.dimension).unwrap(),
+                    &BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(0.6),
+                )
+            })
+            .collect();
+        // .inspect(|x2| println!("dim {:?} to {:?} <> {:?}",x2.start_value, x2.end_value, x2.bucket_contents))
+        // .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
         return roll_comparison(ret);
-
     }
-    pub fn get_potential_matches_indexes_with_range(&self, value: &T, range: &f64) -> Option<Vec<usize>> {
+    pub fn get_potential_matches_indexes_with_ranges(
+        &self,
+        value: &T,
+        ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
+    ) -> Option<Vec<usize>> {
         let value_vec = (self.value_fn)(value);
-        let ret: Vec<Vec<usize>> = self.dimensional_knights.iter()
-            .map(|k| k.get_index_in_range(value_vec.get(k.dimension).unwrap(), *range)).collect();
+        let ret: Vec<Vec<usize>> = self
+            .dimensional_knights
+            .iter()
+            .map(|k| {
+                k.get_index_in_range(
+                    value_vec.get(k.dimension).unwrap(),
+                    ranges.get(k.dimension).unwrap(),
+                )
+            })
+            .collect();
         return roll_comparison(ret);
-
     }
 
+    pub fn get_potential_matches_indexes_with_raw_values(
+        &self,
+        value: &Vec<f64>,
+        ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
+    ) -> Option<Vec<usize>> {
+        let value_vec = value;
+        let ret: Vec<Vec<usize>> = self
+            .dimensional_knights
+            .iter()
+            .map(|k| {
+                k.get_index_in_range(
+                    value_vec.get(k.dimension).unwrap(),
+                    ranges.get(k.dimension).unwrap(),
+                )
+            })
+            .collect();
+        return roll_comparison(ret);
+    }
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {
-        let value_values: Vec<(usize, &Vec<f64>)> = values.iter().map(|x| ((self.index_fn)(x),(self.value_fn)(x))).collect();
-        for (n ,dimensional_knight) in self.dimensional_knights.iter_mut().enumerate() {
-            let as_bucket_values: Vec<BucketValue> = value_values.iter().map(|(index, value_vec)| {
-                return BucketValue{
-                    value: value_vec.get(n).unwrap().clone(),
-                    index: index.clone()
-                }
-            }).collect();
+        let value_values: Vec<(usize, &Vec<f64>)> = values
+            .iter()
+            .map(|x| ((self.index_fn)(x), (self.value_fn)(x)))
+            .collect();
+        for (n, dimensional_knight) in self.dimensional_knights.iter_mut().enumerate() {
+            let as_bucket_values: Vec<BucketValue> = value_values
+                .iter()
+                .map(|(index, value_vec)| {
+                    return BucketValue {
+                        value: value_vec.get(n).unwrap().clone(),
+                        index: index.clone(),
+                    };
+                })
+                .collect();
             dimensional_knight.add_items(as_bucket_values);
-
         }
 
-     /*   self.dimensional_knights.iter().for_each(|x| {
+        /*   self.dimensional_knights.iter().for_each(|x| {
             println!("dim {:?}", x.dimension);
             x.buckets.iter().for_each(|y|{
                 println!("{:?}", y.bucket_contents);
                 // println!("{:?}",y.bucket_contents.iter().map(|x1|x1.index).collect::<Vec<usize>>())
             })
         })*/
-
     }
 }
 
