@@ -1,24 +1,52 @@
 use crate::bucket_empire::BucketKing;
-use crate::evaluation::{evaluate_b_cell, score_b_cells, Evaluation};
+use crate::evaluation::{evaluate_b_cell, score_b_cells, Evaluation, gen_merge_mask};
 use crate::representation::{AntiGen, BCell, BCellFactory, DimValueType};
-use crate::selection::elitism_selection;
+use crate::selection::{elitism_selection, kill_by_mask_yo};
 use rayon::prelude::*;
 use std::collections::HashSet;
+use std::ops::Range;
+use rand::prelude::SliceRandom;
+use rand::thread_rng;
 
-pub struct ParamObj {
+
+
+
+pub struct Params {
+    // -- train params -- //
     pub b_cell_pop_size: usize,
     pub generations: usize,
 
     pub mutate_offset: bool,
-    pub offset_max_delta: f64,
-    pub offset_flip_prob: f64,
-
     pub mutate_multiplier: bool,
-    pub multiplier_max_delta: f64,
-    pub multiplier_flip_prob: f64,
-
     pub mutate_value_type: bool,
+
+    pub offset_mutation_multiplier_range: Range<f64>,
+    pub multiplier_mutation_multiplier_range: Range<f64>,
+    pub value_type_valid_mutations: Vec<DimValueType>,
+
+    // selection
+    pub rr_max: f64,
+    pub tournament_size: usize,
+
+    pub n_parents_mutations: usize,
+
+    // -- B-cell from antigen initialization -- //
+    pub b_cell_ag_init_offset_range: Range<f64>,
+    pub b_cell_ag_init_multiplier_range: Range<f64>,
+    pub b_cell_ag_init_value_types: Vec<DimValueType>,
+
+    // -- B-cell from random initialization -- //
+    pub b_cell_rand_init_offset_range: Range<f64>,
+    pub b_cell_rand_init_multiplier_range: Range<f64>,
+    pub b_cell_rand_init_value_types: Vec<DimValueType>,
+
+
 }
+
+/*
+1. select n parents
+2. clone -> mutate parents n times
+ */
 pub struct ArtificialImmuneSystem {
     pub b_cells: Vec<BCell>,
 }
@@ -29,7 +57,7 @@ pub struct ArtificialImmuneSystem {
 
 fn evaluate_population(
     bk: &BucketKing<AntiGen>,
-    params: &ParamObj,
+    params: &Params,
     population: Vec<BCell>,
     antigens: &Vec<AntiGen>,
 ) -> Vec<(Evaluation, BCell)> {
@@ -58,16 +86,24 @@ impl ArtificialImmuneSystem {
     pub fn train(
         &mut self,
         antigens: &Vec<AntiGen>,
-        params: &ParamObj,
-        mutate_fn: fn(&ParamObj, f64, BCell) -> BCell,
-        selector_fn: fn(&ParamObj, Vec<(f64, Evaluation, BCell)>) -> Vec<(f64, Evaluation, BCell)>,
-    ) -> Vec<f64> {
+        params: &Params,
+    ) -> (Vec<f64>, Vec<(f64, Evaluation, BCell)>) {
+
+
+        // =======  init misc training params  ======= //
+
+        let mut best_run: Vec<(f64, Evaluation, BCell)>= Vec::new();
+        let mut best_score = 0.0;
+
+        let mut rng = rand::thread_rng();
+
         let mut train_hist = Vec::new();
         let n_dims = antigens.get(0).unwrap().values.len();
         let class_labels = antigens
             .iter()
             .map(|x| x.class_label)
             .collect::<HashSet<_>>();
+
 
         let mut bk: BucketKing<AntiGen> =
             BucketKing::new(n_dims, (0.0, 10.0), 10, |ag| ag.id, |ag| &ag.values);
@@ -78,23 +114,26 @@ impl ArtificialImmuneSystem {
             n_dims,
             vec![0.5..=2.0; n_dims],
             vec![0.0..=10.0; n_dims],
-            3.0..=20.0,
-            vec![DimValueType::Circle, DimValueType::Disabled],
+            0.5..=10.0,
+            vec![DimValueType::Circle],
             true,
             true,
-            Vec::from_iter(class_labels.into_iter()),
+            Vec::from_iter(class_labels.clone().into_iter()),
         );
 
-        // gen inital pop
+        // =======  gen init pop  ======= //
         let mut initial_population: Vec<BCell> = Vec::with_capacity(params.b_cell_pop_size);
         let mut evaluated_pop: Vec<(Evaluation, BCell)> =
             Vec::with_capacity(params.b_cell_pop_size);
         let mut scored_pop: Vec<(f64, Evaluation, BCell)> =
             Vec::with_capacity(params.b_cell_pop_size);
+        let mut match_mask: Vec<usize> = Vec::new();
 
         antigens
             .iter()
             .for_each(|ag| initial_population.push(cell_factory.generate_from_antigen(ag)));
+
+        initial_population.shuffle(&mut thread_rng());
         if params.b_cell_pop_size > initial_population.len() {
             let missing = params.b_cell_pop_size - initial_population.len();
             (0..missing)
@@ -102,7 +141,17 @@ impl ArtificialImmuneSystem {
         }
 
         evaluated_pop = evaluate_population(&bk, params, initial_population, antigens);
-        scored_pop = score_b_cells(evaluated_pop);
+        match_mask = gen_merge_mask(&evaluated_pop);
+        scored_pop = score_b_cells(evaluated_pop, &match_mask);
+
+        println!("initial");
+         class_labels.clone().into_iter().for_each(|cl| {
+                let filtered: Vec<usize> = scored_pop.iter().inspect(|(a,b,c)|{
+                }).filter(|(a,b,c)| c.class_label == cl ).map(|(a,b,c)| 1usize).collect();
+                print!("num with {:?} is {:?}", cl,filtered.len() )
+            });
+        println!("\ninital end");
+
 
         for i in 0..params.generations {
             let max_score = scored_pop
@@ -110,60 +159,153 @@ impl ArtificialImmuneSystem {
                 .map(|(score, _, _)| score)
                 .max_by(|a, b| a.total_cmp(b))
                 .unwrap();
-            train_hist
-                .push(scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64);
+
             println!(
                 "iter: {:<5} avg score {:.6}, max score {:.6}",
                 i,
                 scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64,
                 max_score
             );
-            // println!("pop size {:} ",scored_pop.len());
+            println!("pop size {:} ",scored_pop.len());
+
+            class_labels.clone().into_iter().for_each(|cl| {
+                let filtered: Vec<usize> = scored_pop.iter().inspect(|(a,b,c)|{
+                }).filter(|(a,b,c)| c.class_label == cl ).map(|(a,b,c)| 1usize).collect();
+                print!("num with {:?} is {:?}", cl,filtered.len() )
+            });
+            println!();
 
             // find the matches for the new B-cells
             //
 
+
+
             // let new_scored: Vec<(f64, BCell)> = scored_pop.clone().into_par_iter().map(|(score ,b_cell)| {
+   /*         let new_evaluated: Vec<(Evaluation, BCell)> = scored_pop
+                .clone()
+                // .into_par_iter() // TODO: set paralell
+                .into_iter()
+                .map(|(parent_score, parent_evaluation, b_cell)| {
+                    let frac_score = parent_score / max_score;
+
+                    let mutated: Vec<(Evaluation, BCell)> = (0..5).map(|_|{
+                         let mutated = mutate_fn(params, frac_score, b_cell.clone());
+                         let evaluation = evaluate_b_cell(&bk, params, antigens, &mutated);
+                        return (evaluation, mutated)
+                     }).filter(|(ev, cell)| {
+                        let more_matches = ev.matched_ids.len() > parent_evaluation.matched_ids.len();
+                        let not_more_error = ev.wrongly_matched.len() <= parent_evaluation.wrongly_matched.len();
+                        return (more_matches & not_more_error) || (not_more_error)
+                    }).collect();
+
+
+                    if mutated.len() == 0{
+                        return vec![(parent_evaluation, b_cell)];
+                    } else{
+                        return mutated;
+                    }
+
+                })
+                .flat_map(|v| v.into_iter())
+                .collect();
+
+*/
             let new_evaluated: Vec<(Evaluation, BCell)> = scored_pop
                 .clone()
-                .into_par_iter()
-                .map(|(score, _evaluation, b_cell)| {
-                    let frac_score = score / max_score;
-                    let mutated = mutate_fn(params, frac_score, b_cell);
-                    let evaluation = evaluate_b_cell(&bk, params, antigens, &mutated);
-                    return (evaluation, mutated);
+                // .into_par_iter() // TODO: set paralell
+                .into_iter()
+                .map(|(parent_score, parent_evaluation, b_cell)| {
+                    let frac_score = parent_score / max_score;
+
+                    for n in (0..5){
+                        let mutated = mutate_fn(params, frac_score, b_cell.clone());
+                        let evaluation = evaluate_b_cell(&bk, params, antigens, &mutated);
+
+                        let more_matches = evaluation.matched_ids.len() > parent_evaluation.matched_ids.len();
+                        let not_more_error = evaluation.wrongly_matched.len() <= parent_evaluation.wrongly_matched.len();
+
+
+                        let mut res_v = score_b_cells(vec![(evaluation, mutated)], &match_mask);
+                        let (new_score, new_eval, new_b_cell) = res_v.pop().unwrap();
+                        if new_score > parent_score{
+                            return (new_eval, new_b_cell)
+
+                        }
+                        // if (more_matches & not_more_error) || (not_more_error){
+                        //     return (evaluation,mutated)
+                        // }
+                    }
+                    return (parent_evaluation, b_cell)
                 })
                 .collect();
+
             evaluated_pop = scored_pop.into_iter().map(|(_a, b, c)| (b, c)).collect();
-            evaluated_pop.extend(new_evaluated);
+            // evaluated_pop.extend(new_evaluated);
+            evaluated_pop = new_evaluated;
+
 
             // let new_scored = score_population(params, mutated, antigens, eval_fn);
 
             // tweak by overmatching factor
-            scored_pop = score_b_cells(evaluated_pop);
+            match_mask = gen_merge_mask(&evaluated_pop);
+            scored_pop = score_b_cells(evaluated_pop, &match_mask);
 
-            // select a subset of the pop
-            scored_pop = selector_fn(params, scored_pop);
+
+
+            println!("init len {:?}", scored_pop.len());
+            // scored_pop = kill_by_mask_yo(scored_pop, &mut match_mask);
+            println!("dedup len {:?}", scored_pop.len());
+
+            if params.b_cell_pop_size < scored_pop.len() {
+                // select a subset of the pop
+                // scored_pop = selector_fn(params, scored_pop, &mut match_mask);
+            }
+
+            let avg_score = scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64;
+            if avg_score > best_score{
+                best_score = avg_score;
+                best_run = scored_pop.clone();
+            }
+
+            train_hist.push(avg_score);
 
             // gen new b_cells to fill the hole
             if params.b_cell_pop_size > scored_pop.len() {
                 let missing = params.b_cell_pop_size - scored_pop.len();
-                let new_pop = (0..missing)
+                let num_new_rand = (missing as f64 * params.new_val_rand_frac) as usize;
+                let num_new_pop = missing - num_new_rand;
+
+                // println!("num rand {:<3?} num new pop {:<3?}", num_new_rand, num_new_pop);
+                let new_pop_rand = (0..num_new_rand)
                     .map(|_| cell_factory.generate_random_genome())
                     .map(|cell| (evaluate_b_cell(&bk, params, antigens, &cell), cell))
                     .collect::<Vec<(Evaluation, BCell)>>();
 
+                let new_pop_pop = antigens.choose_multiple(&mut rng,num_new_pop)
+                    .map(|ag| cell_factory.generate_from_antigen(ag))
+                    .map(|cell| (evaluate_b_cell(&bk, params, antigens, &cell), cell))
+                    .collect::<Vec<(Evaluation, BCell)>>();
+
                 evaluated_pop = scored_pop.into_iter().map(|(_a, b, c)| (b, c)).collect();
-                evaluated_pop.extend(new_pop);
-                scored_pop = score_b_cells(evaluated_pop);
+                evaluated_pop.extend(new_pop_rand);
+                evaluated_pop.extend(new_pop_pop);
+
+
+
+                match_mask = gen_merge_mask(&evaluated_pop);
+                scored_pop = score_b_cells(evaluated_pop, &match_mask);
+
             }
         }
-        let (scored_pop, _drained) = elitism_selection(scored_pop, &150);
+
+        // scored_pop = best_run;
+
+        let (scored_pop, _drained) = elitism_selection(scored_pop, &100);
         self.b_cells = scored_pop
-            .into_iter()
-            .map(|(_score, _ev, cell)| cell)
+            .iter()
+            .map(|(_score, _ev, cell)| cell.clone())
             .collect();
-        return train_hist;
+        return (train_hist, scored_pop);
     }
 
     pub fn is_class_correct(&self, antigen: &AntiGen) -> Option<bool> {

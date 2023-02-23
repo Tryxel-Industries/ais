@@ -1,4 +1,5 @@
-use rand::{distributions::Distribution, Rng};
+use rand::{distributions::Distribution, Rng, thread_rng};
+use rand::prelude::SliceRandom;
 
 use crate::ais::ParamObj;
 use crate::evaluation::Evaluation;
@@ -26,12 +27,47 @@ fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     return picks;
 }
 
+pub fn kill_by_mask_yo(mut population: Vec<(f64, Evaluation, BCell)>, match_mask: &mut Vec<usize>) -> Vec<(f64, Evaluation, BCell)>{
+    let mut survivors: Vec<(f64, Evaluation, BCell)> = Vec::new();
+
+
+    population.shuffle(&mut thread_rng());
+
+    for (score, eval, cell) in population.into_iter(){
+        let mut keep = false;
+        for idx in &eval.matched_ids{
+            if let Some(cnt) =  match_mask.get(*idx){
+                if *cnt <= 1{
+                    keep = true;
+                    break;
+                }
+            }
+        }
+
+
+        if keep{
+            survivors.push((score, eval, cell))
+        }else {
+            // all the covered vars are covered elsewhere
+            for idx in &eval.matched_ids{
+            if let Some( cnt) =  match_mask.get_mut(*idx){
+                *cnt -= 1
+            }
+        }
+        }
+
+
+    }
+
+    return survivors;
+}
 pub fn selection(
     _params: &ParamObj,
     population: Vec<(f64, Evaluation, BCell)>,
+    match_mask: &mut Vec<usize>,
 ) -> Vec<(f64, Evaluation, BCell)> {
-    let (mut selected, drained) = elitism_selection(population, &200);
-    selected.extend(pick_n_random(drained, 100).into_iter());
+    let (mut selected, drained) = elitism_selection(population, &150);
+    // selected.extend(pick_n_random(drained, 70).into_iter());
     return selected;
 }
 
@@ -43,6 +79,7 @@ pub fn elitism_selection(
 
     // let mut res_cells  = population.into_iter().map(|(a, b)| b).collect::<Vec<_>>();
     let mut res_cells = population.into_iter().collect::<Vec<_>>();
+
 
     // println!("{:?}", res_cells.get(res_cells.len()-1).unwrap());
     // return res_cells.drain(..num).collect();

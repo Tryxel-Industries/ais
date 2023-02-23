@@ -85,7 +85,7 @@ impl BCellFactory {
         let radius_constant = self.radius_range.sample(&mut rng);
         let class_label = self
             .class_labels
-            .get(rng.gen_range(0..self.allowed_value_types.len()))
+            .get(rng.gen_range(0..self.class_labels.len()))
             .unwrap()
             .clone();
 
@@ -102,23 +102,34 @@ impl BCellFactory {
         let mut dim_multipliers: Vec<BCellDim> = Vec::with_capacity(self.n_dims);
         for i in 0..self.n_dims {
             let offset = antigen.values.get(i).unwrap().clone() * -1.0;
+            if false{
+                let multiplier = if self.use_multiplier {
+                    self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
+                } else {
+                    1.0
+                };
 
-            let multiplier = if self.use_multiplier {
-                self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
-            } else {
-                1.0
-            };
+                let value_type = self
+                    .allowed_value_types
+                    .get(rng.gen_range(0..self.allowed_value_types.len()))
+                    .unwrap()
+                    .clone();
+                dim_multipliers.push(BCellDim {
+                    multiplier,
+                    offset,
+                    value_type,
+                })
 
-            let value_type = self
-                .allowed_value_types
-                .get(rng.gen_range(0..self.allowed_value_types.len()))
-                .unwrap()
-                .clone();
-            dim_multipliers.push(BCellDim {
-                multiplier,
-                offset,
-                value_type,
-            })
+            }else{
+                let multiplier = 1.0;
+                let value_type = DimValueType::Circle;
+                dim_multipliers.push(BCellDim {
+                    multiplier,
+                    offset,
+                    value_type,
+                })
+            }
+
         }
 
         let radius_constant = if self.use_rand_radius {

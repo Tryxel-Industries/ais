@@ -1,12 +1,13 @@
+use rand::distributions::Uniform;
 use crate::ais::ParamObj;
 use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 use crate::representation::{AntiGen, BCell, DimValueType};
 use rayon::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Evaluation {
-    matched_ids: Vec<usize>,
-    wrongly_matched: Vec<usize>,
+    pub matched_ids: Vec<usize>,
+    pub wrongly_matched: Vec<usize>,
 }
 
 pub fn evaluate_b_cell(
@@ -69,6 +70,7 @@ pub fn evaluate_b_cell(
 
     // let score = (with_same_label.len()as f64) - ((num_wrong as f64/2.0));
 
+    // println!("matched {:?}\n", corr_matched);
     let ret_evaluation = Evaluation {
         matched_ids: corr_matched,
         wrongly_matched: wrong_matched,
@@ -76,7 +78,6 @@ pub fn evaluate_b_cell(
     // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
     return ret_evaluation;
 }
-
 pub fn merge_evaluation_matches(evaluations: Vec<&Evaluation>) -> Vec<usize> {
     let max_id = evaluations
         .iter()
@@ -87,6 +88,7 @@ pub fn merge_evaluation_matches(evaluations: Vec<&Evaluation>) -> Vec<usize> {
     let merged =
         evaluations
             .iter()
+            .filter(|e| e.wrongly_matched.len() == 0)
             .map(|e| &e.matched_ids)
             .fold(vec![0usize; max_id], |mut acc, b| {
                 b.iter().for_each(|v| {
@@ -99,33 +101,47 @@ pub fn merge_evaluation_matches(evaluations: Vec<&Evaluation>) -> Vec<usize> {
     return merged;
 }
 
-pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>) -> Vec<(f64, Evaluation, BCell)> {
+pub fn gen_merge_mask(scored_population: &Vec<(Evaluation, BCell)>) -> Vec<usize>{
     let evaluations = scored_population
         .iter()
         .map(|(b, _)| b)
         .collect::<Vec<&Evaluation>>();
-    let merged_mask = merge_evaluation_matches(evaluations);
+    return merge_evaluation_matches(evaluations);
+}
+pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &Vec<usize>) -> Vec<(f64, Evaluation, BCell)>{
 
     // println!("{:?}", merged_mask);
     // println!("len {:?}", merged_mask.len());
+    // println!("sum {:?}", merged_mask.iter().sum::<usize>());
+    // println!("match -s: ");
     let scored = scored_population
-        .into_par_iter()
+        .into_iter()
+        // .into_par_iter() // TODO: set paralell
         .map(|(eval, cell)| {
-            let mut matched_sum: f64 = 0.0;
+            let mut bonus_sum: f64 = 0.0;
+            let mut base_sum: f64 = 0.0;
 
             let mut n_shared = 0;
             let mut roll_shared = 0;
 
             for mid in &eval.matched_ids {
-                let sharers = merged_mask.get(*mid).unwrap();
+                let sharers = merged_mask.get(*mid).unwrap_or(&0);
                 if *sharers > 1 {
                     n_shared += 1 as usize;
                     roll_shared += sharers;
                     // matched_sum += (0.5+(1.0 / ((*sharers as f64) / 2.0))).min(1.0)
-                    matched_sum += (1.0 / ((*sharers as f64) / 2.0)).max(0.5)
+                    // matched_sum += (1.0 / ((*sharers as f64) / 2.0)).max(0.5)
+
+                    let delta =  (1.0/ *sharers as f64).min(0.01);
+                    // let delta =  (1.0 / ((*sharers as f64) / 2.0)).max(0.5);
+
+
+                    bonus_sum += delta;
                 } else {
-                    matched_sum += 1.2
+                    bonus_sum += 1.5;
                 }
+                base_sum += 1.0;
+
             }
             let n_wrong = eval.wrongly_matched.len() as f64;
             let n_right = eval.matched_ids.len() as f64;
@@ -145,8 +161,10 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>) -> Vec<(f64, E
             }
 
             // let score = crowdedness+purity+accuracy ;
-            let score = matched_sum / (n_wrong + 1.0);
+            let score = ((bonus_sum) / (n_wrong + 1.0)) ;
+            // let score = (matched_sum - n_wrong).max(0.0) ;
 
+            // println!("\n score {:?}", score);
             return (score, eval, cell);
         })
         .collect();

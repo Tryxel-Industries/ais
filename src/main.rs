@@ -3,15 +3,18 @@
 
 extern crate core;
 
+use std::collections::HashSet;
+use std::ptr::null;
 use crate::ais::{ArtificialImmuneSystem, ParamObj};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::read_diabetes;
+use crate::dataset_readers::{read_diabetes, read_iris};
 use plotters::prelude::*;
 use rand::prelude::SliceRandom;
 use rand::Rng;
 use std::time::Instant;
 
 use crate::mutations::mutate;
+use crate::representation::AntiGen;
 
 use crate::selection::selection;
 
@@ -98,43 +101,75 @@ fn plot_hist(hist: Vec<f64>) -> Result<(), Box<dyn std::error::Error>> {
     root.present()?;
     return Ok(());
 }
+
+fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, Vec<AntiGen>){
+    let classes: HashSet<usize> = antigens.iter().map(|ag| ag.class_label).collect();
+
+    let mut train: Vec<AntiGen> = Vec::new();
+    let mut test: Vec<AntiGen> = Vec::new();
+
+    for class in classes{
+        let mut of_class: Vec<_> = antigens.iter().filter(|ag|  ag.class_label == class).cloned().collect();
+        println!("num in class {:?} is {:?}", class ,of_class.len());
+        let num_test = (of_class.len() as f64 * test_frac) as usize;
+        let class_train = of_class.split_off(num_test);
+
+        train.extend(class_train);
+        test.extend(of_class);
+
+        println!("train s {:?} test s {:?}", train.len() ,test.len());
+    }
+
+    return (train,test)
+}
 fn ais_test() {
     let params = ParamObj {
-        b_cell_pop_size: 400,
-        generations: 200,
+        paralelize: false,
+        b_cell_pop_size: 200,
+        generations: 500,
 
         mutate_offset: true,
         offset_flip_prob: 0.0,
-        offset_max_delta: 0.5,
+        offset_max_delta: 5.0,
 
         mutate_multiplier: true,
-        multiplier_flip_prob: 0.0,
-        multiplier_max_delta: 0.2,
+        multiplier_flip_prob: 0.01,
+        multiplier_max_delta: 1.0,
 
         mutate_value_type: true,
+
+        new_val_rand_frac: 0.3,
     };
 
-    // let mut antigens = read_iris();
-    let mut antigens = read_diabetes();
+    let mut antigens = read_iris();
+    //let mut antigens = read_diabetes();
 
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
 
-    let (test, train_slice) = antigens.split_at(150);
+    let (train_slice, test) = split_train_test(&antigens, 0.2);
+
+    println!("train size: {:?} test size: {:?}", train_slice.len(), test.len());
+
+
+
+
 
     let start = Instant::now();
     let train = train_slice.clone().to_vec();
-    let duration = start.elapsed();
 
     let mut ais = ArtificialImmuneSystem::new();
-    let hist = ais.train(&train, &params, mutate, selection);
-    plot_hist(hist);
+    let (train_hist, scored_pop) = ais.train(&train, &params, mutate, selection);
+
+    let duration = start.elapsed();
+    plot_hist(train_hist);
 
     let mut zero_reg_cells = 0;
     // display final
-    ais.b_cells.iter().for_each(|b_cell| {
+
+    scored_pop.iter().for_each(|(disc_score, eval, b_cell)| {
         let registered_antigens = test
             .iter()
             .filter(|ag| b_cell.test_antigen(ag))
@@ -175,14 +210,17 @@ fn ais_test() {
                     .map(|v| &v.value_type)
                     .collect::<Vec<_>>()
             );
+            println!("genome matches    {:?}", eval.matched_ids);
+
             println!("genome value radius    {:?}", b_cell.radius_constant);
 
             println!(
-                "num reg {:?} same label {:?} other label {:?}, score {:?}",
+                "num reg {:?} same label {:?} other label {:?}, score {:?}, discounted score {:?}",
                 registered_antigens.len(),
                 with_same_label.len(),
                 num_wrong.len(),
-                score
+                score,
+                disc_score
             );
             println!()
         } else {
@@ -191,11 +229,16 @@ fn ais_test() {
     });
     println!("zero reg cells {}", zero_reg_cells);
 
+
+
+    println!("=============================================================================");
+    println!("      TRAIN");
+    println!("=============================================================================");
     let mut n_corr = 0;
     let mut n_wrong = 0;
     let mut n_no_detect = 0;
-    for antigen in test {
-        let pred_class = ais.is_class_correct(antigen);
+    for antigen in &train_slice {
+        let pred_class = ais.is_class_correct(&antigen);
         if let Some(v) = pred_class {
             if v {
                 n_corr += 1
@@ -207,7 +250,35 @@ fn ais_test() {
         }
     }
     println!();
-    println!("dataset size {:?}", antigens.len());
+    println!("dataset size {:?}", train.len());
+    println!(
+        "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
+        n_corr,
+        n_wrong,
+        n_no_detect,
+        n_corr as f64 / (train_slice.len() as f64)
+    );
+
+    println!("=============================================================================");
+    println!("      TEST");
+    println!("=============================================================================");
+    n_corr = 0;
+    n_wrong = 0;
+    n_no_detect = 0;
+    for antigen in &test {
+        let pred_class = ais.is_class_correct(&antigen);
+        if let Some(v) = pred_class {
+            if v {
+                n_corr += 1
+            } else {
+                n_wrong += 1
+            }
+        } else {
+            n_no_detect += 1
+        }
+    }
+    println!();
+    println!("dataset size {:?}", test.len());
     println!(
         "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
         n_corr,
@@ -219,7 +290,7 @@ fn ais_test() {
     println!(
         "Total runtime: {:?}, \nPer iteration: {:?}",
         duration,
-        duration / params.generations as u32
+        duration.as_nanos() / params.generations as u128
     );
     // ais.pred_class(test.get(0).unwrap());
 }

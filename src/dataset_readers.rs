@@ -27,15 +27,14 @@ pub fn read_iris() -> Vec<AntiGen> {
         let record: RecordIris = res.unwrap();
         records.push(record);
     }
-    return records
+    let mut  antigens: Vec<AntiGen> =  records
         .into_iter()
         .enumerate()
         .map(|(n, record)| {
             let label = match record.class.as_str() {
-                "Iris-setosa" => 1,
-                "initialization" => 2,
-                "Iris-versicolor" => 3,
-                "Iris-virginica" => 4,
+                "Iris-setosa" => 0,
+                "Iris-versicolor" => 1,
+                "Iris-virginica" => 2,
                 _ => {
                     panic!("parsing error ")
                 }
@@ -52,6 +51,43 @@ pub fn read_iris() -> Vec<AntiGen> {
             };
         })
         .collect();
+
+      let mut max_v = Vec::new();
+    let mut min_v = Vec::new();
+    for i in 0..=3 {
+        max_v.push(
+            antigens
+                .iter()
+                .map(|x| x.values.get(i).unwrap())
+                .max_by(|a, b| a.total_cmp(b))
+                .unwrap()
+                .clone(),
+        );
+
+        min_v.push(
+            antigens
+                .iter()
+                .map(|x| x.values.get(i).unwrap())
+                .min_by(|a, b| a.total_cmp(b))
+                .unwrap()
+                .clone(),
+        );
+    }
+
+    antigens = antigens
+        .into_iter()
+        .map(|mut ag| {
+            for i in 0..=3{
+                let min = min_v.get(i).unwrap();
+                let max = max_v.get(i).unwrap();
+
+                let val = ag.values[i].clone();
+                ag.values[i] = ((val - min) / (max - min)) * 10.0;
+            }
+            return ag;
+        })
+        .collect();
+    return antigens;
 }
 #[derive(Debug, Deserialize)]
 struct RecordDiabetes {

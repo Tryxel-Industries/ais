@@ -6,9 +6,10 @@ use crate::representation::{BCell, DimValueType};
 pub fn mutate(params: &ParamObj, score: f64, b_cell: BCell) -> BCell {
     let mut rng = rand::thread_rng();
 
+    let flipped_score = score;
     let mutated = match rng.gen_range(0..1) {
-        0 => mutate_offset(params, b_cell, score),
-        1 => mutate_multiplier(params, b_cell, score),
+        0 => mutate_offset(params, b_cell, flipped_score.min(0.0)),
+        1 => mutate_multiplier(params, b_cell, flipped_score.min(0.0)),
         // 2 => mutate_value_type(b_cell, score),
         _ => {
             panic!("invalid mut")
