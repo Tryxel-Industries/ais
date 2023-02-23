@@ -5,7 +5,7 @@ extern crate core;
 
 use std::collections::HashSet;
 use std::ptr::null;
-use crate::ais::{ArtificialImmuneSystem, ParamObj};
+use crate::ais::{ArtificialImmuneSystem, Params};
 use crate::bucket_empire::BucketKing;
 use crate::dataset_readers::{read_diabetes, read_iris};
 use plotters::prelude::*;
@@ -14,7 +14,7 @@ use rand::Rng;
 use std::time::Instant;
 
 use crate::mutations::mutate;
-use crate::representation::AntiGen;
+use crate::representation::{AntiGen, DimValueType};
 
 use crate::selection::selection;
 
@@ -123,33 +123,53 @@ fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, V
     return (train,test)
 }
 fn ais_test() {
-    let params = ParamObj {
-        paralelize: false,
-        b_cell_pop_size: 200,
-        generations: 500,
-
-        mutate_offset: true,
-        offset_flip_prob: 0.0,
-        offset_max_delta: 5.0,
-
-        mutate_multiplier: true,
-        multiplier_flip_prob: 0.01,
-        multiplier_max_delta: 1.0,
-
-        mutate_value_type: true,
-
-        new_val_rand_frac: 0.3,
-    };
-
     let mut antigens = read_iris();
-    //let mut antigens = read_diabetes();
+    // let mut antigens = read_diabetes();
 
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     let mut rng = rand::thread_rng();
-    antigens.shuffle(&mut rng);
+    // antigens.shuffle(&mut rng);
 
     let (train_slice, test) = split_train_test(&antigens, 0.2);
+
+
+    let params = Params {
+        // -- train params -- //
+        antigen_pop_fraction: 3.0,
+        leak_fraction: 0.1,
+        generations: 500,
+
+        mutate_offset: true,
+        mutate_multiplier: true,
+        mutate_value_type: true,
+        mutate_label: true,
+
+        offset_mutation_multiplier_range: 0.8..=1.2,
+        multiplier_mutation_multiplier_range: 0.8..=1.2,
+        value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
+
+        //selection
+        max_replacment_frac: 0.25,
+        tournament_size: 5,
+        n_parents_mutations: 10,
+
+
+        // -- B-cell from antigen initialization -- //
+        b_cell_ag_init_multiplier_range: 1.0..=1.0,
+        b_cell_ag_init_value_types: vec![DimValueType::Circle],
+        // b_cell_ag_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
+        b_cell_ag_init_range_range: 0.1..=0.1,
+
+        // -- B-cell from random initialization -- //
+        b_cell_rand_init_offset_range: 1.0..=1.0,
+        b_cell_rand_init_multiplier_range: 1.0..=1.0,
+        b_cell_rand_init_value_types: vec![DimValueType::Circle],
+        b_cell_rand_init_range_range: 1.0..=1.0,
+    };
+
+
+
 
     println!("train size: {:?} test size: {:?}", train_slice.len(), test.len());
 
@@ -161,7 +181,7 @@ fn ais_test() {
     let train = train_slice.clone().to_vec();
 
     let mut ais = ArtificialImmuneSystem::new();
-    let (train_hist, scored_pop) = ais.train(&train, &params, mutate, selection);
+    let (train_hist, scored_pop) = ais.train(&train, &params);
 
     let duration = start.elapsed();
     plot_hist(train_hist);
@@ -185,7 +205,7 @@ fn ais_test() {
 
         let score = with_same_label.len() as f64 / (num_wrong.len() as f64 + 1.0);
 
-        if registered_antigens.len() > 0 {
+        if true {//registered_antigens.len() > 0 {
             println!(
                 "genome dim values    {:?}",
                 b_cell
@@ -249,6 +269,7 @@ fn ais_test() {
             n_no_detect += 1
         }
     }
+
     println!();
     println!("dataset size {:?}", train.len());
     println!(

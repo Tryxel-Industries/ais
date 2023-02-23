@@ -1,7 +1,7 @@
 use rand::{distributions::Distribution, Rng, thread_rng};
 use rand::prelude::SliceRandom;
+use crate::ais::Params;
 
-use crate::ais::ParamObj;
 use crate::evaluation::Evaluation;
 use crate::representation::BCell;
 
@@ -61,8 +61,40 @@ pub fn kill_by_mask_yo(mut population: Vec<(f64, Evaluation, BCell)>, match_mask
 
     return survivors;
 }
+
+pub fn snip_worst_n(
+    mut population: Vec<(f64, Evaluation, BCell)>,
+    num_to_snip: usize,
+) -> Vec<(f64, Evaluation, BCell)>{
+    population.sort_by(|(score_a, _, _) ,(score_b,_,_)| score_a.total_cmp(score_b));
+
+
+    // println!("pre {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
+    let survivors = population.split_off(num_to_snip);
+    // println!("post {:?}", survivors.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
+    // let snipped: Vec<(f64, Evaluation, BCell)> = population
+    //     .drain(0..num_to_snip)
+    //     .collect();
+
+    return survivors;
+}
+
+
+pub fn pick_best_n(
+    mut population: Vec<(f64, Evaluation, BCell)>,
+    num_to_pick: usize,
+) -> Vec<(f64, Evaluation, BCell)>{
+    population.sort_by(|(score_a, _, _) ,(score_b,_,_)| score_b.total_cmp(score_a));
+
+    // println!("pre {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
+    let picked = population.split_off(num_to_pick);
+    // println!("post {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
+
+    return population;
+}
+
 pub fn selection(
-    _params: &ParamObj,
+    _params: &Params,
     population: Vec<(f64, Evaluation, BCell)>,
     match_mask: &mut Vec<usize>,
 ) -> Vec<(f64, Evaluation, BCell)> {
@@ -114,37 +146,44 @@ pub fn elitism_selection(
     }
     return (select, res_cells);
 }
-// pub fn tournament_pick(
-//     population: &Vec<(f64, BCell)>,
-//     num: &usize,
-//     tournament_size: &usize,
-//     num_tournaments: &usize,
-//     picks_per_tournament: &usize,
-// ) -> Vec<BCell> {
-//     let mut rng = rand::thread_rng();
-//
-//     let mut idx_list = Vec::new();
-//     while idx_list.len() < *tournament_size {
-//         let idx = rng.gen_range(0..population.len());
-//         if !idx_list.contains(&idx) {
-//             idx_list.push(idx.clone());
-//         }
-//     }
-//
-//     let mut tournament_pool: Vec<_> = idx_list
-//         .iter()
-//         .map(|idx| (idx,population.get(*idx).unwrap()[0]))
-//         .collect();
-//
-//     tournament_pool.sort_by(|(score_a, _), (score_b, _)| score_a.partial_cmp(score_b).unwrap());
-//     let b_cells  = tournament_pool.iter().map(|(a, b)| b).collect::<Vec<_>>();
-//
-//     let mut ret = Vec::new();
-//     for n in 0..*num {
-//         let a = b_cells.get(n).unwrap()
-//         ret.push(**a)
-//     }
-//
-//     return ret;
-// }
-//
+
+
+
+pub fn tournament_pick(
+    population: &Vec<(f64, Evaluation, BCell)>,
+    num_to_pick: &usize,
+    tournament_size: &usize,
+) -> Vec<usize> {
+    let mut rng = rand::thread_rng();
+
+    // idx map for convenience
+    let idx_list: Vec<(usize, f64)> = population.iter().enumerate().map(|(idx, (score,_,_))| (idx, score.clone())).collect();
+
+    let mut picks: Vec<usize> = Vec::with_capacity(*num_to_pick);
+
+    for _ in (0..*num_to_pick){
+        // make pool
+        let mut pool: Vec<&(usize,f64)> = (0..*tournament_size).into_iter()
+            .map(|_| idx_list.get(rng.gen_range(0..population.len())).unwrap()).collect();
+        pool.sort_by(|(_,score_a) ,(_,score_b)| score_a.total_cmp(score_b));
+
+        let mut cur_fetch_idx: usize = 0;
+        //todo this may crash but sort of ok if it does because of issues elsewhere
+        while cur_fetch_idx < pool.len()  {
+            // println!("trial {:?} pool {:?}",cur_fetch_idx, pool);
+            // println!("picks {:?}", picks);
+            let (cand_idx,s) = pool.get(cur_fetch_idx).unwrap();
+            if picks.contains(cand_idx){
+                cur_fetch_idx += 1;
+            }else{
+                picks.push(cand_idx.clone());
+                break
+            }
+        }
+    }
+
+
+
+    return picks;
+}
+

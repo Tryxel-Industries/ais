@@ -77,7 +77,7 @@ pub trait Bucketable {
 
 pub enum BucketEmpireOfficialRangeNotationSystemClasses {
     Open,
-    Symmetric(f64),
+    Symmetric((f64,f64)),
     UpperBound(f64),
     LowerBound(f64),
 }
@@ -160,9 +160,11 @@ impl BucketKnight {
                     .map(|v| v.index)
                     .collect();
             }
-            BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(v) => {
-                let value_lb = dimensional_value.clone() - v;
-                let value_ub = dimensional_value.clone() + v;
+            BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((lb, ub)) => {
+                // let value_lb = dimensional_value.clone() - v;
+                // let value_ub = dimensional_value.clone() + v;
+                let value_lb = *lb;
+                let value_ub = *ub;
 
                 for bucket in self.buckets.iter() {
                     if bucket.end_value > value_lb && bucket.end_value <= value_ub {
@@ -175,7 +177,7 @@ impl BucketKnight {
             BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(v) => {
                 let value_ub = *v;
                 for bucket in self.buckets.iter() {
-                    if bucket.end_value <= value_ub {
+                    if bucket.start_value <= value_ub {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     }
                 }
@@ -183,7 +185,7 @@ impl BucketKnight {
             BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(v) => {
                 let value_lb = *v;
                 for bucket in self.buckets.iter() {
-                    if bucket.start_value > value_lb {
+                    if bucket.end_value > value_lb {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     }
                 }
@@ -292,7 +294,7 @@ impl<T> BucketKing<T> {
             .map(|k| {
                 k.get_index_in_range(
                     value_vec.get(k.dimension).unwrap(),
-                    &BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(0.6),
+                    &BucketEmpireOfficialRangeNotationSystemClasses::Open,
                 )
             })
             .collect();

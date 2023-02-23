@@ -11,17 +11,15 @@ pub enum DimValueType {
 
 pub struct BCellFactory {
     n_dims: usize,
-    // the multiplier for the dim value
-    dim_multiplier_ranges: Vec<Uniform<f64>>,
-    // the shift used for the dim if the value type is a circle
-    dim_offset_ranges: Vec<Uniform<f64>>,
 
-    radius_range: Uniform<f64>,
+    b_cell_multiplier_ranges: Vec<Uniform<f64>>,
+    b_cell_radius_range: Uniform<f64>,
+    b_cell_allowed_value_types: Vec<DimValueType>,
 
-    allowed_value_types: Vec<DimValueType>,
-
-    use_multiplier: bool,
-    use_rand_radius: bool,
+    rng_multiplier_ranges: Vec<Uniform<f64>>,
+    rng_offset_ranges: Vec<Uniform<f64>>,
+    rng_radius_range: Uniform<f64>,
+    rng_allowed_value_types: Vec<DimValueType>,
 
     class_labels: Vec<usize>,
 }
@@ -29,30 +27,33 @@ pub struct BCellFactory {
 impl BCellFactory {
     pub fn new(
         n_dims: usize,
-        dim_multiplier_ranges: Vec<RangeInclusive<f64>>,
-        dim_offset_ranges: Vec<RangeInclusive<f64>>,
-        radius_range: RangeInclusive<f64>,
-        allowed_value_types: Vec<DimValueType>,
-        use_multiplier: bool,
-        use_rand_radius: bool,
+
+        b_cell_multiplier_ranges: RangeInclusive<f64>,
+        b_cell_radius_range: RangeInclusive<f64>,
+        b_cell_allowed_value_types: Vec<DimValueType>,
+
+        rng_multiplier_ranges: RangeInclusive<f64>,
+        rng_offset_ranges: RangeInclusive<f64>,
+        rng_radius_range: RangeInclusive<f64>,
+        rng_allowed_value_types: Vec<DimValueType>,
+
         class_labels: Vec<usize>,
     ) -> Self {
-        let dim_multiplier_ranges_mapped: Vec<Uniform<f64>> = dim_multiplier_ranges
-            .iter()
+        let range_to_uniform = | range: RangeInclusive<f64>| return vec![range; n_dims].iter()
             .map(|x| Uniform::new_inclusive(x.start(), x.end()))
-            .collect();
-        let dim_offset_ranges_mapped: Vec<Uniform<f64>> = dim_offset_ranges
-            .iter()
-            .map(|x| Uniform::new_inclusive(x.start(), x.end()))
-            .collect();
+            .collect::<Vec<Uniform<f64>>>();
+
         return Self {
             n_dims,
-            dim_multiplier_ranges: dim_multiplier_ranges_mapped,
-            dim_offset_ranges: dim_offset_ranges_mapped,
-            radius_range: Uniform::new_inclusive(radius_range.start(), radius_range.end()),
-            allowed_value_types,
-            use_multiplier,
-            use_rand_radius,
+            b_cell_multiplier_ranges: range_to_uniform(b_cell_multiplier_ranges),
+            b_cell_radius_range: Uniform::new_inclusive(b_cell_radius_range.start(),b_cell_radius_range.end()),
+            b_cell_allowed_value_types,
+
+            rng_multiplier_ranges: range_to_uniform(rng_multiplier_ranges),
+            rng_offset_ranges: range_to_uniform(rng_offset_ranges),
+            rng_radius_range: Uniform::new_inclusive(rng_radius_range.start(),rng_radius_range.end()),
+            rng_allowed_value_types,
+
             class_labels,
         };
     }
@@ -62,19 +63,15 @@ impl BCellFactory {
 
         let mut dim_multipliers: Vec<BCellDim> = Vec::with_capacity(self.n_dims);
         for i in 0..self.n_dims {
-            let offset = self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng) * -1.0;
+            let offset = self.rng_offset_ranges.get(i).unwrap().sample(&mut rng) * -1.0;
+            let multiplier =  self.rng_multiplier_ranges.get(i).unwrap().sample(&mut rng);
 
-            let multiplier = if self.use_multiplier {
-                self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
-            } else {
-                1.0
-            };
-
-            let value_type = self
-                .allowed_value_types
-                .get(rng.gen_range(0..self.allowed_value_types.len()))
+            let value_type =  self
+                .rng_allowed_value_types
+                .get(rng.gen_range(0..self.rng_allowed_value_types.len()))
                 .unwrap()
                 .clone();
+
             dim_multipliers.push(BCellDim {
                 multiplier,
                 offset,
@@ -82,7 +79,8 @@ impl BCellFactory {
             })
         }
 
-        let radius_constant = self.radius_range.sample(&mut rng);
+        let radius_constant = self.rng_radius_range.sample(&mut rng);
+
         let class_label = self
             .class_labels
             .get(rng.gen_range(0..self.class_labels.len()))
@@ -102,41 +100,22 @@ impl BCellFactory {
         let mut dim_multipliers: Vec<BCellDim> = Vec::with_capacity(self.n_dims);
         for i in 0..self.n_dims {
             let offset = antigen.values.get(i).unwrap().clone() * -1.0;
-            if false{
-                let multiplier = if self.use_multiplier {
-                    self.dim_multiplier_ranges.get(i).unwrap().sample(&mut rng)
-                } else {
-                    1.0
-                };
+            let multiplier =  self.b_cell_multiplier_ranges.get(i).unwrap().sample(&mut rng);
+            let value_type =  self
+                .b_cell_allowed_value_types
+                .get(rng.gen_range(0..self.b_cell_allowed_value_types.len()))
+                .unwrap()
+                .clone();
 
-                let value_type = self
-                    .allowed_value_types
-                    .get(rng.gen_range(0..self.allowed_value_types.len()))
-                    .unwrap()
-                    .clone();
                 dim_multipliers.push(BCellDim {
                     multiplier,
                     offset,
                     value_type,
                 })
-
-            }else{
-                let multiplier = 1.0;
-                let value_type = DimValueType::Circle;
-                dim_multipliers.push(BCellDim {
-                    multiplier,
-                    offset,
-                    value_type,
-                })
-            }
-
         }
 
-        let radius_constant = if self.use_rand_radius {
-            self.radius_range.sample(&mut rng)
-        } else {
-            1.0
-        };
+
+        let radius_constant = self.b_cell_radius_range.sample(&mut rng);
         let class_label = antigen.class_label;
 
         return BCell {
@@ -176,9 +155,9 @@ impl BCell {
             let antigen_dim_val = antigen.values.get(i).unwrap();
             roll_sum += match b_dim.value_type {
                 DimValueType::Disabled => 0.0,
-                DimValueType::Open => b_dim.multiplier * antigen_dim_val,
+                DimValueType::Open => b_dim.multiplier * (antigen_dim_val+ b_dim.offset),
                 DimValueType::Circle => {
-                    ((b_dim.multiplier * antigen_dim_val) + b_dim.offset).powi(2)
+                    (b_dim.multiplier * (antigen_dim_val + b_dim.offset)).powi(2)
                 }
             };
         }

@@ -1,8 +1,8 @@
 use rand::distributions::Uniform;
-use crate::ais::ParamObj;
 use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 use crate::representation::{AntiGen, BCell, DimValueType};
 use rayon::prelude::*;
+use crate::ais::Params;
 
 #[derive(Clone, Debug)]
 pub struct Evaluation {
@@ -12,10 +12,11 @@ pub struct Evaluation {
 
 pub fn evaluate_b_cell(
     bk: &BucketKing<AntiGen>,
-    _params: &ParamObj,
+    _params: &Params,
     antigens: &Vec<AntiGen>,
     b_cell: &BCell,
 ) -> Evaluation {
+    // todo: flip offset mabye
     let dim_radus = b_cell
         .dim_values
         .iter()
@@ -23,16 +24,17 @@ pub fn evaluate_b_cell(
             return match dv.value_type {
                 DimValueType::Disabled => BucketEmpireOfficialRangeNotationSystemClasses::Open,
                 DimValueType::Open => {
+                    // return  BucketEmpireOfficialRangeNotationSystemClasses::Open;
                     let value = (b_cell.radius_constant / dv.multiplier) - dv.offset;
-                    if dv.multiplier > 0.0 {
+                    if dv.multiplier < 0.0 {
                         return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(value);
                     } else {
                         return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(value);
                     }
                 }
                 DimValueType::Circle => {
-                    let value = (b_cell.radius_constant.sqrt() / dv.multiplier) - dv.offset;
-                    return BucketEmpireOfficialRangeNotationSystemClasses::Symmetric(value);
+                    let value = (b_cell.radius_constant.sqrt() / dv.multiplier);
+                    return BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((dv.offset- value, dv.offset+value));
                 }
             };
         })
@@ -78,19 +80,14 @@ pub fn evaluate_b_cell(
     // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
     return ret_evaluation;
 }
-pub fn merge_evaluation_matches(evaluations: Vec<&Evaluation>) -> Vec<usize> {
-    let max_id = evaluations
-        .iter()
-        .map(|e| e.matched_ids.iter().max().unwrap_or(&0))
-        .max()
-        .unwrap()
-        + 1;
+pub fn merge_evaluation_matches(evaluations: Vec<&Evaluation>, mask: Vec<usize>) -> Vec<usize> {
+
     let merged =
         evaluations
             .iter()
             .filter(|e| e.wrongly_matched.len() == 0)
             .map(|e| &e.matched_ids)
-            .fold(vec![0usize; max_id], |mut acc, b| {
+            .fold(mask, |mut acc, b| {
                 b.iter().for_each(|v| {
                     if let Some(elem) = acc.get_mut(*v) {
                         *elem += 1;
@@ -106,7 +103,25 @@ pub fn gen_merge_mask(scored_population: &Vec<(Evaluation, BCell)>) -> Vec<usize
         .iter()
         .map(|(b, _)| b)
         .collect::<Vec<&Evaluation>>();
-    return merge_evaluation_matches(evaluations);
+
+    let max_id = evaluations
+        .iter()
+        .map(|e| e.matched_ids.iter().max().unwrap_or(&0))
+        .max()
+        .unwrap()
+        + 1;
+    let mask = vec![0usize; max_id];
+
+    return merge_evaluation_matches(evaluations, mask);
+}
+
+
+pub fn expand_merge_mask(scored_population: &Vec<(Evaluation, BCell)>, mask: Vec<usize>) -> Vec<usize>{
+    let evaluations = scored_population
+        .iter()
+        .map(|(b, _)| b)
+        .collect::<Vec<&Evaluation>>();
+    return merge_evaluation_matches(evaluations, mask);
 }
 pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &Vec<usize>) -> Vec<(f64, Evaluation, BCell)>{
 
@@ -115,8 +130,8 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &
     // println!("sum {:?}", merged_mask.iter().sum::<usize>());
     // println!("match -s: ");
     let scored = scored_population
-        .into_iter()
-        // .into_par_iter() // TODO: set paralell
+        // .into_iter()
+        .into_par_iter() // TODO: set paralell
         .map(|(eval, cell)| {
             let mut bonus_sum: f64 = 0.0;
             let mut base_sum: f64 = 0.0;
@@ -132,13 +147,13 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &
                     // matched_sum += (0.5+(1.0 / ((*sharers as f64) / 2.0))).min(1.0)
                     // matched_sum += (1.0 / ((*sharers as f64) / 2.0)).max(0.5)
 
-                    let delta =  (1.0/ *sharers as f64).min(0.01);
+                    let delta =  (1.0/ *sharers as f64).min(0.0);
                     // let delta =  (1.0 / ((*sharers as f64) / 2.0)).max(0.5);
 
 
                     bonus_sum += delta;
                 } else {
-                    bonus_sum += 1.5;
+                    bonus_sum += 2.0;
                 }
                 base_sum += 1.0;
 
@@ -147,7 +162,7 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &
             let n_right = eval.matched_ids.len() as f64;
 
             let mut purity = n_right / n_wrong;
-            let mut accuracy = 1.0 / (n_wrong + n_right);
+            let mut accuracy = n_right / (n_wrong + n_right);
             let mut crowdedness = 1.0 / (roll_shared as f64 / n_shared as f64);
 
             if !purity.is_finite() {
@@ -161,7 +176,8 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &
             }
 
             // let score = crowdedness+purity+accuracy ;
-            let score = ((bonus_sum) / (n_wrong + 1.0)) ;
+            // let score = ((base_sum - n_wrong)+(bonus_sum*0.5))*accuracy ;
+            let score = ((bonus_sum) / (n_wrong + 1.0));
             // let score = (matched_sum - n_wrong).max(0.0) ;
 
             // println!("\n score {:?}", score);
