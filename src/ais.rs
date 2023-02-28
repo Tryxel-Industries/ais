@@ -189,8 +189,7 @@ impl ArtificialImmuneSystem {
             // =======  parent selection  ======= //
             let replace_exponent = (3.0/2.0)*(((i as f64)+1.0)/params.generations as f64);
             let replace_frac = params.max_replacment_frac * (2.0/pop_size as f64).powf(replace_exponent);
-            let mut n_to_replace = (pop_size as f64 * replace_frac).floor() as usize;
-            println!("replacing {:} ",n_to_replace);
+            let mut n_to_replace = (pop_size as f64 * replace_frac).ceil() as usize;
 
             let parents = tournament_pick(&scored_pop, &n_to_replace, &params.tournament_size);
 
@@ -198,19 +197,35 @@ impl ArtificialImmuneSystem {
 
             // =======  clone -> mut -> eval  ======= //
 
-            let new_gen: Vec<(Evaluation, BCell)> = parents
+            let new_gen: Vec<(Evaluation, BCell)> = parents.clone()
                 .into_par_iter() // TODO: set paralell
                 // .into_iter()
                 .map(|idx| scored_pop.get(idx).unwrap().clone())
                 .map(|(parent_score, parent_eval, parent_b_cell)|{
-                    return (0..params.n_parents_mutations).into_iter().map(|_|{
+                    let  children = (0..params.n_parents_mutations).into_iter().map(|_|{
                         let mutated = mutate(params, parent_score,parent_b_cell.clone());
                         let eval = evaluate_b_cell(&bk, params, antigens, &parent_b_cell);
                         return (eval, mutated)
-                    }).collect::<Vec<(Evaluation, BCell)>>().into_iter();//.collect::<Vec<(Evaluation, BCell)>>()
+                    }).collect::<Vec<(Evaluation, BCell)>>();//.into_iter();//.collect::<Vec<(Evaluation, BCell)>>()
+                    let mut new_local_match_mask = expand_merge_mask(&children, match_mask.clone());
+
+                    let new_gen_scored = score_b_cells(children, &new_local_match_mask);
+                    let (daddy_score,daddy_eval, daddy_bcell) = score_b_cells(vec![(parent_eval, parent_b_cell)], &new_local_match_mask).pop().unwrap();
+
+                    let (best_s, best_eval, best_cell) = new_gen_scored
+                        .into_iter()
+                        .max_by(|(a,_,_), (b,_,_)| a.total_cmp(b)).unwrap();
+
+                    if (best_s >= daddy_score){
+                        return (best_eval, best_cell)
+                    }else {
+                        return (daddy_eval, daddy_bcell)
+                    }
+
+
                 })
                 // .flatten()
-                .flatten_iter()
+                // .flatten_iter()
                 .collect();
 
             // gen a new match mask for the added values
@@ -218,12 +233,14 @@ impl ArtificialImmuneSystem {
             let new_gen_scored = score_b_cells(new_gen, &new_gen_match_mask);
 
             // filter to the n best new antigens
-            let mut to_add = pick_best_n(new_gen_scored, n_to_replace);
+            // let mut to_add = pick_best_n(new_gen_scored, n_to_replace);
+            let mut to_add = new_gen_scored;
 
             // =======  leak new  ======= //
+            let n_to_leak = (n_to_replace as f64 * params.leak_fraction) as usize;
+
+            let mut new_leaked: Vec<(f64,Evaluation, BCell)> = Vec::new();
             if params.leak_fraction > 0.0{
-                let n_to_leak = (n_to_replace as f64 * params.leak_fraction) as usize;
-                n_to_replace += n_to_leak;
 
                 let new_pop_pop = antigens.choose_multiple(&mut rng,n_to_leak)
                     .map(|ag| cell_factory.generate_from_antigen(ag))
@@ -231,15 +248,25 @@ impl ArtificialImmuneSystem {
                     .collect::<Vec<(Evaluation, BCell)>>();
 
                 let leaked_to_add = score_b_cells(new_pop_pop, &new_gen_match_mask);
-                to_add.extend(leaked_to_add);
+                new_leaked.extend(leaked_to_add);
             }
             // =======  selection  ======= //
             // remove the n worst b-cells
-            scored_pop = snip_worst_n(scored_pop, n_to_replace);
+            // scored_pop = snip_worst_n(scored_pop, n_to_replace);
+            // scored_pop.extend(to_add.into_iter());
+            if true{
+                for idx in parents{
+                    // let mut parent_value = scored_pop.get_mut(idx).unwrap();
+                    let (p_score,p_eval,p_cell) = scored_pop.get_mut(idx).unwrap();
+                    let  (c_score,c_eval,c_cell) = to_add.pop().unwrap();
+                    std::mem::replace(p_score, c_score);
+                    std::mem::replace(p_eval, c_eval);
+                    std::mem::replace(p_cell, c_cell);
+                }
+            }
 
-
-
-            scored_pop.extend(to_add.into_iter());
+            scored_pop = snip_worst_n(scored_pop, n_to_leak);
+            scored_pop.extend(new_leaked);
 
             // =======  next gen cleanup  ======= //
             evaluated_pop = scored_pop.into_iter().map(|(a,b,c)|(b,c)).collect();
@@ -281,10 +308,11 @@ impl ArtificialImmuneSystem {
 
 
 
+            println!("replacing {:} leaking {:}",n_to_replace, n_to_leak);
             class_labels.clone().into_iter().for_each(|cl| {
                 let filtered: Vec<usize> = scored_pop.iter().inspect(|(a,b,c)|{
                 }).filter(|(a,b,c)| c.class_label == cl ).map(|(a,b,c)| 1usize).collect();
-                print!("num with {:?} is {:?}", cl,filtered.len() )
+                print!("num with {:?} is {:?} ", cl,filtered.len() )
             });
             println!();
 //
@@ -417,7 +445,9 @@ impl ArtificialImmuneSystem {
         // let (scored_pop, _drained) = elitism_selection(scored_pop, &100);
         self.b_cells = scored_pop
             .iter()
+            // .filter(|(score, _, _)| *score > 5.0)
             .map(|(_score, _ev, cell)| cell.clone())
+
             .collect();
         return (train_hist, scored_pop);
     }
