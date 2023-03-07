@@ -1,5 +1,6 @@
 #![feature(fn_traits)]
 #![feature(get_many_mut)]
+#![feature(exclusive_range_pattern)]
 
 extern crate core;
 
@@ -126,6 +127,11 @@ fn ais_test() {
     let mut antigens = read_iris();
     // let mut antigens = read_diabetes();
 
+    let class_labels = antigens
+            .iter()
+            .map(|x| x.class_label)
+            .collect::<HashSet<_>>();
+
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     let mut rng = rand::thread_rng();
@@ -137,17 +143,21 @@ fn ais_test() {
     let params = Params {
         // -- train params -- //
         antigen_pop_fraction: 3.0,
-        leak_fraction: 0.1,
+        leak_fraction: 0.2,
         generations: 500,
 
-        mutate_offset: true,
-        mutate_multiplier: true,
-        mutate_value_type: true,
-        mutate_label: true,
+        mutation_offset_weight: 1,
+        mutation_multiplier_weight: 1,
+        mutation_radius_weight: 1,
+        mutation_value_type_weight: 1,
 
-        offset_mutation_multiplier_range: 0.8..=1.2,
-        multiplier_mutation_multiplier_range: 0.8..=1.2,
-        value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
+        mutation_label_weight: 1,
+
+        offset_mutation_multiplier_range: 0.5..=1.5,
+        multiplier_mutation_multiplier_range: 0.5..=1.5,
+        radius_mutation_multiplier_range: 0.5..=1.5,
+        value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle, DimValueType::Open],
+        label_valid_mutations: class_labels.into_iter().collect::<Vec<usize>>(),
 
         //selection
         max_replacment_frac: 0.25,
