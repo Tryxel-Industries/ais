@@ -52,7 +52,7 @@ pub fn evaluate_b_cell(
 
     let registered_antigens = antigens
         .iter()
-        .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
+        // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
         .filter(|ag| b_cell.test_antigen(ag))
         .collect::<Vec<_>>();
 
@@ -153,7 +153,7 @@ pub fn score_b_cells(scored_population: Vec<(Evaluation, BCell)>, merged_mask: &
 
                     bonus_sum += delta;
                 } else {
-                    bonus_sum += 2.0;
+                    bonus_sum += 5.0;
                 }
                 base_sum += 1.0;
 
