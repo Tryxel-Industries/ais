@@ -145,11 +145,17 @@ impl BucketKnight {
 
     pub fn get_index_in_range(
         &self,
-        dimensional_value: &f64,
         range: &BucketEmpireOfficialRangeNotationSystemClasses,
     ) -> Vec<usize> {
         let mut ret: Vec<usize> = Vec::new();
 
+        // return self
+        //     .buckets
+        //     .iter()
+        //     .map(|v| v.bucket_contents.iter())
+        //     .flat_map(|v| v)
+        //     .map(|v| v.index)
+        //     .collect();
         match range {
             BucketEmpireOfficialRangeNotationSystemClasses::Open => {
                 ret = self
@@ -228,28 +234,6 @@ impl<T> BucketKing<T> {
         // let mut bucket_knights: Vec<BucketKnight> = Vec::new();
         let (r_from, r_to) = bucket_range;
         let bucket_step = (r_from.max(r_to) - r_from.min(r_to)) / num_buckets as f64;
-        // println!("bkt step {}", bucket_step);
-        // for i in 0..n_dims {
-        //     let mut buckets: Vec<Bucket> = Vec::new();
-        //     for j in 0..num_buckets {
-        //
-        //         let start_value = if j == 0 { f64::MIN } else { r_from + j as f64 * bucket_step };
-        //         let mut end_value =  if j == (num_buckets-1) { f64::MAX } else { r_from + (j + 1) as f64 * bucket_step };
-        //         // println!("{} to {}", start_value,end_value);
-        //
-        //         buckets.push(Bucket{
-        //             start_value,
-        //             end_value,
-        //             bucket_contents: Vec::new(),
-        //         })
-        //
-        //     }
-        //
-        //     bucket_knights.push(BucketKnight{
-        //         dimension: i,
-        //         buckets
-        //     })
-        // }
 
         let bucket_knights: Vec<BucketKnight> = (0..n_dims)
             .map(|i| {
@@ -287,13 +271,11 @@ impl<T> BucketKing<T> {
         };
     }
     pub fn get_potential_matches_indexes(&self, value: &T) -> Option<Vec<usize>> {
-        let value_vec = (self.value_fn)(value);
         let ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
             .map(|k| {
                 k.get_index_in_range(
-                    value_vec.get(k.dimension).unwrap(),
                     &BucketEmpireOfficialRangeNotationSystemClasses::Open,
                 )
             })
@@ -302,30 +284,32 @@ impl<T> BucketKing<T> {
     }
     pub fn get_potential_matches_indexes_with_ranges(
         &self,
-        value: &T,
         ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
     ) -> Option<Vec<usize>> {
-        let value_vec = (self.value_fn)(value);
-        return self.get_potential_matches_indexes_with_raw_values(value_vec, ranges);
+        return self.get_potential_matches_indexes_with_raw_values( ranges);
     }
 
     pub fn get_potential_matches_indexes_with_raw_values(
         &self,
-        value: &Vec<f64>,
         ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
     ) -> Option<Vec<usize>> {
-        let value_vec = value;
         let ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
             .map(|k| {
                 k.get_index_in_range(
-                    value_vec.get(k.dimension).unwrap(),
                     ranges.get(k.dimension).unwrap(),
                 )
             })
             .collect();
-        return roll_comparison(ret);
+
+        // println!("pre:");
+        // ret.iter().enumerate().for_each(|(idx,ls)|{
+        //     println!("{:3<}: {:?}", idx, ls);
+        // });
+        let r =roll_comparison(ret);
+        // println!("post: {:?}", r.clone().unwrap());
+        return r;
     }
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {
         let value_values: Vec<(usize, &Vec<f64>)> = values
@@ -345,13 +329,14 @@ impl<T> BucketKing<T> {
             dimensional_knight.add_items(as_bucket_values);
         }
 
-        /*   self.dimensional_knights.iter().for_each(|x| {
-            println!("dim {:?}", x.dimension);
-            x.buckets.iter().for_each(|y|{
-                println!("{:?}", y.bucket_contents);
-                // println!("{:?}",y.bucket_contents.iter().map(|x1|x1.index).collect::<Vec<usize>>())
-            })
-        })*/
+        // self.dimensional_knights.iter().for_each(|x| {
+        //     println!("dim {:?}", x.dimension);
+        //     x.buckets.iter().for_each(|y|{
+        //         println!("{:?}", y.bucket_contents);
+        //         // println!("{:?}",y.bucket_contents.iter().map(|x1|x1.index).collect::<Vec<usize>>())
+        //     })
+        // })
+
     }
 }
 

@@ -1,5 +1,6 @@
 use rand::{distributions::Distribution, Rng};
 use crate::ais::{MutationType, Params};
+use crate::ais::MutationType::ValueType;
 
 use crate::representation::{BCell, DimValueType};
 
@@ -87,6 +88,17 @@ pub fn mutate_value_type(params: &Params, mut genome: BCell) -> BCell {
                 .unwrap()
                 .clone();
 
+
+
+    if (change_dim.value_type == DimValueType::Open) & (dim_type != DimValueType::Open){
+        // from open to something else
+        genome.radius_constant +=  genome.radius_constant.sqrt();
+
+    }else if (change_dim.value_type != DimValueType::Open) & (dim_type == DimValueType::Open){
+        // from something to open
+        genome.radius_constant +=  genome.radius_constant.powi(2);
+
+    }
 
     change_dim.value_type = dim_type;
 

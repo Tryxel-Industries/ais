@@ -142,34 +142,36 @@ fn ais_test() {
 
     let params = Params {
         // -- train params -- //
-        antigen_pop_fraction: 3.0,
-        leak_fraction: 0.2,
+        antigen_pop_fraction: 1.0,
         generations: 500,
 
-        mutation_offset_weight: 1,
-        mutation_multiplier_weight: 1,
-        mutation_radius_weight: 1,
+        mutation_offset_weight: 2,
+        mutation_multiplier_weight: 2,
+        mutation_radius_weight: 2,
         mutation_value_type_weight: 1,
 
-        mutation_label_weight: 1,
+        mutation_label_weight: 0,
 
-        offset_mutation_multiplier_range: 0.5..=1.5,
-        multiplier_mutation_multiplier_range: 0.5..=1.5,
-        radius_mutation_multiplier_range: 0.5..=1.5,
-        value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle, DimValueType::Open],
+        offset_mutation_multiplier_range: 0.8..=1.2,
+        multiplier_mutation_multiplier_range: 0.8..=1.2,
+        radius_mutation_multiplier_range: 0.8..=1.2,
+        // value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle, DimValueType::Open],
+        value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Open, DimValueType::Disabled],
+
         label_valid_mutations: class_labels.into_iter().collect::<Vec<usize>>(),
 
         //selection
-        max_replacment_frac: 0.25,
+        leak_fraction: 0.3,
+        max_replacment_frac: 0.7,
         tournament_size: 5,
         n_parents_mutations: 10,
 
 
         // -- B-cell from antigen initialization -- //
-        b_cell_ag_init_multiplier_range: 1.0..=1.0,
-        b_cell_ag_init_value_types: vec![DimValueType::Circle],
+        b_cell_ag_init_multiplier_range: 0.8..=1.2,
+        b_cell_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Circle],
         // b_cell_ag_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
-        b_cell_ag_init_range_range: 0.1..=0.1,
+        b_cell_ag_init_range_range: 0.1..=0.4,
 
         // -- B-cell from random initialization -- //
         b_cell_rand_init_offset_range: 1.0..=1.0,
