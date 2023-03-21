@@ -9,7 +9,7 @@ use std::collections::HashSet;
 
 use crate::ais::{ArtificialImmuneSystem, Params};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{read_iris};
+use crate::dataset_readers::{read_iris, read_wine};
 use plotters::prelude::*;
 
 use rand::Rng;
@@ -125,7 +125,8 @@ fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, V
     return (train,test)
 }
 fn ais_test() {
-    let antigens = read_iris();
+    // let antigens = read_iris();
+    let antigens = read_wine();
     // let mut antigens = read_diabetes();
 
     let class_labels = antigens
