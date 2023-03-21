@@ -3,13 +3,13 @@ use crate::evaluation::{evaluate_b_cell, expand_merge_mask, gen_merge_mask, scor
 use crate::mutate;
 use crate::representation::{AntiGen, BCell, BCellFactory, DimValueType};
 use crate::selection::{
-    elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n,
-    replace_worst_n_per_cat, snip_worst_n, tournament_pick,
+    labeled_tournament_pick,
+    replace_worst_n_per_cat,
 };
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rayon::prelude::*;
 use std::collections::{HashMap, HashSet};
-use std::ops::{Range, RangeInclusive};
+use std::ops::{RangeInclusive};
 use rand::Rng;
 
 #[derive(Clone)]
@@ -123,7 +123,7 @@ impl ArtificialImmuneSystem {
         // =======  init misc training params  ======= //
 
         let pop_size = (antigens.len() as f64 * params.antigen_pop_fraction) as usize;
-        let leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
+        let _leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
 
         let mut rng = rand::thread_rng();
         // check dims and classes
@@ -184,7 +184,7 @@ impl ArtificialImmuneSystem {
         let mut error_match_mask: Vec<usize> = Vec::new();
 
         // gen init pop
-        let mut initial_population: Vec<BCell> = (0..pop_size)
+        let _initial_population: Vec<BCell> = (0..pop_size)
             .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rng).unwrap()))
             .collect();
         // let mut initial_population: Vec<BCell> = Vec::with_capacity(pop_size);
@@ -208,9 +208,9 @@ impl ArtificialImmuneSystem {
         class_labels.clone().into_iter().for_each(|cl| {
             let filtered: Vec<usize> = scored_pop
                 .iter()
-                .inspect(|(a, b, c)| {})
-                .filter(|(a, b, c)| c.class_label == cl)
-                .map(|(a, b, c)| 1usize)
+                .inspect(|(_a, _b, _c)| {})
+                .filter(|(_a, _b, c)| c.class_label == cl)
+                .map(|(_a, _b, _c)| 1usize)
                 .collect();
             print!("num with {:?} is {:?} ", cl, filtered.len())
         });
@@ -238,7 +238,7 @@ impl ArtificialImmuneSystem {
             let replace_exponent = (3.0 / 2.0) * (((i as f64) + 1.0) / params.generations as f64);
             let replace_frac =
                 params.max_replacment_frac * (2.0 / pop_size as f64).powf(replace_exponent)+0.05;
-            let mut n_to_replace = (pop_size as f64 * replace_frac).ceil() as usize;
+            let n_to_replace = (pop_size as f64 * replace_frac).ceil() as usize;
 
             // =======  clone -> mut -> eval  ======= //
             let mut new_gen: Vec<(Evaluation, BCell)> = Vec::new();
@@ -276,9 +276,9 @@ impl ArtificialImmuneSystem {
                                 return (eval, mutated);
                             })
                             .collect::<Vec<(Evaluation, BCell)>>(); //.into_iter();//.collect::<Vec<(Evaluation, BCell)>>()
-                        let mut new_local_match_mask =
+                        let new_local_match_mask =
                             expand_merge_mask(&children, match_mask.clone(), false);
-                        let mut new_local_error_match_mask =
+                        let new_local_error_match_mask =
                             expand_merge_mask(&children, error_match_mask.clone(), true);
 
                         let new_gen_scored = score_b_cells(children, &new_local_match_mask, &new_local_error_match_mask);
@@ -295,7 +295,7 @@ impl ArtificialImmuneSystem {
                             .max_by(|(a, _, _), (b, _, _)| a.total_cmp(b))
                             .unwrap();
 
-                        if (best_s >= daddy_score) {
+                        if best_s >= daddy_score {
                             // if best_cell.class_label != daddy_bcell.class_label{
                             //     print!("\n\n\n\n\n\n")
                             // }
@@ -343,9 +343,12 @@ impl ArtificialImmuneSystem {
                     // let mut parent_value = scored_pop.get_mut(idx).unwrap();
                     let (p_score, p_eval, p_cell) = scored_pop.get_mut(idx).unwrap();
                     let (c_score, c_eval, c_cell) = to_add.pop().unwrap();
-                    std::mem::replace(p_score, c_score);
-                    std::mem::replace(p_eval, c_eval);
-                    std::mem::replace(p_cell, c_cell);
+                    // std::mem::replace(p_score, c_score);
+                    // std::mem::replace(p_eval, c_eval);
+                    // std::mem::replace(p_cell, c_cell);
+                    *p_score = c_score;
+                    *p_eval = c_eval;
+                    *p_cell = c_cell;
                 }
             }
             //
@@ -404,14 +407,14 @@ impl ArtificialImmuneSystem {
             // scored_pop.extend(new_leaked);
 
             // =======  next gen cleanup  ======= //
-            evaluated_pop = scored_pop.into_iter().map(|(a, b, c)| (b, c)).collect();
+            evaluated_pop = scored_pop.into_iter().map(|(_a, b, c)| (b, c)).collect();
 
             match_mask = gen_merge_mask(&evaluated_pop);
             error_match_mask = gen_error_merge_mask(&evaluated_pop);
 
             scored_pop = score_b_cells(evaluated_pop, &match_mask, &error_match_mask);
 
-            let b_cell: Vec<BCell> = scored_pop.iter().map(|(a, b, c)| c.clone()).collect();
+            let b_cell: Vec<BCell> = scored_pop.iter().map(|(_a, _b, c)| c.clone()).collect();
 
             self.b_cells = b_cell;
             let mut n_corr = 0;
@@ -443,9 +446,9 @@ impl ArtificialImmuneSystem {
             class_labels.clone().into_iter().for_each(|cl| {
                 let filtered: Vec<usize> = scored_pop
                     .iter()
-                    .inspect(|(a, b, c)| {})
-                    .filter(|(a, b, c)| c.class_label == cl)
-                    .map(|(a, b, c)| 1usize)
+                    .inspect(|(_a, _b, _c)| {})
+                    .filter(|(_a, _b, c)| c.class_label == cl)
+                    .map(|(_a, _b, _c)| 1usize)
                     .collect();
                 print!("num with {:?} is {:?} ", cl, filtered.len())
             });

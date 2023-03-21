@@ -1,11 +1,11 @@
 use rand::{distributions::Distribution, Rng};
 use crate::ais::{MutationType, Params};
-use crate::ais::MutationType::ValueType;
+
 
 use crate::representation::{BCell, DimValueType};
 
-pub fn mutate(params: &Params, score: f64, b_cell: BCell) -> BCell {
-    let mut rng = rand::thread_rng();
+pub fn mutate(params: &Params, _score: f64, b_cell: BCell) -> BCell {
+    let _rng = rand::thread_rng();
     
     let mutated = match params.roll_mutation_type() {
         MutationType::Offset => mutate_offset(&params, b_cell),
@@ -70,7 +70,7 @@ pub fn mutate_offset(params: &Params, mut genome: BCell) -> BCell {
     let dim_to_mutate = rng.gen_range(0..candidates_dims.len());
     let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
 
-    let mut multi = rng.gen_range(params.offset_mutation_multiplier_range.clone());
+    let multi = rng.gen_range(params.offset_mutation_multiplier_range.clone());
     change_dim.offset *= multi;
 
     return genome;
@@ -123,7 +123,7 @@ pub fn mutate_radius(params: &Params, mut genome: BCell) -> BCell {
     let mut rng = rand::thread_rng();
     
 
-    let mut multi = rng.gen_range(params.radius_mutation_multiplier_range.clone());
+    let multi = rng.gen_range(params.radius_mutation_multiplier_range.clone());
 
     genome.radius_constant *= multi;
 

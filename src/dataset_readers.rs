@@ -82,7 +82,7 @@ pub fn read_iris() -> Vec<AntiGen> {
                 let max = max_v.get(i).unwrap();
 
                 let val = ag.values[i].clone();
-                ag.values[i] = ((val - min) / (max - min));
+                ag.values[i] = (val - min) / (max - min);
             }
             return ag;
         })
@@ -161,7 +161,7 @@ pub fn read_diabetes() -> Vec<AntiGen> {
                 let max = max_v.get(i).unwrap();
 
                 let val = ag.values[i].clone();
-                ag.values[i] = ((val - min) / (max - min));
+                ag.values[i] = (val - min) / (max - min);
             }
             return ag;
         })

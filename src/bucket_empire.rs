@@ -270,7 +270,7 @@ impl<T> BucketKing<T> {
             dimensional_knights: bucket_knights,
         };
     }
-    pub fn get_potential_matches_indexes(&self, value: &T) -> Option<Vec<usize>> {
+    pub fn get_potential_matches_indexes(&self, _value: &T) -> Option<Vec<usize>> {
         let ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
