@@ -62,6 +62,7 @@ impl Params {
         let weighted = vec![
             (MutationType::Offset, self.mutation_offset_weight),
             (MutationType::Multiplier, self.mutation_multiplier_weight),
+            (MutationType::ValueType, self.mutation_value_type_weight),
             (MutationType::Radius, self.mutation_radius_weight),
             (MutationType::Label, self.mutation_label_weight),
         ];
