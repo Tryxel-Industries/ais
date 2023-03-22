@@ -96,7 +96,7 @@ impl BCellFactory {
 
         let mut radius_constant = self.rng_radius_range.sample(&mut rng);
 
-        for _ in (0..num_open){
+        for _ in 0..num_open {
             radius_constant = radius_constant.sqrt();
         }
 
@@ -154,7 +154,7 @@ impl BCellFactory {
         let mut  radius_constant = self.b_cell_radius_range.sample(&mut rng);
         let class_label = antigen.class_label;
 
-        for _ in (0..num_open){
+        for _ in 0..num_open {
             radius_constant = radius_constant.sqrt();
         }
         return BCell {

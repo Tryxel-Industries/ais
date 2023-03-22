@@ -1,23 +1,24 @@
 #![feature(fn_traits)]
 #![feature(get_many_mut)]
 #![feature(exclusive_range_pattern)]
-
+#![allow(non_snake_case)]
+#![allow(non_camel_case_types)]
 extern crate core;
 
 use std::collections::HashSet;
-use std::ptr::null;
+
 use crate::ais::{ArtificialImmuneSystem, Params};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{read_diabetes, read_iris};
+use crate::dataset_readers::{read_iris, read_wine};
 use plotters::prelude::*;
-use rand::prelude::SliceRandom;
+
 use rand::Rng;
 use std::time::Instant;
 
 use crate::mutations::mutate;
 use crate::representation::{AntiGen, DimValueType};
 
-use crate::selection::selection;
+
 
 mod ais;
 mod bucket_empire;
@@ -124,7 +125,8 @@ fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, V
     return (train,test)
 }
 fn ais_test() {
-    let mut antigens = read_iris();
+    // let antigens = read_iris();
+    let antigens = read_wine();
     // let mut antigens = read_diabetes();
 
     let class_labels = antigens
@@ -134,7 +136,7 @@ fn ais_test() {
 
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
-    let mut rng = rand::thread_rng();
+    let _rng = rand::thread_rng();
     // antigens.shuffle(&mut rng);
 
     let (train_slice, test) = split_train_test(&antigens, 0.2);

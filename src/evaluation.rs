@@ -1,7 +1,7 @@
 use crate::ais::Params;
 use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 use crate::representation::{AntiGen, BCell, DimValueType};
-use rand::distributions::Uniform;
+
 use rayon::prelude::*;
 
 #[derive(Clone, Debug)]
@@ -25,7 +25,7 @@ pub fn evaluate_b_cell(
                 DimValueType::Disabled => BucketEmpireOfficialRangeNotationSystemClasses::Open,
                 DimValueType::Open => {
                     // return  BucketEmpireOfficialRangeNotationSystemClasses::Open;
-                    let value = (b_cell.radius_constant / dv.multiplier);
+                    let value = b_cell.radius_constant / dv.multiplier;
                     let flipped_offset = dv.offset * -1.0;
                     if dv.multiplier > 0.0 {
                         return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(
@@ -38,7 +38,7 @@ pub fn evaluate_b_cell(
                     }
                 }
                 DimValueType::Circle => {
-                    let value = (b_cell.radius_constant.sqrt() / dv.multiplier);
+                    let value = b_cell.radius_constant.sqrt() / dv.multiplier;
                     let flipped_offset = dv.offset * -1.0;
                     return BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((
                         flipped_offset - value,

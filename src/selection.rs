@@ -2,7 +2,7 @@ use crate::ais::Params;
 use rand::prelude::SliceRandom;
 use rand::{distributions::Distribution, thread_rng, Rng};
 use std::collections::HashMap;
-use std::iter::Map;
+
 
 use crate::evaluation::Evaluation;
 use crate::representation::BCell;
@@ -90,7 +90,7 @@ pub fn replace_worst_n_per_cat(
     let mut cur_idx = 0;
     while snip_list.keys().len() > 0 {
         if let Some((_, _, cell)) = population.get(cur_idx) {
-            if let Some(mut remaining_count) = snip_list.get_mut(&cell.class_label) {
+            if let Some(remaining_count) = snip_list.get_mut(&cell.class_label) {
                 kill_list.push(cur_idx.clone());
                 *remaining_count -= 1;
                 if *remaining_count <= 0 {
@@ -107,9 +107,13 @@ pub fn replace_worst_n_per_cat(
         // let mut parent_value = scored_pop.get_mut(idx).unwrap();
         let (p_score, p_eval, p_cell) = population.get_mut(idx).unwrap();
         let (c_score, c_eval, c_cell) = replacements.pop().unwrap();
-        std::mem::replace(p_score, c_score);
-        std::mem::replace(p_eval, c_eval);
-        std::mem::replace(p_cell, c_cell);
+        // std::mem::replace(p_score, c_score);
+        // std::mem::replace(p_eval, c_eval);
+        // std::mem::replace(p_cell, c_cell);
+        *p_score = c_score;
+        *p_eval = c_eval;
+        *p_cell = c_cell;
+
     }
     println!("{:?}", replacements.len());
 
@@ -122,7 +126,7 @@ pub fn pick_best_n(
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_b.total_cmp(score_a));
 
     // println!("pre {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
-    let picked = population.split_off(num_to_pick);
+    let _picked = population.split_off(num_to_pick);
     // println!("post {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
 
     return population;
@@ -131,9 +135,9 @@ pub fn pick_best_n(
 pub fn selection(
     _params: &Params,
     population: Vec<(f64, Evaluation, BCell)>,
-    match_mask: &mut Vec<usize>,
+    _match_mask: &mut Vec<usize>,
 ) -> Vec<(f64, Evaluation, BCell)> {
-    let (mut selected, drained) = elitism_selection(population, &150);
+    let (selected, _drained) = elitism_selection(population, &150);
     // selected.extend(pick_n_random(drained, 70).into_iter());
     return selected;
 }
@@ -197,11 +201,11 @@ pub fn labeled_tournament_pick(
         let filtered: Vec<_> = population
             .iter()
             .enumerate()
-            .filter(|(idx, (score, eval, bcell))| bcell.class_label == *v)
+            .filter(|(_idx, (_score, _eval, bcell))| bcell.class_label == *v)
             .collect();
 
-        let index_vali: Vec<_> = filtered.iter()
-            .map(|(_,(a,b,c))|c.class_label)
+        let _index_vali: Vec<_> = filtered.iter()
+            .map(|(_,(_a,_b,c))|c.class_label)
             .collect();
 
         // println!("for label {:?}", v);
@@ -223,7 +227,7 @@ pub fn labeled_tournament_pick(
     }
     let mut picks: Vec<usize> = Vec::with_capacity(*num_to_pick);
 
-    for _ in (0..*num_to_pick) {
+    for _ in 0..*num_to_pick {
         // make pool
         let mut pool: Vec<&(usize, f64)> = (0..*tournament_size)
             .into_iter()
@@ -236,7 +240,7 @@ pub fn labeled_tournament_pick(
         while cur_fetch_idx < pool.len() {
             // println!("trial {:?} pool {:?}",cur_fetch_idx, pool);
             // println!("picks {:?}", picks);
-            let (cand_idx, s) = pool.get(cur_fetch_idx).unwrap();
+            let (cand_idx, _s) = pool.get(cur_fetch_idx).unwrap();
             if picks.contains(cand_idx) {
                 cur_fetch_idx += 1;
             } else {
