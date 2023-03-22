@@ -92,11 +92,11 @@ pub fn mutate_value_type(params: &Params, mut genome: BCell) -> BCell {
 
     if (change_dim.value_type == DimValueType::Open) & (dim_type != DimValueType::Open){
         // from open to something else
-        genome.radius_constant +=  genome.radius_constant.sqrt();
+        genome.radius_constant =  genome.radius_constant.sqrt();
 
     }else if (change_dim.value_type != DimValueType::Open) & (dim_type == DimValueType::Open){
         // from something to open
-        genome.radius_constant +=  genome.radius_constant.powi(2);
+        genome.radius_constant =  genome.radius_constant.powi(2);
 
     }
 
