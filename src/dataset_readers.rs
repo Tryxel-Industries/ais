@@ -78,7 +78,7 @@ pub fn read_wine() -> Vec<AntiGen> {
 
     let mut max_v = Vec::new();
     let mut min_v = Vec::new();
-    for i in 0..=3 {
+    for i in 0..=12 {
         max_v.push(
             antigens
                 .iter()
@@ -101,7 +101,7 @@ pub fn read_wine() -> Vec<AntiGen> {
     antigens = antigens
         .into_iter()
         .map(|mut ag| {
-            for i in 0..=3{
+            for i in 0..=12{
                 let min = min_v.get(i).unwrap();
                 let max = max_v.get(i).unwrap();
 

@@ -115,7 +115,7 @@ pub fn replace_worst_n_per_cat(
         *p_cell = c_cell;
 
     }
-    println!("{:?}", replacements.len());
+    // println!("{:?}", replacements.len());
 
     return population;
 }

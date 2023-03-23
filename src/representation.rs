@@ -1,6 +1,8 @@
 use rand::distributions::{Distribution, Uniform};
 use rand::Rng;
 use std::ops::RangeInclusive;
+use crate::BucketKing;
+use crate::evaluation::evaluate_b_cell;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum DimValueType {
@@ -66,6 +68,8 @@ impl BCellFactory {
             class_labels,
         };
     }
+
+
 
     fn gen_random_genome(&self, label: Option<usize>) -> BCell {
         let mut rng = rand::thread_rng();
@@ -165,6 +169,52 @@ impl BCellFactory {
     }
 }
 
+
+
+pub fn expand_b_cell_radius_until_hit(
+    mut cell: BCell,
+    bk: &BucketKing<AntiGen>,
+    antigens: &Vec<AntiGen>,
+ ) -> BCell {
+    /*
+    ha en middels høy range
+    finn om ikke hit på feil øk til du får det
+    iterer deretter gjennom de som er feil og for hver som er innenfor reduser rangen til den er lavere en den
+     */
+
+    let mut evaluation = loop{
+        let evaluation = evaluate_b_cell(
+            bk,
+            antigens,
+            &cell,
+        );
+
+        if evaluation.wrongly_matched.len() > 0{
+            break evaluation;
+        }else {
+            cell.radius_constant *= 2.0;
+        }
+    };
+    evaluation.wrongly_matched.sort();
+
+    // todo: inneficeient
+    let wrong_ags : Vec<_>= antigens.iter().filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok()).collect();
+
+    for err_ag in wrong_ags{
+
+        let affinity_dist = cell.get_affinity_dist(err_ag);
+
+        if affinity_dist < cell.radius_constant{
+            cell.radius_constant = affinity_dist * 0.99;
+        }
+    }
+
+    return cell;
+
+
+
+}
+
 #[derive(Clone, Debug)]
 pub struct BCellDim {
     // the multiplier for the dim value
@@ -187,7 +237,7 @@ impl BCell {
     // initializers
     //
 
-    pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
+    pub fn get_affinity_dist(&self, antigen: &AntiGen) -> f64 {
         let mut roll_sum: f64 = 0.0;
         for i in 0..antigen.values.len() {
             let b_dim = self.dim_values.get(i).unwrap();
@@ -200,9 +250,14 @@ impl BCell {
                 }
             };
         }
+        return roll_sum
 
+    }
+    pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
+
+        let affinity_dist = self.get_affinity_dist(antigen);
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if roll_sum <= self.radius_constant {
+        if affinity_dist <= self.radius_constant {
             return true;
         } else {
             return false;

@@ -1,3 +1,5 @@
+use std::cmp::min;
+use std::collections::HashMap;
 use crate::ais::Params;
 use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 use crate::representation::{AntiGen, BCell, DimValueType};
@@ -12,7 +14,6 @@ pub struct Evaluation {
 
 pub fn evaluate_b_cell(
     bk: &BucketKing<AntiGen>,
-    _params: &Params,
     antigens: &Vec<AntiGen>,
     b_cell: &BCell,
 ) -> Evaluation {
@@ -158,6 +159,7 @@ pub fn score_b_cells(
     scored_population: Vec<(Evaluation, BCell)>,
     merged_mask: &Vec<usize>,
     error_merged_mask: &Vec<usize>,
+    count_map: &HashMap<usize,usize>,
 ) -> Vec<(f64, Evaluation, BCell)> {
     // println!("{:?}", merged_mask);
     // println!("len {:?}", merged_mask.len());
@@ -168,66 +170,94 @@ pub fn score_b_cells(
         .into_par_iter() // TODO: set paralell
         .map(|(eval, cell)| {
 
-            let mut bonus_sum: f64 = 0.0;
-            let mut bonus_error: f64 = 0.0;
-            let mut discounted_sum: f64 = 0.0;
-            let mut base_sum: f64 = 0.0;
 
-            let mut n_shared = 0;
-            let mut roll_shared = 0;
+            let mut true_positives:f64 = 0.0;
+            let mut false_positives :f64= 0.0;
+
+            let mut discounted_match_score: f64 = 0.0;
+
+            let mut unique_positives = 0;
+
+            let mut shared_positive_weight = 0;
+            let mut shared_error_weight = 0;
+
 
             for mid in &eval.matched_ids {
+                true_positives += 1.0;
                 let sharers = merged_mask.get(*mid).unwrap_or(&0);
+
                 if *sharers > 1 {
-                    n_shared += 1 as usize;
-                    roll_shared += sharers;
                     let delta = (1.0 / *sharers as f64).max(0.0);
-
-                    // println!("disc pre: {:?}", discounted_sum);
-                    discounted_sum += delta;
-                    // println!("disc post: {:?}", discounted_sum);
-                    // println!("disc sh: {:?}", delta);
-                    // println!("disc sh: {:?}", 1.0/ sharers.clone() as f64);
-                    // println!("disc sh: {:?}", sharers);
-
+                    discounted_match_score += delta;
+                    shared_positive_weight = *sharers;
                 } else {
-                    bonus_sum += 1.0;
+                    unique_positives += 1;
                 }
-                base_sum += 1.0;
             }
-
 
             for mid in &eval.wrongly_matched {
+                false_positives += 1.0;
                 let sharers = error_merged_mask.get(*mid).unwrap_or(&0);
                 if *sharers > 1 {
-                    let delta =  *sharers as f64;
-                    bonus_error += delta;
+                    // bonus_error += 1.0-(1.0 / *sharers as f64);
+                    shared_error_weight += *sharers;
                 } else {
-                    bonus_error += 1.0;
                 }
-                // base_sum += 1.0;
             }
+            // ##################### F1 stuff #####################
 
-            let n_wrong = eval.wrongly_matched.len() as f64;
-            let n_right = eval.matched_ids.len() as f64;
+            let label_tot_count = *count_map.get(&cell.class_label).unwrap() as f64;
+            let tot_elements = count_map.values().sum::<usize>() as f64;
 
-            let mut purity = n_right / n_wrong;
-            let mut accuracy = n_right / (n_wrong + n_right);
-            let mut crowdedness = 1.0 / (roll_shared as f64 / n_shared as f64);
+            let pred_pos = true_positives + false_positives;
+            let pred_neg = tot_elements - pred_pos;
 
-            if !purity.is_finite() {
-                purity = 0.0;
-            }
-            if !accuracy.is_finite() {
-                accuracy = 0.0;
-            }
-            if !crowdedness.is_finite() {
-                crowdedness = 0.0;
-            }
+            let positives = label_tot_count;
+            let negatives = tot_elements - positives;
 
+            let false_negatives = positives - true_positives;
+            let true_negatives = negatives - false_positives;
+
+            let beta : f64 = 0.5f64.powi(2);
+
+            let f1_divisor = (1.0+ beta) * true_positives + beta*false_negatives + false_positives;
+            let f1_top = (1.0+beta)*true_positives;
+            let f1 = f1_top/f1_divisor;
+
+
+            // the precession
+            let positive_predictive_value = true_positives / pred_pos;
+
+
+            // how shared are the values for the predictor
+            let purity = true_positives/shared_positive_weight as f64;
+
+            let precession = if positive_predictive_value.is_finite(){positive_predictive_value} else { 0.0 };
+            let purity = if purity.is_finite(){purity } else {0.0};
+            // let score = precession + purity;
+
+            // let score = true_positives / ((shared_positive_weight + shared_error_weight) as f64).max(1.0);
             // let score = crowdedness+purity+accuracy ;
+
+
+            // let score = f1 / (shared_error_weight as f64).max(1.0);
+
+            let score = pred_pos / (false_positives  as f64).max(1.0);
+
             // let score = ((base_sum - n_wrong)+(bonus_sum*0.5))*accuracy ;
-            let score = ((discounted_sum) - (n_wrong).powi(2)) + bonus_sum * 5.0;
+            // let score = ((discounted_sum) - (n_wrong).powi(2)) + bonus_sum  - bonus_error;
+
+            // let score = ((true_positives) - (true_negatives).powi(2)) + unique_positives as f64 * 5.0;
+
+            // let mut divisor = (n_wrong + bonus_error).powi(2) + n_shared_error as f64;
+            // divisor = if (divisor.is_finite()) | (divisor != 0.0) {divisor} else { 1.0 };
+
+            // let score = ((n_right + (bonus_sum+1.0).powi(1)) / (divisor+1.0) );
+
+
+
+            // let score = ((n_right + bonus_sum) - (n_wrong).powi(2)) + bonus_sum * 5.0  - bonus_error;
+
             // let score = ((discounted_sum) - (bonus_error)) + bonus_sum * 5.0;
             // let score = (matched_sum - n_wrong).max(0.0) ;
 
@@ -237,7 +267,9 @@ pub fn score_b_cells(
             // println!("wrong match:  {:?}", eval.wrongly_matched);
             // println!("base        {:?}", base_sum);
             // println!("discount    {:?}", discounted_sum);
+            // println!("n_right    {:?}", n_right);
             // println!("bonus       {:?}", bonus_sum);
+            // println!("divisor       {:?}", divisor);
             // println!("final score {:?}", score);
 
 
