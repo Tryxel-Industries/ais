@@ -30,6 +30,8 @@ pub mod mutations;
 pub mod representation;
 mod selection;
 mod simple_rr_ais;
+mod cloning;
+
 #[derive(Clone)]
 struct TestStruct {
     idx: i32,
@@ -126,9 +128,9 @@ fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, V
     return (train,test)
 }
 fn ais_test() {
-    // let mut antigens = read_iris();
+    let mut antigens = read_iris();
     // let mut antigens = read_wine();
-    let mut antigens = read_diabetes();
+    // let mut antigens = read_diabetes();
 
     let class_labels = antigens
             .iter()

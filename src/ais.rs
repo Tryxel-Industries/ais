@@ -361,13 +361,13 @@ impl ArtificialImmuneSystem {
 
                 parent_idx_vec.extend(parents.clone());
 
-                let label_gen: Vec<(Evaluation, BCell)> = parents
+                let mut label_gen: Vec<(Evaluation, BCell)> = parents
                     .clone()
                     .into_par_iter() // TODO: set paralell
                     // .into_iter()
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
                     .map(|(parent_score, parent_eval, parent_b_cell)| {
-                        let children = (0..params.n_parents_mutations)
+                        let mut children = (0..params.n_parents_mutations)
                             .into_iter()
                             .map(|_| {
                                 let mutated = mutate(params, parent_score, parent_b_cell.clone());
@@ -375,41 +375,64 @@ impl ArtificialImmuneSystem {
                                 return (eval, mutated);
                             })
                             .collect::<Vec<(Evaluation, BCell)>>(); //.into_iter();//.collect::<Vec<(Evaluation, BCell)>>()
-                        let mut new_local_match_mask =
-                            expand_merge_mask(&children, match_mask.clone(), false);
-                        let mut new_local_error_match_mask =
-                            expand_merge_mask(&children, error_match_mask.clone(), true);
 
-                        let new_gen_scored = score_b_cells(
-                            children,
-                            &new_local_match_mask,
-                            &new_local_error_match_mask, &count_map
-                        );
-                        let (daddy_score, daddy_eval, daddy_bcell) = score_b_cells(
-                            vec![(parent_eval, parent_b_cell)],
-                            &new_local_match_mask,
-                            &error_match_mask, &count_map
-                        )
-                        .pop()
-                        .unwrap();
-
-                        let (best_s, best_eval, best_cell) = new_gen_scored
-                            .into_iter()
-                            .max_by(|(a, _, _), (b, _, _)| a.total_cmp(b))
-                            .unwrap();
-
-                        if (best_s >= daddy_score) {
-                            // if best_cell.class_label != daddy_bcell.class_label{
-                            //     print!("\n\n\n\n\n\n")
-                            // }
-                            return (best_eval, best_cell);
-                        } else {
-                            return (daddy_eval, daddy_bcell);
-                        }
+                        children.push(((parent_eval, parent_b_cell)));
+                        return children;
+                        //
+                        // let mut new_local_match_mask =
+                        //     expand_merge_mask(&children, match_mask.clone(), false);
+                        // let mut new_local_error_match_mask =
+                        //     expand_merge_mask(&children, error_match_mask.clone(), true);
+                        //
+                        // let new_gen_scored = score_b_cells(
+                        //     children,
+                        //     &new_local_match_mask,
+                        //     &new_local_error_match_mask, &count_map
+                        // );
+                        // let (daddy_score, daddy_eval, daddy_bcell) = score_b_cells(
+                        //     vec![(parent_eval, parent_b_cell)],
+                        //     &new_local_match_mask,
+                        //     &error_match_mask, &count_map
+                        // )
+                        // .pop()
+                        // .unwrap();
+                        //
+                        //
+                        // let (best_s, best_eval, best_cell) = new_gen_scored
+                        //     .into_iter()
+                        //     .max_by(|(a, _, _), (b, _, _)| a.total_cmp(b))
+                        //     .unwrap();
+                        //
+                        // if (best_s >= daddy_score) {
+                        //     // if best_cell.class_label != daddy_bcell.class_label{
+                        //     //     print!("\n\n\n\n\n\n")
+                        //     // }
+                        //     return (best_eval, best_cell);
+                        // } else {
+                        //     return (daddy_eval, daddy_bcell);
+                        // }
+                        //
                     })
+                    .flatten_iter()
                     .collect();
 
-                new_gen.extend(label_gen)
+                let mut new_local_match_mask =
+                    expand_merge_mask(&label_gen, match_mask.clone(), false);
+                let mut new_local_error_match_mask =
+                    expand_merge_mask(&label_gen, error_match_mask.clone(), true);
+
+                let mut new_gen_scored = score_b_cells(
+                    label_gen,
+                    &new_local_match_mask,
+                    &new_local_error_match_mask, &count_map
+                );
+
+                new_gen_scored
+                    .sort_by(|(a, _, _), (b, _, _)| a.total_cmp(b));
+
+
+                let best: Vec<_> = new_gen_scored.drain((new_gen_scored.len()- replace_count_for_label)..).map(|(a,b,c)|(b,c)).collect();
+                new_gen.extend(best);
             }
             // println!("{:?}", parent_idx_vec);
 
