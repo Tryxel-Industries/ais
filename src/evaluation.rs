@@ -189,7 +189,7 @@ pub fn score_b_cells(
                 if *sharers > 1 {
                     let delta = (1.0 / *sharers as f64).max(0.0);
                     discounted_match_score += delta;
-                    shared_positive_weight = *sharers;
+                    shared_positive_weight += *sharers;
                 } else {
                     unique_positives += 1;
                 }
