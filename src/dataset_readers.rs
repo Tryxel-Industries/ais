@@ -202,3 +202,132 @@ pub fn read_diabetes() -> Vec<AntiGen> {
 
 
 }
+
+
+pub fn read_sonar() -> Vec<AntiGen> {
+    let mut data_vec = read_csv("./datasets/sonar/sonar.all-data");
+
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| (row.pop().unwrap(), row)).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
+        .into_iter()
+        .map(|v| {
+            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
+        }
+        ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
+        .enumerate()
+        .map(|(n,(label, features))|{
+            let label_val = match label.as_str() {
+                "R" => 0,
+                "M" => 1,
+                _ => {
+                    panic!("parsing error ")
+                }
+            };
+            return AntiGen {
+                id: n,
+                class_label: label_val,
+                values: features
+            };
+        }).collect();
+
+    return antigens;
+
+}
+
+
+pub fn read_glass() -> Vec<AntiGen> {
+    let mut data_vec = read_csv("./datasets/glass/glass.data");
+
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| {
+            //remove index
+            row.remove(0);
+
+            let label = row.pop().unwrap();
+            return (label, row)
+        }).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
+        .into_iter()
+        .map(|v| {
+            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
+        }
+        ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
+        .enumerate()
+        .map(|(n,(label, features))|{
+            let label_val = label.parse().unwrap();
+            return AntiGen {
+                id: n,
+                class_label: label_val,
+                values: features
+            };
+        }).collect();
+
+    return antigens;
+
+}
+
+
+
+
+pub fn read_ionosphere() -> Vec<AntiGen> {
+
+    let mut data_vec = read_csv("./datasets/ionosphere/ionosphere.data");
+
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| {
+            //remove index
+            row.remove(0);
+            row.remove(0);
+
+            let label = row.pop().unwrap();
+            return (label, row)
+        }).unzip();
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
+        .into_iter()
+        .map(|v| {
+            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
+        }
+        ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
+        .enumerate()
+        .map(|(n,(label, features))|{
+            let label_val = match label.as_str() {
+                "b" => 0,
+                "g" => 1,
+                _ => {
+                    panic!("parsing error ")
+                }
+            };
+            return AntiGen {
+                id: n,
+                class_label: label_val,
+                values: features
+            };
+        }).collect();
+
+    return antigens;
+
+}
