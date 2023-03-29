@@ -126,7 +126,7 @@ fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, V
     return (train,test)
 }
 fn ais_test() {
-    // let mut antigens = read_iris();
+    // let mut antigens = read_iris_2();
     // let mut antigens = read_wine();
     let mut antigens = read_diabetes();
 

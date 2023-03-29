@@ -1,148 +1,117 @@
+
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::fs::File;
+
+
 use crate::representation::AntiGen;
 use csv::StringRecord;
 
 use serde::Deserialize;
 
 
-
-#[derive(Debug, Deserialize)]
-struct RecordWine {
-    class: usize,
-    alcohol: f64,
-    malic_acid: f64,
-    ash: f64,
-    alcalinity_of_ash: f64,
-    magnesium: f64,
-    total_phenols: f64,
-    flavanoids: f64,
-    nonflavanoid_phenols: f64,
-    proanthocyanins: f64,
-    color_intensity: f64,
-    hue: f64,
-    OD280_OD315_of_diluted_wines: f64,
-    proline: f64,
-}
-pub trait Reader {
-    fn read();
-}
-
-pub fn read_wine() -> Vec<AntiGen> {
-    let mut reader = csv::Reader::from_path("./datasets/wine/wine.data").unwrap();
-    reader.set_headers(StringRecord::from(vec![
-        "class",
-        "alcohol",
-        "malic_acid",
-        "ash",
-        "alcalinity_of_ash",
-        "magnesium",
-        "total_phenols",
-        "flavanoids",
-        "nonflavanoid_phenols",
-        "proanthocyanins",
-        "color_intensity",
-        "hue",
-        "OD280_OD315_of_diluted_wines",
-        "proline",
-    ]));
-
-    let mut records = Vec::new();
-    for res in reader.deserialize() {
-        let record: RecordWine = res.unwrap();
-        records.push(record);
-    }
-    let mut antigens: Vec<AntiGen> =  records
-        .into_iter()
-        .enumerate()
-        .map(|(n, record)| {
-            return AntiGen {
-                id: n,
-                class_label: record.class,
-                values: vec![
-                    record.alcohol,
-                    record.malic_acid,
-                    record.ash,
-                    record.alcalinity_of_ash,
-                    record.magnesium,
-                    record.total_phenols,
-                    record.flavanoids,
-                    record.nonflavanoid_phenols,
-                    record.proanthocyanins,
-                    record.color_intensity,
-                    record.hue,
-                    record.OD280_OD315_of_diluted_wines,
-                    record.proline,
-                ],
-            };
-        })
-        .collect();
+fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    let n_features = feature_vec.first().unwrap().len();
 
     let mut max_v = Vec::new();
     let mut min_v = Vec::new();
-    for i in 0..=12 {
+
+    for i in 0..n_features {
         max_v.push(
-            antigens
+            feature_vec
                 .iter()
-                .map(|x| x.values.get(i).unwrap())
+                .map(|x| x.get(i).unwrap())
                 .max_by(|a, b| a.total_cmp(b))
                 .unwrap()
                 .clone(),
         );
 
         min_v.push(
-            antigens
+            feature_vec
                 .iter()
-                .map(|x| x.values.get(i).unwrap())
+                .map(|x| x.get(i).unwrap())
                 .min_by(|a, b| a.total_cmp(b))
                 .unwrap()
                 .clone(),
         );
     }
 
-    antigens = antigens
+
+
+    let ret: Vec<_> = feature_vec
         .into_iter()
-        .map(|mut ag| {
-            for i in 0..=12{
+        .map(|mut f_vals| {
+
+            for i in 0..n_features{
                 let min = min_v.get(i).unwrap();
                 let max = max_v.get(i).unwrap();
 
-                let val = ag.values[i].clone();
-                ag.values[i] = (val - min) / (max - min);
+                let val = f_vals[i].clone();
+                f_vals[i] = (val - min) / (max - min);
             }
-            return ag;
+            return f_vals;
         })
         .collect();
-    return antigens;
+
+    return ret;
 }
 
+fn read_csv(path: &str) -> Vec<Vec<String>> {
+    let mut ret_vec : Vec<Vec<String>> = Vec::new();
 
-#[derive(Debug, Deserialize)]
-struct RecordIris {
-    sepal_length: f64,
-    sepal_width: f64,
-    petal_length: f64,
-    petal_width: f64,
-    class: String,
-}
-pub fn read_iris() -> Vec<AntiGen> {
-    let mut reader = csv::Reader::from_path("./datasets/iris/iris.data").unwrap();
-    reader.set_headers(StringRecord::from(vec![
-        "sepal_length",
-        "sepal_width",
-        "petal_length",
-        "petal_width",
-        "class",
-    ]));
+    let f = File::open(path).unwrap();
+    let mut reader = BufReader::new(f);
+    let mut line = String::new();
 
-    let mut records = Vec::new();
-    for res in reader.deserialize() {
-        let record: RecordIris = res.unwrap();
-        records.push(record);
+    loop{
+        let len = reader.read_line(&mut line).unwrap();
+
+        if line.ends_with("\n"){
+            line = line.strip_suffix("\n").unwrap().parse().unwrap();
+        }
+        if line.ends_with("\r"){
+            line = line.strip_suffix("\r").unwrap().parse().unwrap();
+        }
+
+        if line.len() > 0{
+            let cols = line.split(",");
+            ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
+            line.clear();
+        } else {
+            break
+        }
     }
-    let mut  antigens: Vec<AntiGen> =  records
+
+    // println!("{:?}", ret_vec);
+    return ret_vec;
+    let mut reader = csv::Reader::from_path("./datasets/wine/wine.data").unwrap();
+}
+
+
+
+
+pub fn read_iris() -> Vec<AntiGen> {
+    let mut data_vec = read_csv("./datasets/iris/iris.data");
+
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| (row.pop().unwrap(), row)).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
+        .map(|v| {
+             v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
+        }
+           ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n, record)| {
-            let label = match record.class.as_str() {
+        .map(|(n,(label, features))|{
+            let label_val = match label.as_str() {
                 "Iris-setosa" => 0,
                 "Iris-versicolor" => 1,
                 "Iris-virginica" => 2,
@@ -152,131 +121,84 @@ pub fn read_iris() -> Vec<AntiGen> {
             };
             return AntiGen {
                 id: n,
-                class_label: label,
-                values: vec![
-                    record.sepal_length,
-                    record.sepal_width,
-                    record.petal_length,
-                    record.petal_width,
-                ],
+                class_label: label_val,
+                values: features
             };
-        })
-        .collect();
+        }).collect();
 
-      let mut max_v = Vec::new();
-    let mut min_v = Vec::new();
-    for i in 0..=3 {
-        max_v.push(
-            antigens
-                .iter()
-                .map(|x| x.values.get(i).unwrap())
-                .max_by(|a, b| a.total_cmp(b))
-                .unwrap()
-                .clone(),
-        );
-
-        min_v.push(
-            antigens
-                .iter()
-                .map(|x| x.values.get(i).unwrap())
-                .min_by(|a, b| a.total_cmp(b))
-                .unwrap()
-                .clone(),
-        );
-    }
-
-    antigens = antigens
-        .into_iter()
-        .map(|mut ag| {
-            for i in 0..=3{
-                let min = min_v.get(i).unwrap();
-                let max = max_v.get(i).unwrap();
-
-                let val = ag.values[i].clone();
-                ag.values[i] = (val - min) / (max - min);
-            }
-            return ag;
-        })
-        .collect();
     return antigens;
-}
-#[derive(Debug, Deserialize)]
-struct RecordDiabetes {
-    Pregnancies: f64,
-    Glucose: f64,
-    BloodPressure: f64,
-    SkinThickness: f64,
-    Insulin: f64,
-    BMI: f64,
-    DiabetesPedigreeFunction: f64,
-    Age: f64,
-    Outcome: usize,
+
 }
 
-pub fn read_diabetes() -> Vec<AntiGen> {
-    let mut reader = csv::Reader::from_path("./datasets/diabetes/diabetes.csv").unwrap();
 
-    let mut records = Vec::new();
-    for res in reader.deserialize() {
-        let record: RecordDiabetes = res.unwrap();
-        records.push(record);
-    }
-    let mut antigens: Vec<AntiGen> = records
+pub fn read_wine() -> Vec<AntiGen> {
+
+    let mut data_vec = read_csv("./datasets/wine/wine.data");
+
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| (row.remove(0), row)).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
+        .map(|v| {
+            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
+        }
+        ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n, r)| {
+        .map(|(n,(label, features))|{
+            let label_val = label.parse().unwrap();
+
             return AntiGen {
                 id: n,
-                class_label: r.Outcome,
-                values: vec![
-                    r.Pregnancies,
-                    r.Glucose,
-                    r.BloodPressure,
-                    r.SkinThickness,
-                    r.Insulin,
-                    r.BMI,
-                    r.DiabetesPedigreeFunction,
-                    r.Age,
-                ],
+                class_label: label_val,
+                values: features
             };
-        })
-        .collect();
-
-    let mut max_v = Vec::new();
-    let mut min_v = Vec::new();
-    for i in 0..=7 {
-        max_v.push(
-            antigens
-                .iter()
-                .map(|x| x.values.get(i).unwrap())
-                .max_by(|a, b| a.total_cmp(b))
-                .unwrap()
-                .clone(),
-        );
-
-        min_v.push(
-            antigens
-                .iter()
-                .map(|x| x.values.get(i).unwrap())
-                .min_by(|a, b| a.total_cmp(b))
-                .unwrap()
-                .clone(),
-        );
-    }
-
-    antigens = antigens
-        .into_iter()
-        .map(|mut ag| {
-            for i in 0..=7 {
-                let min = min_v.get(i).unwrap();
-                let max = max_v.get(i).unwrap();
-
-                let val = ag.values[i].clone();
-                ag.values[i] = (val - min) / (max - min);
-            }
-            return ag;
-        })
-        .collect();
+        }).collect();
 
     return antigens;
+
+}
+
+
+pub fn read_diabetes() -> Vec<AntiGen> {
+    let mut data_vec = read_csv("./datasets/diabetes/diabetes.csv");
+
+    data_vec.remove(0);
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| (row.pop().unwrap(), row)).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
+        .into_iter()
+        .map(|v| {
+             v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
+        }
+           ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
+        .enumerate()
+        .map(|(n,(label, features))|{
+            let label_val = label.parse().unwrap();
+
+            return AntiGen {
+                id: n,
+                class_label: label_val,
+                values: features
+            };
+        }).collect();
+
+    return antigens;
+
+
 }
