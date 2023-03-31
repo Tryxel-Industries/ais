@@ -130,6 +130,14 @@ pub fn read_iris() -> Vec<AntiGen> {
 
 }
 
+pub fn read_iris_snipped() -> Vec<AntiGen> {
+    let mut ag = read_iris();
+    return ag.into_iter().map(|mut ag| {
+        let _ = ag.values.pop();
+        return ag
+    }).collect::<Vec<_>>();
+}
+
 
 pub fn read_wine() -> Vec<AntiGen> {
 

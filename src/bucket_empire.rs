@@ -11,17 +11,31 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
     // println!("in: {:?}", lists);
 
+    let n_lists = lists.len();
+
+    if n_lists == 0{
+        return Some(Vec::new());
+    } else if n_lists == 1{
+        return Some(lists.first().unwrap().clone())
+    }else{
+        // println!("\n\n&&&&&&&&&&&&&&");
+        // lists.iter().enumerate().for_each(|(n,l)|println!("list {:?}: {:?}",n, l));
+
     let mut found_matches: Vec<usize> = Vec::new();
 
     let mut current_idx_list = vec![0 as usize; lists.len()];
     let mut max_idx_list: Vec<usize> = lists.iter().map(|x| x.len()).collect();
+        if *max_idx_list.iter().min().unwrap() == 0{
+            return Some(Vec::new())
+        }
+
 
     let (first, rest_of_lists) = lists.split_at(1);
     let first_list_value = first.get(0)?;
     let mut first_idx: usize = 0;
 
     'outer: loop {
-        // println!("outer");
+        // println!("outer, cnt {:?} brk& {:?}", first_idx, *max_idx_list.get_mut(0)?);
         if first_idx >= *max_idx_list.get_mut(0)? {
             break 'outer;
         }
@@ -31,6 +45,7 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
         'row: for (n, list) in rest_of_lists.iter().enumerate() {
             'internal: loop {
+
                 let idx_val = current_idx_list.get_mut(n + 1).unwrap();
                 let max_idx_val = max_idx_list.get_mut(n + 1).unwrap();
 
@@ -39,6 +54,8 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
                 }
 
                 let value = list.get(*idx_val).unwrap();
+
+                // println!("internal, cnt {:?} brk& {:?}", value, check_val);
                 if value > check_val {
                     // if on of the lower cols has a bigger value than
                     // the check val the check val needs to be increased
@@ -63,6 +80,8 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     }
     // println!("out: {:?}", found_matches);
     return Some(found_matches);
+
+    }
 }
 //
 // Traits
@@ -75,6 +94,7 @@ pub trait Bucketable {
 // structs
 //
 
+#[derive(Debug, Copy, Clone)]
 pub enum BucketEmpireOfficialRangeNotationSystemClasses {
     Open,
     Symmetric((f64,f64)),
@@ -146,7 +166,7 @@ impl BucketKnight {
     pub fn get_index_in_range(
         &self,
         range: &BucketEmpireOfficialRangeNotationSystemClasses,
-    ) -> Vec<usize> {
+    ) -> Option<Vec<usize>> {
         let mut ret: Vec<usize> = Vec::new();
 
         // return self
@@ -158,13 +178,7 @@ impl BucketKnight {
         //     .collect();
         match range {
             BucketEmpireOfficialRangeNotationSystemClasses::Open => {
-                ret = self
-                    .buckets
-                    .iter()
-                    .map(|v| v.bucket_contents.iter())
-                    .flat_map(|v| v)
-                    .map(|v| v.index)
-                    .collect();
+                return None
             }
             BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((lb, ub)) => {
                 // let value_lb = dimensional_value.clone() - v;
@@ -172,12 +186,21 @@ impl BucketKnight {
                 let value_lb = *lb;
                 let value_ub = *ub;
 
+
                 for bucket in self.buckets.iter() {
-                    if bucket.end_value > value_lb && bucket.end_value <= value_ub {
+                    let contains_left_border = bucket.start_value < value_lb && bucket.end_value > value_lb;
+                    let contains_right_border = bucket.start_value < value_ub && bucket.end_value > value_ub;
+                    let contains_center = bucket.start_value > value_lb && bucket.end_value < value_ub;
+
+                    if contains_left_border | contains_center | contains_right_border {
+                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
+                    }
+                  /*  if bucket.end_value > value_lb && bucket.end_value <= value_ub {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     } else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     }
+                    */
                 }
             }
             BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(v) => {
@@ -200,7 +223,7 @@ impl BucketKnight {
 
         ret.sort();
         // println!("ret size {:?}", ret.len());
-        return ret;
+        return Some(ret);
     }
     pub fn get_bucket_mut(&mut self, dimensional_value: &f64) -> Option<&mut Bucket> {
         let value = dimensional_value;
@@ -274,7 +297,7 @@ impl<T> BucketKing<T> {
         let ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
-            .map(|k| {
+            .filter_map(|k| {
                 k.get_index_in_range(
                     &BucketEmpireOfficialRangeNotationSystemClasses::Open,
                 )
@@ -296,19 +319,27 @@ impl<T> BucketKing<T> {
         let ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
-            .map(|k| {
-                k.get_index_in_range(
+            .filter_map(|k| {
+                let rgs = ranges.get(k.dimension).unwrap();
+                let a = k.get_index_in_range(
                     ranges.get(k.dimension).unwrap(),
-                )
+                );
+                if let BucketEmpireOfficialRangeNotationSystemClasses::Open = rgs{
+                    // println!("shold be empty {:?}",a);
+                }else {
+                    // println!("shold not be empty {:?}",a);
+                }
+
+                return a;
             })
             .collect();
 
-        // println!("pre:");
-        // ret.iter().enumerate().for_each(|(idx,ls)|{
-        //     println!("{:3<}: {:?}", idx, ls);
-        // });
+        println!("pre:");
+        ret.iter().enumerate().for_each(|(idx,ls)|{
+            println!("{:3<}: {:?}", idx, ls);
+        });
         let r =roll_comparison(ret);
-        // println!("post: {:?}", r.clone().unwrap());
+        println!("post: {:?}", r.clone().unwrap());
         return r;
     }
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {

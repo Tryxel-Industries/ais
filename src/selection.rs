@@ -119,6 +119,49 @@ pub fn replace_worst_n_per_cat(
 
     return population;
 }
+
+
+pub fn replace_if_better_per_cat(
+    mut population: Vec<(f64, Evaluation, BCell)>,
+    mut replacements: Vec<(f64, Evaluation, BCell)>,
+    mut snip_list: HashMap<usize, usize>,
+) -> Vec<(f64, Evaluation, BCell)> {
+    population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
+
+    let mut kill_list: Vec<_> = Vec::new();
+    let mut cur_idx = 0;
+    while snip_list.keys().len() > 0 {
+        if let Some((_, _, cell)) = population.get(cur_idx) {
+            if let Some(remaining_count) = snip_list.get_mut(&cell.class_label) {
+                kill_list.push(cur_idx.clone());
+                *remaining_count -= 1;
+                if *remaining_count <= 0 {
+                    snip_list.remove(&cell.class_label);
+                }
+            }
+        } else {
+            break;
+        }
+        cur_idx += 1;
+    }
+
+    for idx in kill_list {
+        // let mut parent_value = scored_pop.get_mut(idx).unwrap();
+        let (p_score, p_eval, p_cell) = population.get_mut(idx).unwrap();
+        let (c_score, c_eval, c_cell) = replacements.pop().unwrap();
+        // std::mem::replace(p_score, c_score);
+        // std::mem::replace(p_eval, c_eval);
+        // std::mem::replace(p_cell, c_cell);
+        *p_score = c_score;
+        *p_eval = c_eval;
+        *p_cell = c_cell;
+
+    }
+    // println!("{:?}", replacements.len());
+
+    return population;
+}
+
 pub fn pick_best_n(
     mut population: Vec<(f64, Evaluation, BCell)>,
     num_to_pick: usize,

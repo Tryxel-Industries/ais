@@ -1,10 +1,14 @@
 use rand::distributions::{Distribution, Uniform};
 use rand::Rng;
 use std::ops::RangeInclusive;
+use std::path::Iter;
 use crate::BucketKing;
 use crate::evaluation::evaluate_b_cell;
 
-#[derive(Clone, PartialEq, Debug)]
+use rayon::prelude::*;
+use statrs::statistics::Statistics;
+
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum DimValueType {
     Disabled,
     Open,
@@ -78,8 +82,8 @@ impl BCellFactory {
 
         let mut num_open = 0;
         for i in 0..self.n_dims {
-            let offset = self.rng_offset_ranges.get(i).unwrap().sample(&mut rng) * -1.0;
-            let multiplier = self.rng_multiplier_ranges.get(i).unwrap().sample(&mut rng);
+            let offset = self.rng_offset_ranges.get(i).unwrap().sample(&mut rng);
+            let mut multiplier = self.rng_multiplier_ranges.get(i).unwrap().sample(&mut rng);
 
             let value_type = self
                 .rng_allowed_value_types
@@ -88,7 +92,10 @@ impl BCellFactory {
                 .clone();
 
             if value_type == DimValueType::Open {
-                num_open += 1
+                num_open += 1;
+                              if rng.gen::<bool>(){
+                    multiplier *= -1.0;
+                }
             }
 
             dim_multipliers.push(BCellDim {
@@ -100,10 +107,10 @@ impl BCellFactory {
 
         let mut radius_constant = self.rng_radius_range.sample(&mut rng);
 
-        for _ in 0..num_open {
+   /*     for _ in 0..num_open {
             radius_constant = radius_constant.sqrt();
         }
-
+*/
         let class_label = if let Some(lbl) = label {
             lbl
         } else {
@@ -132,8 +139,8 @@ impl BCellFactory {
         let mut dim_multipliers: Vec<BCellDim> = Vec::with_capacity(self.n_dims);
         let mut num_open = 0;
         for i in 0..self.n_dims {
-            let offset = antigen.values.get(i).unwrap().clone() * -1.0;
-            let multiplier = self
+            let offset = antigen.values.get(i).unwrap().clone();
+            let mut multiplier = self
                 .b_cell_multiplier_ranges
                 .get(i)
                 .unwrap()
@@ -145,7 +152,11 @@ impl BCellFactory {
                 .clone();
 
             if value_type == DimValueType::Open{
-                num_open += 1
+                num_open += 1;
+                if rng.gen::<bool>(){
+                    multiplier *= -1.0;
+                }
+
             }
 
             dim_multipliers.push(BCellDim {
@@ -158,9 +169,9 @@ impl BCellFactory {
         let mut  radius_constant = self.b_cell_radius_range.sample(&mut rng);
         let class_label = antigen.class_label;
 
-        for _ in 0..num_open {
-            radius_constant = radius_constant.sqrt();
-        }
+        // for _ in 0..num_open {
+        //     radius_constant = radius_constant.sqrt();
+        // }
         return BCell {
             dim_values: dim_multipliers,
             radius_constant,
@@ -182,6 +193,9 @@ pub fn expand_b_cell_radius_until_hit(
     iterer deretter gjennom de som er feil og for hver som er innenfor reduser rangen til den er lavere en den
      */
 
+    if !cell.dim_values.iter().map(|v| v.value_type).any(|v| v != DimValueType::Disabled){
+        return cell;
+    }
     let mut evaluation = loop{
         let evaluation = evaluate_b_cell(
             bk,
@@ -197,17 +211,28 @@ pub fn expand_b_cell_radius_until_hit(
     };
     evaluation.wrongly_matched.sort();
 
+    let min_range = antigens
+        .par_iter()
+        .filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok())
+        .map(|ag| cell.get_affinity_dist(ag))
+        .min_by(|a,b|  a.partial_cmp(b).unwrap()).unwrap();
+
+
+    cell.radius_constant = min_range * 0.99;
+
+
     // todo: inneficeient
-    let wrong_ags : Vec<_>= antigens.iter().filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok()).collect();
-
-    for err_ag in wrong_ags{
-
-        let affinity_dist = cell.get_affinity_dist(err_ag);
-
-        if affinity_dist < cell.radius_constant{
-            cell.radius_constant = affinity_dist * 0.99;
-        }
-    }
+    // let wrong_ags : Vec<_>= antigens.iter().filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok()).collect();
+    //
+    // for err_ag in wrong_ags{
+    //
+    //     let affinity_dist = cell.get_affinity_dist(err_ag);
+    //
+    //     if affinity_dist < cell.radius_constant{
+    //         cell.radius_constant = affinity_dist * 0.99;
+    //     }
+    // }
+    //
 
     return cell;
 
@@ -244,9 +269,9 @@ impl BCell {
             let antigen_dim_val = antigen.values.get(i).unwrap();
             roll_sum += match b_dim.value_type {
                 DimValueType::Disabled => 0.0,
-                DimValueType::Open => b_dim.multiplier * (antigen_dim_val + b_dim.offset),
+                DimValueType::Open => b_dim.multiplier * (antigen_dim_val - b_dim.offset),
                 DimValueType::Circle => {
-                    (b_dim.multiplier * (antigen_dim_val + b_dim.offset)).powi(2)
+                    (b_dim.multiplier * (antigen_dim_val - b_dim.offset)).powi(2)
                 }
             };
         }
@@ -256,8 +281,15 @@ impl BCell {
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
 
         let affinity_dist = self.get_affinity_dist(antigen);
+
+       if affinity_dist == 0.0{
+            // all dims are disabled
+            return false
+        }
+
+        let v = affinity_dist -self.radius_constant;
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if affinity_dist <= self.radius_constant {
+        if v <= 0.0 {
             return true;
         } else {
             return false;
@@ -265,7 +297,7 @@ impl BCell {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AntiGen {
     pub id: usize,
     pub class_label: usize,

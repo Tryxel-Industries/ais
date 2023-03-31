@@ -5,10 +5,11 @@
 extern crate core;
 
 use std::collections::{HashMap, HashSet};
+use std::env;
 use std::ptr::null;
 use crate::ais::{ArtificialImmuneSystem, evaluate_population, Params};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{read_diabetes, read_iris, read_wine};
+use crate::dataset_readers::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_sonar, read_wine};
 use plotters::prelude::*;
 use rand::prelude::SliceRandom;
 use rand::Rng;
@@ -19,6 +20,8 @@ use crate::mutations::mutate;
 use crate::representation::{AntiGen, DimValueType};
 
 use crate::selection::selection;
+
+use statrs::statistics::Statistics;
 
 mod ais;
 mod bucket_empire;
@@ -113,29 +116,105 @@ fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, V
 
     for class in classes{
         let mut of_class: Vec<_> = antigens.iter().filter(|ag|  ag.class_label == class).cloned().collect();
-        println!("num in class {:?} is {:?}", class ,of_class.len());
+        // println!("num in class {:?} is {:?}", class ,of_class.len());
         let num_test = (of_class.len() as f64 * test_frac) as usize;
         let class_train = of_class.split_off(num_test);
 
         train.extend(class_train);
         test.extend(of_class);
 
-        println!("train s {:?} test s {:?}", train.len() ,test.len());
+        // println!("train s {:?} test s {:?}", train.len() ,test.len());
     }
 
     return (train,test)
 }
-fn ais_test() {
-    // let mut antigens = read_iris_2();
-    // let mut antigens = read_wine();
-    let mut antigens = read_diabetes();
 
-    let class_labels = antigens
-            .iter()
-            .map(|x| x.class_label)
-            .collect::<HashSet<_>>();
+
+fn split_train_test_n_fold(antigens: &Vec<AntiGen>, n_folds: usize) -> Vec<(Vec<AntiGen>, Vec<AntiGen>)>{
+    let classes: HashSet<usize> = antigens.iter().map(|ag| ag.class_label).collect();
+    let fold_frac = 1.0/n_folds as f64;
+
+    let mut folds: Vec<Vec<AntiGen>> = Vec::new();
+    for _ in 0..n_folds {
+        folds.push(Vec::new());
+    }
+
+    for class in classes{
+        let mut of_class: Vec<_> = antigens.iter().filter(|ag|  ag.class_label == class).cloned().collect();
+        let class_fold_size = (of_class.len() as f64 * fold_frac).floor() as usize;
+
+        // println!("class {:?} has {:?} elements per fold", class, class_fold_size);
+        for n in 0..(n_folds-1) {
+            let new_vals =  of_class.drain(..class_fold_size);
+
+            let mut fold_vec = folds.get_mut(n).unwrap();
+            fold_vec.extend(new_vals)
+        }
+
+        folds.get_mut(n_folds-1).unwrap().extend(of_class);
+
+    }
+
+    let mut ret_folds: Vec<(Vec<AntiGen>, Vec<AntiGen>)> = Vec::new();
+
+    for fold in 0..n_folds{
+        let test_fold = folds.get(fold).unwrap().clone();
+        // println!("fold {:?} has {:?} elements", fold, test_fold.len());
+        let mut train_fold = Vec::new();
+        for join_fold in 0..n_folds{
+            if join_fold != fold{
+                train_fold.extend(folds.get(join_fold).unwrap().clone());
+            }
+        }
+        ret_folds.push((train_fold, test_fold))
+    }
+
+    // println!("folds {:?}", folds);
+    return ret_folds;
+}
+
+
+fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>) {
+
+
 
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
+
+
+    let folds = split_train_test_n_fold(&antigens, 5);
+
+    let mut train_acc_vals = Vec::new();
+    let mut test_acc_vals = Vec::new();
+    for (train, test) in folds.iter(){
+        let (train_acc,test_acc) = ais_test(&antigens, train, test, false, &params);
+        train_acc_vals.push(train_acc);
+        test_acc_vals.push(test_acc);
+    }
+
+    let train_mean: f64 = train_acc_vals.iter().mean();
+    let train_std: f64 = train_acc_vals.iter().std_dev();
+
+    let test_mean: f64 = test_acc_vals.iter().mean();
+    let test_std: f64 = test_acc_vals.iter().std_dev();
+
+
+    println!("train_acc: {:<5.4?} std {:.4}", train_mean, train_std);
+    println!("test_acc: {:<5.4?} std {:.4}", test_mean, test_std);
+    // println!("train size: {:?}, test size {:?}", train.len(), test.len());
+
+}
+
+
+fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbose: bool) {
+
+
+    // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
+
+    // let mut rng = rand::thread_rng();
+    // antigens.shuffle(&mut rng);
+
+    // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
+
 
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
@@ -143,53 +222,24 @@ fn ais_test() {
     let (train_slice, test) = split_train_test(&antigens, 0.3);
 
 
-    let params = Params {
-        // -- train params -- //
-        antigen_pop_fraction: 1.0,
-        generations: 500,
+    let (train_acc,test_acc) = ais_test(&antigens, &train_slice, &test, verbose, &params);
 
-        mutation_offset_weight: 3,
-        mutation_multiplier_weight: 3,
-        mutation_radius_weight: 2,
-        mutation_value_type_weight: 1,
+    println!("train_acc: {:?} test_acc: {:?} ", train_acc, test_acc)
 
-        mutation_label_weight: 0,
 
-        offset_mutation_multiplier_range: 0.8..=1.2,
-        multiplier_mutation_multiplier_range: 0.8..=1.2,
-        radius_mutation_multiplier_range: 0.8..=1.2,
-        value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle],
-        // value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Open, DimValueType::Disabled],
+}
+fn ais_test(antigens: &Vec<AntiGen>, train_slice: &Vec<AntiGen>, test: &Vec<AntiGen>, verbose: bool, params: &Params) -> (f64, f64) {
 
-        label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
-
-        //selection
-        leak_fraction: 0.5,
-        leak_rand_prob: 0.5,
-        max_replacment_frac: 0.7,
-        tournament_size: 5,
-        n_parents_mutations: 10,
-
-        b_cell_init_expand_radius: true,
-
-        // -- B-cell from antigen initialization -- //
-        b_cell_ag_init_multiplier_range: 0.8..=1.2,
-        b_cell_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Circle],
-        // b_cell_ag_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
-        b_cell_ag_init_range_range: 0.1..=0.4,
-
-        // -- B-cell from random initialization -- //
-        b_cell_rand_init_offset_range: 0.0..=1.0,
-        b_cell_rand_init_multiplier_range: 0.8..=1.2,
-        // b_cell_rand_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled],
-        b_cell_rand_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
-        b_cell_rand_init_range_range: 0.1..=0.4,
-    };
+    let class_labels = antigens
+            .iter()
+            .map(|x| x.class_label)
+            .collect::<HashSet<_>>();
 
 
 
-
-    println!("train size: {:?} test size: {:?}", train_slice.len(), test.len());
+    if verbose{
+        println!("train size: {:?} test size: {:?}", train_slice.len(), test.len());
+    }
 
 
 
@@ -199,11 +249,13 @@ fn ais_test() {
     let train = train_slice.clone().to_vec();
 
     let mut ais = ArtificialImmuneSystem::new();
-    let (train_acc_hist, train_score_hist,init_scored_pop) = ais.train(&train, &params);
+    let (train_acc_hist, train_score_hist,init_scored_pop) = ais.train(&train, &params, verbose);
 
+    if verbose{
+        plot_hist(train_acc_hist, "acuracy");
+        plot_hist(train_score_hist, "score");
+    }
     let duration = start.elapsed();
-    plot_hist(train_acc_hist, "acuracy");
-    plot_hist(train_score_hist, "score");
 
     let mut zero_reg_cells = 0;
     // display final
@@ -252,7 +304,7 @@ fn ais_test() {
 
         let score = with_same_label.len() as f64 / (num_wrong.len() as f64 + 1.0);
 
-        if true {//registered_antigens.len() > 0 {
+        if verbose {//registered_antigens.len() > 0 {
             println!(
                 "genome dim values    {:?}",
                 b_cell
@@ -295,28 +347,29 @@ fn ais_test() {
             zero_reg_cells += 1;
         }
     });
-    println!("zero reg cells {}", zero_reg_cells);
 
+    if verbose{
+        println!("zero reg cells {}", zero_reg_cells);
+        println!("########## error mask \n{:?}", error_match_mask);
+        println!("########## match mask \n{:?}", match_mask);
 
-    println!("########## error mask \n{:?}", error_match_mask);
-    println!("########## match mask \n{:?}", match_mask);
-    for n in (0..match_mask.len()){
-        let wrong = error_match_mask.get(n).unwrap();
-        let right = match_mask.get(n).unwrap();
+        for n in (0..match_mask.len()){
+            let wrong = error_match_mask.get(n).unwrap();
+            let right = match_mask.get(n).unwrap();
 
-        if wrong>right {
-            println!("idx: {:2>?}  cor: {:2>?} - wrong {:2>?}", n, right, wrong);
+            if wrong>right {
+                println!("idx: {:2>?}  cor: {:2>?} - wrong {:2>?}", n, right, wrong);
+                // println!("ag dat: {:?}", antigens.iter().filter(|ag| ag.id == n).last().unwrap());
+            }
         }
     }
 
-    println!("=============================================================================");
-    println!("      TRAIN");
-    println!("=============================================================================");
-    let mut n_corr = 0;
+    //train
+  let mut n_corr = 0;
     let mut per_class_corr:HashMap<usize,usize> = HashMap::new();
     let mut n_wrong = 0;
     let mut n_no_detect = 0;
-    for antigen in &train_slice {
+    for antigen in train_slice {
         let pred_class = ais.is_class_correct(&antigen);
         if let Some(v) = pred_class {
             if v {
@@ -330,7 +383,35 @@ fn ais_test() {
             n_no_detect += 1
         }
     }
+    let train_acc = n_corr as f64 / (train_slice.len() as f64);
 
+    //test
+
+    let mut test_n_corr = 0;
+    let mut test_n_wrong = 0;
+    let mut test_per_class_corr = HashMap::new();
+    let mut test_n_no_detect = 0;
+    for antigen in test {
+        let pred_class = ais.is_class_correct(&antigen);
+        if let Some(v) = pred_class {
+            if v {
+                test_n_corr += 1;
+                let class_count = test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+                test_per_class_corr.insert(antigen.class_label, *class_count + 1);
+            } else {
+                test_n_wrong += 1
+            }
+        } else {
+            test_n_no_detect += 1
+        }
+    }
+
+    let test_acc = test_n_corr as f64 / (test.len() as f64);
+
+    if verbose{
+        println!("=============================================================================");
+    println!("      TRAIN");
+    println!("=============================================================================");
     println!();
     println!("dataset size {:?}", train.len());
     println!(
@@ -338,31 +419,15 @@ fn ais_test() {
         n_corr,
         n_wrong,
         n_no_detect,
-        n_corr as f64 / (train_slice.len() as f64)
+        train_acc,
     );
     println!("per class cor {:?}", per_class_corr);
+
 
     println!("=============================================================================");
     println!("      TEST");
     println!("=============================================================================");
-    n_corr = 0;
-    n_wrong = 0;
-    per_class_corr = HashMap::new();
-    n_no_detect = 0;
-    for antigen in &test {
-        let pred_class = ais.is_class_correct(&antigen);
-        if let Some(v) = pred_class {
-            if v {
-                n_corr += 1;
-                let class_count = per_class_corr.get(&antigen.class_label).unwrap_or(&0);
-                per_class_corr.insert(antigen.class_label, *class_count + 1);
-            } else {
-                n_wrong += 1
-            }
-        } else {
-            n_no_detect += 1
-        }
-    }
+
     println!();
     println!("dataset size {:?}", test.len());
     println!(
@@ -370,7 +435,7 @@ fn ais_test() {
         n_corr,
         n_wrong,
         n_no_detect,
-        n_corr as f64 / (test.len() as f64)
+        test_acc
     );
     println!("per class cor {:?}", per_class_corr);
 
@@ -379,8 +444,102 @@ fn ais_test() {
         duration,
         duration.as_nanos() / params.generations as u128
     );
+    }
+
+
+    return (train_acc, test_acc)
     // ais.pred_class(test.get(0).unwrap());
 }
+fn modify_config_by_args(params: &mut Params){
+    let args: Vec<String> = env::args().collect();
+
+    for arg in args{
+        if arg.starts_with("--"){
+            let (key,value) = arg.strip_prefix("--").unwrap().split_once("=").unwrap();
+            match key {
+                "tournament_size" => params.tournament_size = value.parse().unwrap(),
+                "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
+                "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
+                _ => panic!("invalid config arg"),
+            }
+
+        }
+    }
+}
+
 fn main() {
-    ais_test()
+
+    let mut antigens = read_iris();
+    // let mut antigens = read_iris_snipped();
+    // let mut antigens = read_wine();
+    // let mut antigens = read_diabetes();
+
+    // let mut antigens = read_sonar();
+    // let mut antigens = read_glass();
+    // let mut antigens = read_ionosphere();
+
+    let mut rng = rand::thread_rng();
+    antigens.shuffle(&mut rng);
+
+    let class_labels = antigens
+        .iter()
+        .map(|x| x.class_label)
+        .collect::<HashSet<_>>();
+
+
+    let mut  params = Params {
+        // -- train params -- //
+        antigen_pop_fraction: 1.0,
+        generations: 1000,
+
+        mutation_offset_weight: 3,
+        mutation_multiplier_weight: 3,
+        mutation_radius_weight: 2,
+        mutation_value_type_weight: 0,
+
+        mutation_label_weight: 0,
+
+        // offset_mutation_multiplier_range: 0.8..=1.2,
+        // multiplier_mutation_multiplier_range: 0.8..=1.2,
+        // radius_mutation_multiplier_range: 0.8..=1.2,
+
+        offset_mutation_multiplier_range: 0.5..=1.5,
+        multiplier_mutation_multiplier_range: 0.5..=1.5,
+        radius_mutation_multiplier_range: 0.5..=1.5,
+        value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Open],
+        // value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Open, DimValueType::Disabled],
+        // value_type_valid_mutations: vec![DimValueType::Circle],
+
+        label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
+
+        //selection
+        leak_fraction: 0.0,
+        leak_rand_prob: 0.5,
+        max_replacment_frac: 0.7,
+        tournament_size: 10,
+        n_parents_mutations: 40,
+
+        b_cell_init_expand_radius: true,
+
+        // -- B-cell from antigen initialization -- //
+        b_cell_ag_init_multiplier_range: 0.8..=1.2,
+        // b_cell_ag_init_value_types: vec![DimValueType::Circle],
+        b_cell_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Open],
+        // b_cell_ag_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
+        b_cell_ag_init_range_range: 0.1..=0.4,
+
+        // -- B-cell from random initialization -- //
+        b_cell_rand_init_offset_range: 0.0..=1.0,
+        b_cell_rand_init_multiplier_range: 0.8..=1.2,
+        // b_cell_rand_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled],
+        b_cell_rand_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
+        b_cell_rand_init_range_range: 0.1..=0.4,
+    };
+    modify_config_by_args(&mut params);
+
+
+
+
+    ais_frac_test(params, antigens, true)
+    // ais_n_fold_test(params, antigens)
 }

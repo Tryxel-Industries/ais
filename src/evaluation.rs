@@ -27,7 +27,7 @@ pub fn evaluate_b_cell(
                 DimValueType::Open => {
                     // return  BucketEmpireOfficialRangeNotationSystemClasses::Open;
                     let value = b_cell.radius_constant / dv.multiplier;
-                    let flipped_offset = dv.offset * -1.0;
+                    let flipped_offset = dv.offset;
                     if dv.multiplier > 0.0 {
                         return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(
                             flipped_offset + value,
@@ -40,7 +40,7 @@ pub fn evaluate_b_cell(
                 }
                 DimValueType::Circle => {
                     let value = b_cell.radius_constant.sqrt() / dv.multiplier;
-                    let flipped_offset = dv.offset * -1.0;
+                    let flipped_offset = dv.offset;
                     return BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((
                         flipped_offset - value,
                         flipped_offset + value,
@@ -61,6 +61,34 @@ pub fn evaluate_b_cell(
         .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
         .filter(|ag| b_cell.test_antigen(ag))
         .collect::<Vec<_>>();
+
+    if true{
+        let test_a = antigens
+            .iter()
+            .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
+            .filter(|ag| b_cell.test_antigen(ag))
+            .collect::<Vec<_>>();
+
+
+        let test_b = antigens
+            .iter()
+            .filter(|ag| b_cell.test_antigen(ag))
+            .collect::<Vec<_>>();
+        if test_a.len() != test_b.len(){
+            println!();
+            println!("cell vt    {:?}",b_cell.dim_values.iter().map(|b| b.value_type.clone()).collect::<Vec<_>>());
+            println!("cell mp    {:?}",b_cell.dim_values.iter().map(|b| b.multiplier.clone()).collect::<Vec<_>>());
+            println!("cell of    {:?}",b_cell.dim_values.iter().map(|b| b.offset.clone()).collect::<Vec<_>>());
+            println!();
+            println!("bk  res: {:?}",dim_radus);
+            println!("bk  res: {:?}",test_a);
+            println!("otr res: {:?}",test_b);
+            panic!("bucket empire error")
+
+        }
+
+        // println!("a {:?} b {:?}", test_a.len(), test_b.len());
+    }
 
     let mut corr_matched = Vec::with_capacity(registered_antigens.len());
     let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
@@ -179,7 +207,9 @@ pub fn score_b_cells(
             let mut unique_positives = 0;
 
             let mut shared_positive_weight = 0;
-            let mut shared_error_weight = 0;
+            let mut shared_error_weight = 0.0;
+
+            let mut error_problem_magnitude: f64 = 0.0;
 
 
             for mid in &eval.matched_ids {
@@ -197,10 +227,16 @@ pub fn score_b_cells(
 
             for mid in &eval.wrongly_matched {
                 false_positives += 1.0;
-                let sharers = error_merged_mask.get(*mid).unwrap_or(&0);
-                if *sharers > 1 {
+                let sharers = *error_merged_mask.get(*mid).unwrap_or(&0) as f64;
+                let cor_shares = *merged_mask.get(*mid).unwrap_or(&0) as f64;
+
+                // when the amount of wrong predictivness goes up the value goes down
+                error_problem_magnitude += cor_shares/ (cor_shares+sharers).max(1.0);
+
+                if sharers > 1.0 {
                     // bonus_error += 1.0-(1.0 / *sharers as f64);
-                    shared_error_weight += *sharers;
+
+                    shared_error_weight += sharers;
                 } else {
                 }
             }
@@ -226,14 +262,37 @@ pub fn score_b_cells(
 
 
             // the precession
-            let positive_predictive_value = true_positives / pred_pos;
+            let positive_predictive_value = true_positives / pred_pos.max(1.0);
+
+            let pos_coverage = true_positives / positives;
+            let neg_coverage = pred_neg / negatives;
 
 
             // how shared are the values for the predictor
             let purity = true_positives/shared_positive_weight as f64;
 
-            let precession = if positive_predictive_value.is_finite(){positive_predictive_value} else { 0.0 };
-            let purity = if purity.is_finite(){purity } else {0.0};
+
+            let penalty =  1.0 - (error_problem_magnitude/ false_positives.max(1.0));
+            let mut score = 0.0;
+            // positive_predictive_value + pos_coverage * discounted_match_score/true_positives.max(1.0) + penalty;
+
+            // add ppv (0-1) indicating the accuracy of the prediction
+            // score += positive_predictive_value;
+
+            // add the pos coverage (0-1) indicating how big of a fraction of the space label space is covered.
+            // score += pos_coverage;
+            score += f1;
+
+            // score +=  discounted_match_score/true_positives.max(1.0);
+
+
+
+
+            // let mut score = positive_predictive_value + pos_coverage + discounted_match_score/true_positives.max(1.0);
+
+
+            // let precession = if positive_predictive_value.is_finite(){positive_predictive_value} else { 0.0 };
+            // let purity = if purity.is_finite(){purity } else {0.0};
             // let score = precession + purity;
 
             // let score = true_positives / ((shared_positive_weight + shared_error_weight) as f64).max(1.0);
@@ -242,7 +301,7 @@ pub fn score_b_cells(
 
             // let score = f1 / (shared_error_weight as f64).max(1.0);
 
-            let score = pred_pos / (false_positives  as f64).max(1.0);
+            // let score = pred_pos / (false_positives  as f64).max(1.0);
 
             // let score = ((base_sum - n_wrong)+(bonus_sum*0.5))*accuracy ;
             // let score = ((discounted_sum) - (n_wrong).powi(2)) + bonus_sum  - bonus_error;
@@ -254,9 +313,10 @@ pub fn score_b_cells(
 
             // let score = ((n_right + (bonus_sum+1.0).powi(1)) / (divisor+1.0) );
 
+            // let score = precession + discounted_match_score/true_positives.max(1.0);
 
 
-            // let score = ((n_right + bonus_sum) - (n_wrong).powi(2)) + bonus_sum * 5.0  - bonus_error;
+            // let score = ((true_positives + discounted_match_score) - (false_positives).powi(2)) + unique_positives as f64 * 5.0  - (shared_error_weight as f64/2.0);
 
             // let score = ((discounted_sum) - (bonus_error)) + bonus_sum * 5.0;
             // let score = (matched_sum - n_wrong).max(0.0) ;
@@ -265,12 +325,16 @@ pub fn score_b_cells(
             // println!("###########################");
             // println!("match:        {:?}", eval.matched_ids);
             // println!("wrong match:  {:?}", eval.wrongly_matched);
-            // println!("base        {:?}", base_sum);
-            // println!("discount    {:?}", discounted_sum);
-            // println!("n_right    {:?}", n_right);
+            // println!("ppv        {:?}", positive_predictive_value);
+            // println!("pos cov    {:?}", pos_coverage);
+            // println!("penalty    {:?}", penalty);
             // println!("bonus       {:?}", bonus_sum);
             // println!("divisor       {:?}", divisor);
             // println!("final score {:?}", score);
+
+            if pred_pos == tot_elements{
+                score = -5.0;
+            }
 
 
             return (score, eval, cell);

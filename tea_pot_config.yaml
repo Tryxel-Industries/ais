@@ -1,0 +1,80 @@
+#
+#study_name: "study_1"
+#
+#engine_params:
+#  base_command: "echo "
+#  n_trials: 100
+#  timeout: 1000
+#  # example with: score: 34.9 accuracy: 11 iter: 23
+#  direction: "maximize"
+#  result_regex: 'score: (\S*)'
+#  pruning:
+#    score_regex: 'score: (\S*)'
+#    iter_regex: 'iter: (\S*)'
+#    use_time: false
+#
+#
+#search_space:
+#  - pick_int:
+#      name: "num_layers"
+#      call_param: "--num_layers "
+#      from: 2
+#      to: 4
+#      step: 1
+#
+#
+#  - pick_float:
+#      name: "lr"
+#      call_param: "--lr "
+#      from: 2.3
+#      to: 4.6
+#      log: false
+#
+#  - pick_categorical:
+#      name: "opt"
+#      call_param: "--opt "
+#      picks: ["adam", "rsm_prop"]
+
+study_name: "study_1"
+
+engine_params:
+  base_command: "./target/release/ais"
+  print_level: 2
+  n_trials: 100
+  timeout: 3600
+  # example with: score: 34.9 accuracy: 11 iter: 23
+  direction: "maximize"
+  result_regex: 'test_acc: (\S*)'
+#  pruning:
+#    score_regex: 'score: (\S*)'
+#    iter_regex: 'iter: (\S*)'
+#    use_time: false
+#
+
+
+search_space:
+  - pick_int:
+      name: "tournament_size"
+      call_param: "--tournament_size="
+      from: 3
+      to: 25
+
+
+  - pick_float:
+      name: "leak_fraction"
+      call_param: "--leak_fraction="
+      from: 0
+      to: 0.8
+      step: 0.05
+
+  - pick_float:
+      name: "antigen_pop_fraction"
+      call_param: "--antigen_pop_fraction="
+      from: 0.2
+      to: 2
+      step: 0.1
+
+#  - pick_categorical:
+#      name: "fp"
+#      call_param: "--fp "
+#      picks: ["True", "False"]
