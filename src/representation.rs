@@ -7,8 +7,9 @@ use crate::evaluation::evaluate_b_cell;
 
 use rayon::prelude::*;
 use statrs::statistics::Statistics;
+use strum_macros::Display;
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, Display)]
 pub enum DimValueType {
     Disabled,
     Open,

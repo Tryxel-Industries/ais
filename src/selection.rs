@@ -128,36 +128,86 @@ pub fn replace_if_better_per_cat(
 ) -> Vec<(f64, Evaluation, BCell)> {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
-    let mut kill_list: Vec<_> = Vec::new();
-    let mut cur_idx = 0;
-    while snip_list.keys().len() > 0 {
-        if let Some((_, _, cell)) = population.get(cur_idx) {
-            if let Some(remaining_count) = snip_list.get_mut(&cell.class_label) {
-                kill_list.push(cur_idx.clone());
-                *remaining_count -= 1;
-                if *remaining_count <= 0 {
-                    snip_list.remove(&cell.class_label);
-                }
+    replacements.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
+
+    let mut rep_map: Vec<(usize,usize)> = Vec::new();
+
+    for (label, snip_n) in snip_list{
+        let label_pop: Vec<_> = population.iter().enumerate().filter(|(_,(_,_,c))| c.class_label==label).collect();
+        let label_rep: Vec<_> = replacements.iter().enumerate().filter(|(_,(_,_,c))| c.class_label==label).collect();
+
+        let mut pop_cur_idx = 0;
+        let mut rep_cur_idx = 0;
+        loop {
+            let pop_option = label_pop.get(pop_cur_idx);
+            let rep_option = label_rep.get(rep_cur_idx);
+
+            if pop_option.is_none() | rep_option.is_none(){
+                break;
             }
-        } else {
-            break;
+
+            let (pop_idx,(pop_score,_,pop_cell)) = pop_option.unwrap();
+            let (rep_idx,(rep_score,_,rep_cell)) = rep_option.unwrap();
+
+            if rep_score > pop_score {
+                rep_map.push((pop_idx.clone(),rep_idx.clone()));
+                pop_cur_idx += 1;
+                rep_cur_idx += 1;
+            } else {
+                rep_cur_idx += 1;
+            }
         }
-        cur_idx += 1;
+
     }
 
-    for idx in kill_list {
+    for (pop_idx, rep_idx) in rep_map {
         // let mut parent_value = scored_pop.get_mut(idx).unwrap();
-        let (p_score, p_eval, p_cell) = population.get_mut(idx).unwrap();
-        let (c_score, c_eval, c_cell) = replacements.pop().unwrap();
+        let (p_score, p_eval, p_cell) = population.get_mut(pop_idx).unwrap();
+        let (c_score, c_eval, c_cell) = replacements.get(rep_idx).unwrap();
         // std::mem::replace(p_score, c_score);
         // std::mem::replace(p_eval, c_eval);
         // std::mem::replace(p_cell, c_cell);
-        *p_score = c_score;
-        *p_eval = c_eval;
-        *p_cell = c_cell;
-
+        *p_score = c_score.clone();
+        *p_eval = c_eval.clone();
+        *p_cell = c_cell.clone();
     }
-    // println!("{:?}", replacements.len());
+    //
+    // // sorted inversely for efficiency
+    // replacements.sort_by(|(score_a, _, _), (score_b, _, _)| score_b.total_cmp(score_a));
+    //
+    // let mut kill_list: Vec<_> = Vec::new();
+    // let mut cur_idx = 0;
+    // let mut rep_idx = replacements.len()-1;
+    // while snip_list.keys().len() > 0 {
+    //     if let Some((_, _, cell)) = population.get(cur_idx) {
+    //         if let Some(remaining_count) = snip_list.get_mut(&cell.class_label) {
+    //             kill_list.push(cur_idx.clone());
+    //             *remaining_count -= 1;
+    //             if *remaining_count <= 0 {
+    //                 snip_list.remove(&cell.class_label);
+    //             }
+    //         }
+    //     } else {
+    //         break;
+    //     }
+    //     cur_idx += 1;
+    // }
+    //
+    // let to_kill_pop = population.iter().filter()
+    //
+    // for idx in kill_list {
+    //     // let mut parent_value = scored_pop.get_mut(idx).unwrap();
+    //     let (p_score, p_eval, p_cell) = population.get_mut(idx).unwrap();
+    //     let (c_score, c_eval, c_cell) = replacements.pop().unwrap();
+    //     // std::mem::replace(p_score, c_score);
+    //     // std::mem::replace(p_eval, c_eval);
+    //     // std::mem::replace(p_cell, c_cell);
+    //     *p_score = c_score;
+    //     *p_eval = c_eval;
+    //     *p_cell = c_cell;
+    //
+    // }
+    // // println!("{:?}", replacements.len());
 
     return population;
 }

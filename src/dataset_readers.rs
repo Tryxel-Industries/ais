@@ -300,10 +300,6 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
 
     let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
         .map(|mut row| {
-            //remove index
-            row.remove(0);
-            row.remove(0);
-
             let label = row.pop().unwrap();
             return (label, row)
         }).unzip();
@@ -329,6 +325,100 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
+            return AntiGen {
+                id: n,
+                class_label: label_val,
+                values: features
+            };
+        }).collect();
+
+    return antigens;
+
+}
+
+
+
+pub fn read_pima_diabetes() -> Vec<AntiGen> {
+    let mut data_vec = read_csv("./datasets/pima_diabetes/pima_diabetes.csv");
+
+    data_vec.remove(0);
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| {
+            //remove index
+
+            let label = row.pop().unwrap();
+            return (label, row)
+        }).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
+        .into_iter()
+        .map(|v| {
+            v.into_iter().map(|v| {
+                let parsed = v.parse::<f64>();
+                if parsed.is_err(){
+                    println!("err line {:?}", v)
+                }
+                return parsed.unwrap();
+
+            }).collect::<Vec<f64>>()
+        }
+        ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
+        .enumerate()
+        .map(|(n,(label, features))|{
+            let label_val = label.parse().unwrap();
+            return AntiGen {
+                id: n,
+                class_label: label_val,
+                values: features
+            };
+        }).collect();
+
+    return antigens;
+
+}
+
+
+pub fn read_spirals() -> Vec<AntiGen> {
+    let mut data_vec = read_csv("./datasets/spirals/spirals.csv");
+
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+        .map(|mut row| {
+            //remove index
+
+            let label = row.pop().unwrap();
+            return (label, row)
+        }).unzip();
+
+
+    let mut transformed_dat: Vec<Vec<f64>> = dat
+        .into_iter()
+        .map(|v| {
+            v.into_iter().map(|v| {
+                let parsed = v.parse::<f64>();
+                if parsed.is_err(){
+                    println!("err line {:?}", v)
+                }
+                return parsed.unwrap();
+
+            }).collect::<Vec<f64>>()
+        }
+        ).collect();
+
+    transformed_dat = normalize_features(transformed_dat);
+
+    let antigens = labels
+        .into_iter()
+        .zip(transformed_dat.into_iter())
+        .enumerate()
+        .map(|(n,(label, features))|{
+            let label_val = label.parse().unwrap();
             return AntiGen {
                 id: n,
                 class_label: label_val,

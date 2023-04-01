@@ -29,6 +29,28 @@ pub fn get_rand_range(max: usize) -> (usize, usize) {
 }
 
 
+//TODO: fix this
+pub fn mutate_orientation(params: &Params, mut genome: BCell) -> BCell {
+    let mut rng = rand::thread_rng();
+
+    let candidates_dims: Vec<usize> = genome
+        .dim_values
+        .iter()
+        .enumerate()
+        .filter(|(_n, x)| x.value_type == DimValueType::Circle)
+        .map(|(n, _x)| n)
+        .collect();
+
+    if candidates_dims.len() == 0 {
+        return genome;
+    }
+
+    genome
+
+
+}
+
+
 pub fn mutate_multiplier(params: &Params, mut genome: BCell, fitness_scaler: f64) -> BCell {
     let mut rng = rand::thread_rng();
 
@@ -56,26 +78,6 @@ pub fn mutate_multiplier(params: &Params, mut genome: BCell, fitness_scaler: f64
     return genome;
 }
 
-//TODO: fix this
-pub fn mutate_orientation(params: &Params, mut genome: BCell) -> BCell {
-    let mut rng = rand::thread_rng();
-
-    let candidates_dims: Vec<usize> = genome
-        .dim_values
-        .iter()
-        .enumerate()
-        .filter(|(_n, x)| x.value_type == DimValueType::Circle)
-        .map(|(n, _x)| n)
-        .collect();
-
-        if candidates_dims.len() == 0 {
-            return genome;
-        }
-
-        genome
-    
-
-}
 
 pub fn mutate_offset(params: &Params, mut genome: BCell, fitness_scaler: f64) -> BCell {
     let mut rng = rand::thread_rng();

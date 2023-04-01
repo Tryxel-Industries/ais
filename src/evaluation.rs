@@ -25,16 +25,16 @@ pub fn evaluate_b_cell(
             return match dv.value_type {
                 DimValueType::Disabled => BucketEmpireOfficialRangeNotationSystemClasses::Open,
                 DimValueType::Open => {
+                    return BucketEmpireOfficialRangeNotationSystemClasses::Open;
                     // return  BucketEmpireOfficialRangeNotationSystemClasses::Open;
-                    let value = b_cell.radius_constant / dv.multiplier;
-                    let flipped_offset = dv.offset;
+                    let value = (b_cell.radius_constant) / dv.multiplier;
                     if dv.multiplier > 0.0 {
                         return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(
-                            flipped_offset + value,
+                            value,
                         );
                     } else {
                         return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(
-                            flipped_offset - value,
+                            value,
                         );
                     }
                 }
@@ -79,9 +79,11 @@ pub fn evaluate_b_cell(
             println!("cell vt    {:?}",b_cell.dim_values.iter().map(|b| b.value_type.clone()).collect::<Vec<_>>());
             println!("cell mp    {:?}",b_cell.dim_values.iter().map(|b| b.multiplier.clone()).collect::<Vec<_>>());
             println!("cell of    {:?}",b_cell.dim_values.iter().map(|b| b.offset.clone()).collect::<Vec<_>>());
+            println!("cell rad : {:?}",b_cell.radius_constant);
             println!();
-            println!("bk  res: {:?}",dim_radus);
+            println!("dim rad: {:?}",dim_radus);
             println!("bk  res: {:?}",test_a);
+            println!();
             println!("otr res: {:?}",test_b);
             panic!("bucket empire error")
 
@@ -280,8 +282,9 @@ pub fn score_b_cells(
             // score += positive_predictive_value;
 
             // add the pos coverage (0-1) indicating how big of a fraction of the space label space is covered.
-            // score += pos_coverage;
+            // score += pos_coverage/4.0;
             score += f1;
+            // score += (true_positives-false_positives)/(true_positives+false_positives).max(1.0);
 
             // score +=  discounted_match_score/true_positives.max(1.0);
 

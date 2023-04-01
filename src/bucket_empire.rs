@@ -94,7 +94,7 @@ pub trait Bucketable {
 // structs
 //
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum BucketEmpireOfficialRangeNotationSystemClasses {
     Open,
     Symmetric((f64,f64)),
@@ -169,13 +169,6 @@ impl BucketKnight {
     ) -> Option<Vec<usize>> {
         let mut ret: Vec<usize> = Vec::new();
 
-        // return self
-        //     .buckets
-        //     .iter()
-        //     .map(|v| v.bucket_contents.iter())
-        //     .flat_map(|v| v)
-        //     .map(|v| v.index)
-        //     .collect();
         match range {
             BucketEmpireOfficialRangeNotationSystemClasses::Open => {
                 return None
@@ -316,7 +309,7 @@ impl<T> BucketKing<T> {
         &self,
         ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
     ) -> Option<Vec<usize>> {
-        let ret: Vec<Vec<usize>> = self
+        let mut ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
             .filter_map(|k| {
@@ -334,12 +327,21 @@ impl<T> BucketKing<T> {
             })
             .collect();
 
-        println!("pre:");
-        ret.iter().enumerate().for_each(|(idx,ls)|{
-            println!("{:3<}: {:?}", idx, ls);
-        });
+        if ranges.iter().filter(|v| BucketEmpireOfficialRangeNotationSystemClasses::Open.eq(v)).collect::<Vec<_>>().len() > 0{
+            let elments: Vec<_> = self.dimensional_knights
+                .get(0).unwrap()
+                .buckets
+                .iter()
+                .flat_map(|bkt| bkt.bucket_contents.iter().map(|x1| x1.index).clone())
+                .collect();
+            ret = vec![elments];
+        }
+        // println!("pre:");
+        // ret.iter().enumerate().for_each(|(idx,ls)|{
+        //     println!("{:3<}: {:?}", idx, ls);
+        // });
         let r =roll_comparison(ret);
-        println!("post: {:?}", r.clone().unwrap());
+        // println!("post: {:?}", r.clone().unwrap());
         return r;
     }
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {

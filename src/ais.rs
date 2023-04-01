@@ -7,10 +7,7 @@ use crate::mutate;
 use crate::representation::{
     expand_b_cell_radius_until_hit, AntiGen, BCell, BCellFactory, DimValueType,
 };
-use crate::selection::{
-    elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n,
-    replace_worst_n_per_cat, snip_worst_n, tournament_pick,
-};
+use crate::selection::{elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n, replace_if_better_per_cat, replace_worst_n_per_cat, snip_worst_n, tournament_pick};
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
 use rayon::prelude::*;
@@ -113,8 +110,8 @@ pub fn evaluate_population(
     antigens: &Vec<AntiGen>,
 ) -> Vec<(Evaluation, BCell)> {
     return population
-        // .into_par_iter()// TODO: set paralell
-        .into_iter()
+        .into_par_iter()// TODO: set paralell
+        // .into_iter()
 
         .map(|b_cell| {
             // evaluate b_cells
@@ -128,6 +125,7 @@ fn remove_strictly_worse(
     mut scored_pop: Vec<(f64,Evaluation, BCell)>,
     match_mask: &mut Vec<usize>,
     error_match_mask: &mut Vec<usize>,
+    max_rm: Option<usize>,
 ) -> (HashMap<usize, usize>, Vec<(f64,Evaluation, BCell)>) {
     let mut removed_tracker: HashMap<usize, usize> = HashMap::new();
     // let mut out_vec:Vec<(Evaluation,BCell)> = Vec::with_capacity(evaluated_pop.len());
@@ -148,10 +146,23 @@ fn remove_strictly_worse(
         // .filter(|(a,b)|b.class_label == *label)
         .filter_map(|(s,a, b)| {
             // println!("match mask: {:?}", match_mask);
+            let removed_count = removed_tracker.get(&b.class_label).unwrap_or(&0);
+                if let Some(max_v) = max_rm{
+                    if *removed_count > max_v{
+                        return Some((s,a, b));
+                    }
+                }
+
             let mut strictly_worse = true;
             for id in &a.matched_ids {
                 let sharers = match_mask.get(*id).unwrap();
-                if *sharers <= 1 {
+                let errors = error_match_mask.get(*id).unwrap();
+
+                if sharers -1 <= *errors{
+                    // to avoid snipping that results in acc loss
+                    strictly_worse = false;
+                    break;
+                }else if *sharers <= 1 {
                     strictly_worse = false;
                     break;
                 }
@@ -160,13 +171,15 @@ fn remove_strictly_worse(
             // println!("is sw {:?}", strictly_worse);
 
             if strictly_worse {
+
+
+
                 a.matched_ids
                     .iter()
                     .for_each(|v| *match_mask.get_mut(*v).unwrap() -= 1);
                 a.wrongly_matched
                     .iter()
                     .for_each(|v| *error_match_mask.get_mut(*v).unwrap() -= 1);
-                let removed_count = removed_tracker.get(&b.class_label).unwrap_or(&0);
                 removed_tracker.insert(b.class_label, removed_count + 1);
                 return None;
             } else {
@@ -345,6 +358,18 @@ impl ArtificialImmuneSystem {
 
             train_score_hist.push(avg_score);
 
+
+            if i % 500 == 0{
+                println!(
+                    "iter: {:<5} avg score {:.6}, max score {:.6}, last acc {:.6}",
+                    i,
+                    avg_score,
+                    max_score,
+                    train_acc_hist.last().unwrap_or(&0.0)
+                );
+            }
+
+
             // =======  parent selection  ======= //
             let replace_exponent = (3.0 / 2.0) * (((i as f64) + 1.0) / params.generations as f64);
             let replace_frac =
@@ -376,8 +401,8 @@ impl ArtificialImmuneSystem {
 
                 let label_gen: Vec<(Evaluation, BCell)> = parents
                     .clone()
-                    // .into_par_iter() // TODO: set paralell
-                    .into_iter()
+                    .into_par_iter() // TODO: set paralell
+                    // .into_iter()
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
                     .map(|(parent_score, parent_eval, parent_b_cell)| {
                         // println!("############################");
@@ -390,8 +415,8 @@ impl ArtificialImmuneSystem {
 
                         // println!("n clones {:?}",n_clones);
                         let children = (0..n_clones)
-                            .into_iter()
-                            // .into_par_iter() // TODO: set paralell
+                            // .into_iter()
+                            .into_par_iter() // TODO: set paralell
                             .map(|_| {
                                 let mutated = mutate(params, frac_of_max, parent_b_cell.clone());
                                 let eval = evaluate_b_cell(&bk, antigens, &mutated);
@@ -467,7 +492,7 @@ impl ArtificialImmuneSystem {
             }
 
             // =======  leak new  ======= //
-            // let is_strip_round = i % 50 == 0;
+            // let is_strip_round = i % 100 == 0;
             let is_strip_round = false;
 
             let n_to_leak = ((n_to_replace as f64 * params.leak_fraction) as usize);
@@ -475,9 +500,9 @@ impl ArtificialImmuneSystem {
 
             let n_to_gen_map = if is_strip_round {
                 let (removed_map, stripped_pop) =
-                    remove_strictly_worse(scored_pop, &mut match_mask, &mut error_match_mask);
+                    remove_strictly_worse(scored_pop, &mut match_mask, &mut error_match_mask, Some(5));
                 scored_pop = stripped_pop;
-                println!("strip round stripping map {:?}", removed_map);
+                println!("\n\nstrip round stripping map {:?}\n\n", removed_map);
                 removed_map
             } else {
                 let mut replace_map = HashMap::new();
@@ -579,7 +604,8 @@ impl ArtificialImmuneSystem {
                         if is_strip_round{
                 scored_pop.extend(new_leaked);
             }else {
-                scored_pop = replace_worst_n_per_cat(scored_pop, new_leaked, n_to_gen_map);
+                // scored_pop = replace_worst_n_per_cat(scored_pop, new_leaked, n_to_gen_map);
+                    scored_pop = replace_if_better_per_cat(scored_pop, new_leaked, n_to_gen_map);
             }
             }
 
@@ -599,7 +625,7 @@ impl ArtificialImmuneSystem {
 
             scored_pop = score_b_cells(evaluated_pop, &match_mask, &error_match_mask, &count_map);
 
-            if verbose {
+            if true {
                 let b_cell: Vec<BCell> = scored_pop.iter().map(|(a, b, c)| c.clone()).collect();
 
                 self.b_cells = b_cell;
@@ -651,6 +677,18 @@ impl ArtificialImmuneSystem {
 
         // scored_pop = snip_worst_n(scored_pop, 10);
         // let (scored_pop, _drained) = elitism_selection(scored_pop, &100);
+
+        if false{
+
+            println!("########## match mask \n{:?}", match_mask);
+            let (removed_map, stripped_pop) =
+                remove_strictly_worse(scored_pop, &mut match_mask, &mut error_match_mask, None);
+            scored_pop = stripped_pop;
+            println!("stripped count {:?}", removed_map);
+            println!("########## match mask \n{:?}", match_mask);
+
+        }
+
         self.b_cells = scored_pop
             .iter()
             // .filter(|(score, _, _)| *score >= 2.0)

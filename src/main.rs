@@ -6,10 +6,12 @@ extern crate core;
 
 use std::collections::{HashMap, HashSet};
 use std::env;
+use std::fs::File;
+use std::io::{BufWriter, Write};
 use std::ptr::null;
 use crate::ais::{ArtificialImmuneSystem, evaluate_population, Params};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_sonar, read_wine};
+use crate::dataset_readers::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_pima_diabetes, read_sonar, read_spirals, read_wine};
 use plotters::prelude::*;
 use rand::prelude::SliceRandom;
 use rand::Rng;
@@ -17,11 +19,13 @@ use std::time::Instant;
 use crate::evaluation::{gen_error_merge_mask, gen_merge_mask, score_b_cells};
 
 use crate::mutations::mutate;
-use crate::representation::{AntiGen, DimValueType};
+use crate::representation::{AntiGen, BCell, DimValueType};
 
 use crate::selection::selection;
 
 use statrs::statistics::Statistics;
+use statrs::statistics::Median;
+use crate::ais::MutationType::ValueType;
 
 mod ais;
 mod bucket_empire;
@@ -81,6 +85,7 @@ fn plot_hist(hist: Vec<f64>, file_name: &str) -> Result<(), Box<dyn std::error::
 
     let max_y = hist.iter().max_by(|a, b| a.total_cmp(b)).unwrap().clone() as f32;
     let min_y = hist.iter().min_by(|a, b| a.total_cmp(b)).unwrap().clone() as f32;
+    // let min_y = hist.get(hist.len()/2).unwrap().clone() as f32;
     let mut chart = ChartBuilder::on(&root)
         .caption("y=x^2", ("sans-serif", 50).into_font())
         .margin(5)
@@ -219,7 +224,7 @@ fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbose: bool) {
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
 
-    let (train_slice, test) = split_train_test(&antigens, 0.3);
+    let (train_slice, test) = split_train_test(&antigens, 0.2);
 
 
     let (train_acc,test_acc) = ais_test(&antigens, &train_slice, &test, verbose, &params);
@@ -227,6 +232,37 @@ fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbose: bool) {
     println!("train_acc: {:?} test_acc: {:?} ", train_acc, test_acc)
 
 
+}
+
+fn _vec_of_vec_to_csv(dump: Vec<Vec<String>>, path: &str) {
+
+    let mut ret_vec : Vec<Vec<String>> = Vec::new();
+
+    let f = File::create(path).unwrap();
+    let mut writer = BufWriter::new(f);
+    let mut line = String::new();
+    for dump_vec in dump{
+        line = dump_vec.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(",") + "\n";
+        let _ = writer.write(line.as_ref());
+    }
+    writer.flush();
+
+}
+fn dump_to_csv(antigens: &Vec<AntiGen>, b_cells: &Vec<BCell>){
+    let csv_formatted_antigens = antigens.iter().map(|ag| {
+        let mut ret_vec = vec![ag.class_label.to_string(),ag.id.to_string()];
+        ret_vec.extend(ag.values.clone().iter().map(|v| v.to_string()));
+        return ret_vec;
+    }).collect::<Vec<_>>();
+    _vec_of_vec_to_csv(csv_formatted_antigens, "out/antigens.csv");
+
+
+    let csv_formatted_b_cells = b_cells.iter().map(|cell| {
+        let mut ret_vec = vec![cell.class_label.to_string(), cell.radius_constant.to_string()];
+        ret_vec.extend(cell.dim_values.clone().iter().flat_map(|d| vec![d.value_type.to_string(), d.offset.to_string(), d.multiplier.to_string()]));
+        return ret_vec;
+    }).collect::<Vec<_>>();
+    _vec_of_vec_to_csv(csv_formatted_b_cells, "out/b_cells.csv");
 }
 fn ais_test(antigens: &Vec<AntiGen>, train_slice: &Vec<AntiGen>, test: &Vec<AntiGen>, verbose: bool, params: &Params) -> (f64, f64) {
 
@@ -432,12 +468,12 @@ fn ais_test(antigens: &Vec<AntiGen>, train_slice: &Vec<AntiGen>, test: &Vec<Anti
     println!("dataset size {:?}", test.len());
     println!(
         "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
-        n_corr,
-        n_wrong,
-        n_no_detect,
+        test_n_corr,
+        test_n_wrong,
+        test_n_no_detect,
         test_acc
     );
-    println!("per class cor {:?}", per_class_corr);
+    println!("per class cor {:?}", test_per_class_corr);
 
     println!(
         "Total runtime: {:?}, \nPer iteration: {:?}",
@@ -446,6 +482,7 @@ fn ais_test(antigens: &Vec<AntiGen>, train_slice: &Vec<AntiGen>, test: &Vec<Anti
     );
     }
 
+    dump_to_csv(antigens, &ais.b_cells);
 
     return (train_acc, test_acc)
     // ais.pred_class(test.get(0).unwrap());
@@ -469,11 +506,13 @@ fn modify_config_by_args(params: &mut Params){
 
 fn main() {
 
-    let mut antigens = read_iris();
+    // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
     // let mut antigens = read_wine();
     // let mut antigens = read_diabetes();
+    let mut antigens = read_spirals();
 
+    // let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
     // let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
@@ -490,7 +529,7 @@ fn main() {
     let mut  params = Params {
         // -- train params -- //
         antigen_pop_fraction: 1.0,
-        generations: 1000,
+        generations: 2000,
 
         mutation_offset_weight: 3,
         mutation_multiplier_weight: 3,
@@ -506,14 +545,14 @@ fn main() {
         offset_mutation_multiplier_range: 0.5..=1.5,
         multiplier_mutation_multiplier_range: 0.5..=1.5,
         radius_mutation_multiplier_range: 0.5..=1.5,
-        value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Open],
-        // value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Open, DimValueType::Disabled],
+        // value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle],
+        value_type_valid_mutations: vec![DimValueType::Circle, DimValueType::Open, DimValueType::Disabled],
         // value_type_valid_mutations: vec![DimValueType::Circle],
 
         label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
 
         //selection
-        leak_fraction: 0.0,
+        leak_fraction: 0.5,
         leak_rand_prob: 0.5,
         max_replacment_frac: 0.7,
         tournament_size: 10,
@@ -524,8 +563,8 @@ fn main() {
         // -- B-cell from antigen initialization -- //
         b_cell_ag_init_multiplier_range: 0.8..=1.2,
         // b_cell_ag_init_value_types: vec![DimValueType::Circle],
-        b_cell_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Open],
-        // b_cell_ag_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
+        // b_cell_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Circle],
+        b_cell_ag_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled, DimValueType::Open],
         b_cell_ag_init_range_range: 0.1..=0.4,
 
         // -- B-cell from random initialization -- //
