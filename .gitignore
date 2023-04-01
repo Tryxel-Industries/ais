@@ -10,3 +10,5 @@ Cargo.lock
 **/*.rs.bk
 
 .idea
+display/.py_env
+display/.ipynb_checkpoints/*
