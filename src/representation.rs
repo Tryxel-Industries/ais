@@ -1,9 +1,9 @@
+use crate::evaluation::evaluate_b_cell;
+use crate::BucketKing;
 use rand::distributions::{Distribution, Uniform};
 use rand::Rng;
 use std::ops::RangeInclusive;
 use std::path::Iter;
-use crate::BucketKing;
-use crate::evaluation::evaluate_b_cell;
 
 use rayon::prelude::*;
 use statrs::statistics::Statistics;
@@ -74,8 +74,6 @@ impl BCellFactory {
         };
     }
 
-
-
     fn gen_random_genome(&self, label: Option<usize>) -> BCell {
         let mut rng = rand::thread_rng();
 
@@ -94,7 +92,7 @@ impl BCellFactory {
 
             if value_type == DimValueType::Open {
                 num_open += 1;
-                              if rng.gen::<bool>(){
+                if rng.gen::<bool>() {
                     multiplier *= -1.0;
                 }
             }
@@ -108,10 +106,10 @@ impl BCellFactory {
 
         let mut radius_constant = self.rng_radius_range.sample(&mut rng);
 
-   /*     for _ in 0..num_open {
-            radius_constant = radius_constant.sqrt();
-        }
-*/
+        /*     for _ in 0..num_open {
+                    radius_constant = radius_constant.sqrt();
+                }
+        */
         let class_label = if let Some(lbl) = label {
             lbl
         } else {
@@ -152,12 +150,11 @@ impl BCellFactory {
                 .unwrap()
                 .clone();
 
-            if value_type == DimValueType::Open{
+            if value_type == DimValueType::Open {
                 num_open += 1;
-                if rng.gen::<bool>(){
+                if rng.gen::<bool>() {
                     multiplier *= -1.0;
                 }
-
             }
 
             dim_multipliers.push(BCellDim {
@@ -167,7 +164,7 @@ impl BCellFactory {
             })
         }
 
-        let mut  radius_constant = self.b_cell_radius_range.sample(&mut rng);
+        let mut radius_constant = self.b_cell_radius_range.sample(&mut rng);
         let class_label = antigen.class_label;
 
         // for _ in 0..num_open {
@@ -181,32 +178,31 @@ impl BCellFactory {
     }
 }
 
-
-
 pub fn expand_b_cell_radius_until_hit(
     mut cell: BCell,
     bk: &BucketKing<AntiGen>,
     antigens: &Vec<AntiGen>,
- ) -> BCell {
+) -> BCell {
     /*
     ha en middels høy range
     finn om ikke hit på feil øk til du får det
     iterer deretter gjennom de som er feil og for hver som er innenfor reduser rangen til den er lavere en den
      */
 
-    if !cell.dim_values.iter().map(|v| v.value_type).any(|v| v != DimValueType::Disabled){
+    if !cell
+        .dim_values
+        .iter()
+        .map(|v| v.value_type)
+        .any(|v| v != DimValueType::Disabled)
+    {
         return cell;
     }
-    let mut evaluation = loop{
-        let evaluation = evaluate_b_cell(
-            bk,
-            antigens,
-            &cell,
-        );
+    let mut evaluation = loop {
+        let evaluation = evaluate_b_cell(bk, antigens, &cell);
 
-        if evaluation.wrongly_matched.len() > 0{
+        if evaluation.wrongly_matched.len() > 0 {
             break evaluation;
-        }else {
+        } else {
             cell.radius_constant *= 2.0;
         }
     };
@@ -216,11 +212,10 @@ pub fn expand_b_cell_radius_until_hit(
         .par_iter()
         .filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok())
         .map(|ag| cell.get_affinity_dist(ag))
-        .min_by(|a,b|  a.partial_cmp(b).unwrap()).unwrap();
-
+        .min_by(|a, b| a.partial_cmp(b).unwrap())
+        .unwrap();
 
     cell.radius_constant = min_range * 0.99;
-
 
     // todo: inneficeient
     // let wrong_ags : Vec<_>= antigens.iter().filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok()).collect();
@@ -236,9 +231,6 @@ pub fn expand_b_cell_radius_until_hit(
     //
 
     return cell;
-
-
-
 }
 
 #[derive(Clone, Debug)]
@@ -276,19 +268,17 @@ impl BCell {
                 }
             };
         }
-        return roll_sum
-
+        return roll_sum;
     }
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
-
         let affinity_dist = self.get_affinity_dist(antigen);
 
-       if affinity_dist == 0.0{
+        if affinity_dist == 0.0 {
             // all dims are disabled
-            return false
+            return false;
         }
 
-        let v = affinity_dist -self.radius_constant;
+        let v = affinity_dist - self.radius_constant;
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
         if v <= 0.0 {
             return true;

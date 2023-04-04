@@ -1,8 +1,8 @@
-use std::cmp::min;
-use std::collections::HashMap;
 use crate::ais::Params;
 use crate::bucket_empire::{BucketEmpireOfficialRangeNotationSystemClasses, BucketKing};
 use crate::representation::{AntiGen, BCell, DimValueType};
+use std::cmp::min;
+use std::collections::HashMap;
 
 use rayon::prelude::*;
 
@@ -29,13 +29,9 @@ pub fn evaluate_b_cell(
                     // return  BucketEmpireOfficialRangeNotationSystemClasses::Open;
                     let value = (b_cell.radius_constant) / dv.multiplier;
                     if dv.multiplier > 0.0 {
-                        return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(
-                            value,
-                        );
+                        return BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(value);
                     } else {
-                        return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(
-                            value,
-                        );
+                        return BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(value);
                     }
                 }
                 DimValueType::Circle => {
@@ -62,31 +58,50 @@ pub fn evaluate_b_cell(
         .filter(|ag| b_cell.test_antigen(ag))
         .collect::<Vec<_>>();
 
-    if true{
+    if true {
         let test_a = antigens
             .iter()
             .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
             .filter(|ag| b_cell.test_antigen(ag))
             .collect::<Vec<_>>();
 
-
         let test_b = antigens
             .iter()
             .filter(|ag| b_cell.test_antigen(ag))
             .collect::<Vec<_>>();
-        if test_a.len() != test_b.len(){
+        if test_a.len() != test_b.len() {
             println!();
-            println!("cell vt    {:?}",b_cell.dim_values.iter().map(|b| b.value_type.clone()).collect::<Vec<_>>());
-            println!("cell mp    {:?}",b_cell.dim_values.iter().map(|b| b.multiplier.clone()).collect::<Vec<_>>());
-            println!("cell of    {:?}",b_cell.dim_values.iter().map(|b| b.offset.clone()).collect::<Vec<_>>());
-            println!("cell rad : {:?}",b_cell.radius_constant);
+            println!(
+                "cell vt    {:?}",
+                b_cell
+                    .dim_values
+                    .iter()
+                    .map(|b| b.value_type.clone())
+                    .collect::<Vec<_>>()
+            );
+            println!(
+                "cell mp    {:?}",
+                b_cell
+                    .dim_values
+                    .iter()
+                    .map(|b| b.multiplier.clone())
+                    .collect::<Vec<_>>()
+            );
+            println!(
+                "cell of    {:?}",
+                b_cell
+                    .dim_values
+                    .iter()
+                    .map(|b| b.offset.clone())
+                    .collect::<Vec<_>>()
+            );
+            println!("cell rad : {:?}", b_cell.radius_constant);
             println!();
-            println!("dim rad: {:?}",dim_radus);
-            println!("bk  res: {:?}",test_a);
+            println!("dim rad: {:?}", dim_radus);
+            println!("bk  res: {:?}", test_a);
             println!();
-            println!("otr res: {:?}",test_b);
+            println!("otr res: {:?}", test_b);
             panic!("bucket empire error")
-
         }
 
         // println!("a {:?} b {:?}", test_a.len(), test_b.len());
@@ -118,19 +133,22 @@ pub fn evaluate_b_cell(
     return ret_evaluation;
 }
 
-
 //
 //  Merge mask
 //
 
-fn merge_evaluation_matches(evaluations: Vec<&Evaluation>, mask: Vec<usize>, is_error: bool) -> Vec<usize> {
+fn merge_evaluation_matches(
+    evaluations: Vec<&Evaluation>,
+    mask: Vec<usize>,
+    is_error: bool,
+) -> Vec<usize> {
     let merged = evaluations
         .iter()
         // .filter(|e| e.wrongly_matched.len() == 0)
         .map(|e| {
-            if is_error{
+            if is_error {
                 &e.wrongly_matched
-            }else{
+            } else {
                 &e.matched_ids
             }
         })
@@ -153,7 +171,13 @@ fn _gen_merge_mask(scored_population: &Vec<(Evaluation, BCell)>, is_error: bool)
 
     let max_id = evaluations
         .iter()
-        .map(|e| e.matched_ids.iter().max().unwrap_or(&0).max(e.wrongly_matched.iter().max().unwrap_or(&0)))
+        .map(|e| {
+            e.matched_ids
+                .iter()
+                .max()
+                .unwrap_or(&0)
+                .max(e.wrongly_matched.iter().max().unwrap_or(&0))
+        })
         .max()
         .unwrap()
         + 1;
@@ -164,11 +188,11 @@ fn _gen_merge_mask(scored_population: &Vec<(Evaluation, BCell)>, is_error: bool)
 }
 
 pub fn gen_merge_mask(scored_population: &Vec<(Evaluation, BCell)>) -> Vec<usize> {
-    return  _gen_merge_mask(scored_population, false);
+    return _gen_merge_mask(scored_population, false);
 }
 
 pub fn gen_error_merge_mask(scored_population: &Vec<(Evaluation, BCell)>) -> Vec<usize> {
-    return  _gen_merge_mask(scored_population, true);
+    return _gen_merge_mask(scored_population, true);
 }
 
 pub fn expand_merge_mask(
@@ -183,13 +207,11 @@ pub fn expand_merge_mask(
     return merge_evaluation_matches(evaluations, mask, is_error_mask);
 }
 
-
-
 pub fn score_b_cells(
     scored_population: Vec<(Evaluation, BCell)>,
     merged_mask: &Vec<usize>,
     error_merged_mask: &Vec<usize>,
-    count_map: &HashMap<usize,usize>,
+    count_map: &HashMap<usize, usize>,
 ) -> Vec<(f64, Evaluation, BCell)> {
     // println!("{:?}", merged_mask);
     // println!("len {:?}", merged_mask.len());
@@ -199,10 +221,8 @@ pub fn score_b_cells(
         // .into_iter()
         .into_par_iter() // TODO: set paralell
         .map(|(eval, cell)| {
-
-
-            let mut true_positives:f64 = 0.0;
-            let mut false_positives :f64= 0.0;
+            let mut true_positives: f64 = 0.0;
+            let mut false_positives: f64 = 0.0;
 
             let mut discounted_match_score: f64 = 0.0;
 
@@ -212,7 +232,6 @@ pub fn score_b_cells(
             let mut shared_error_weight = 0.0;
 
             let mut error_problem_magnitude: f64 = 0.0;
-
 
             for mid in &eval.matched_ids {
                 true_positives += 1.0;
@@ -233,7 +252,7 @@ pub fn score_b_cells(
                 let cor_shares = *merged_mask.get(*mid).unwrap_or(&0) as f64;
 
                 // when the amount of wrong predictivness goes up the value goes down
-                error_problem_magnitude += cor_shares/ (cor_shares+sharers).max(1.0);
+                error_problem_magnitude += cor_shares / (cor_shares + sharers).max(1.0);
 
                 if sharers > 1.0 {
                     // bonus_error += 1.0-(1.0 / *sharers as f64);
@@ -256,12 +275,12 @@ pub fn score_b_cells(
             let false_negatives = positives - true_positives;
             let true_negatives = negatives - false_positives;
 
-            let beta : f64 = 0.5f64.powi(2);
+            let beta: f64 = 0.5f64.powi(2);
 
-            let f1_divisor = (1.0+ beta) * true_positives + beta*false_negatives + false_positives;
-            let f1_top = (1.0+beta)*true_positives;
-            let f1 = f1_top/f1_divisor;
-
+            let f1_divisor =
+                (1.0 + beta) * true_positives + beta * false_negatives + false_positives;
+            let f1_top = (1.0 + beta) * true_positives;
+            let f1 = f1_top / f1_divisor;
 
             // the precession
             let positive_predictive_value = true_positives / pred_pos.max(1.0);
@@ -269,12 +288,10 @@ pub fn score_b_cells(
             let pos_coverage = true_positives / positives;
             let neg_coverage = pred_neg / negatives;
 
-
             // how shared are the values for the predictor
-            let purity = true_positives/shared_positive_weight as f64;
+            let purity = true_positives / shared_positive_weight as f64;
 
-
-            let penalty =  1.0 - (error_problem_magnitude/ false_positives.max(1.0));
+            let penalty = 1.0 - (error_problem_magnitude / false_positives.max(1.0));
             let mut score = 0.0;
             // positive_predictive_value + pos_coverage * discounted_match_score/true_positives.max(1.0) + penalty;
 
@@ -288,11 +305,7 @@ pub fn score_b_cells(
 
             // score +=  discounted_match_score/true_positives.max(1.0);
 
-
-
-
             // let mut score = positive_predictive_value + pos_coverage + discounted_match_score/true_positives.max(1.0);
-
 
             // let precession = if positive_predictive_value.is_finite(){positive_predictive_value} else { 0.0 };
             // let purity = if purity.is_finite(){purity } else {0.0};
@@ -300,7 +313,6 @@ pub fn score_b_cells(
 
             // let score = true_positives / ((shared_positive_weight + shared_error_weight) as f64).max(1.0);
             // let score = crowdedness+purity+accuracy ;
-
 
             // let score = f1 / (shared_error_weight as f64).max(1.0);
 
@@ -318,12 +330,10 @@ pub fn score_b_cells(
 
             // let score = precession + discounted_match_score/true_positives.max(1.0);
 
-
             // let score = ((true_positives + discounted_match_score) - (false_positives).powi(2)) + unique_positives as f64 * 5.0  - (shared_error_weight as f64/2.0);
 
             // let score = ((discounted_sum) - (bonus_error)) + bonus_sum * 5.0;
             // let score = (matched_sum - n_wrong).max(0.0) ;
-
 
             // println!("###########################");
             // println!("match:        {:?}", eval.matched_ids);
@@ -335,10 +345,9 @@ pub fn score_b_cells(
             // println!("divisor       {:?}", divisor);
             // println!("final score {:?}", score);
 
-            if pred_pos == tot_elements{
+            if pred_pos == tot_elements {
                 score = -5.0;
             }
-
 
             return (score, eval, cell);
         })

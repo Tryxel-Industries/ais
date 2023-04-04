@@ -1,14 +1,11 @@
-
+use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::fs::File;
-
 
 use crate::representation::AntiGen;
 use csv::StringRecord;
 
 use serde::Deserialize;
-
 
 fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
     let n_features = feature_vec.first().unwrap().len();
@@ -36,13 +33,10 @@ fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
         );
     }
 
-
-
     let ret: Vec<_> = feature_vec
         .into_iter()
         .map(|mut f_vals| {
-
-            for i in 0..n_features{
+            for i in 0..n_features {
                 let min = min_v.get(i).unwrap();
                 let max = max_v.get(i).unwrap();
 
@@ -57,28 +51,28 @@ fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
 }
 
 fn read_csv(path: &str) -> Vec<Vec<String>> {
-    let mut ret_vec : Vec<Vec<String>> = Vec::new();
+    let mut ret_vec: Vec<Vec<String>> = Vec::new();
 
     let f = File::open(path).unwrap();
     let mut reader = BufReader::new(f);
     let mut line = String::new();
 
-    loop{
+    loop {
         let len = reader.read_line(&mut line).unwrap();
 
-        if line.ends_with("\n"){
+        if line.ends_with("\n") {
             line = line.strip_suffix("\n").unwrap().parse().unwrap();
         }
-        if line.ends_with("\r"){
+        if line.ends_with("\r") {
             line = line.strip_suffix("\r").unwrap().parse().unwrap();
         }
 
-        if line.len() > 0{
+        if line.len() > 0 {
             let cols = line.split(",");
             ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
             line.clear();
         } else {
-            break
+            break;
         }
     }
 
@@ -87,22 +81,22 @@ fn read_csv(path: &str) -> Vec<Vec<String>> {
     let mut reader = csv::Reader::from_path("./datasets/wine/wine.data").unwrap();
 }
 
-
-
-
 pub fn read_iris() -> Vec<AntiGen> {
     let mut data_vec = read_csv("./datasets/iris/iris.data");
 
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
-        .map(|mut row| (row.pop().unwrap(), row)).unzip();
-
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
+        .map(|mut row| (row.pop().unwrap(), row))
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-             v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
-        }
-           ).collect();
+            v.into_iter()
+                .map(|v| v.parse::<f64>().unwrap())
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -110,7 +104,7 @@ pub fn read_iris() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = match label.as_str() {
                 "Iris-setosa" => 0,
                 "Iris-versicolor" => 1,
@@ -122,37 +116,41 @@ pub fn read_iris() -> Vec<AntiGen> {
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }
 
 pub fn read_iris_snipped() -> Vec<AntiGen> {
     let mut ag = read_iris();
-    return ag.into_iter().map(|mut ag| {
-        let _ = ag.values.pop();
-        return ag
-    }).collect::<Vec<_>>();
+    return ag
+        .into_iter()
+        .map(|mut ag| {
+            let _ = ag.values.pop();
+            return ag;
+        })
+        .collect::<Vec<_>>();
 }
 
-
 pub fn read_wine() -> Vec<AntiGen> {
-
     let mut data_vec = read_csv("./datasets/wine/wine.data");
 
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
-        .map(|mut row| (row.remove(0), row)).unzip();
-
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
+        .map(|mut row| (row.remove(0), row))
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
-        }
-        ).collect();
+            v.into_iter()
+                .map(|v| v.parse::<f64>().unwrap())
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -160,35 +158,37 @@ pub fn read_wine() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
 
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }
-
 
 pub fn read_diabetes() -> Vec<AntiGen> {
     let mut data_vec = read_csv("./datasets/diabetes/diabetes.csv");
 
     data_vec.remove(0);
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
-        .map(|mut row| (row.pop().unwrap(), row)).unzip();
-
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
+        .map(|mut row| (row.pop().unwrap(), row))
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-             v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
-        }
-           ).collect();
+            v.into_iter()
+                .map(|v| v.parse::<f64>().unwrap())
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -196,35 +196,36 @@ pub fn read_diabetes() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
 
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
-
 }
-
 
 pub fn read_sonar() -> Vec<AntiGen> {
     let mut data_vec = read_csv("./datasets/sonar/sonar.all-data");
 
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
-        .map(|mut row| (row.pop().unwrap(), row)).unzip();
-
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
+        .map(|mut row| (row.pop().unwrap(), row))
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
-        }
-        ).collect();
+            v.into_iter()
+                .map(|v| v.parse::<f64>().unwrap())
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -232,7 +233,7 @@ pub fn read_sonar() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = match label.as_str() {
                 "R" => 0,
                 "M" => 1,
@@ -243,34 +244,36 @@ pub fn read_sonar() -> Vec<AntiGen> {
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }
-
 
 pub fn read_glass() -> Vec<AntiGen> {
     let mut data_vec = read_csv("./datasets/glass/glass.data");
 
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
         .map(|mut row| {
             //remove index
             row.remove(0);
 
             let label = row.pop().unwrap();
-            return (label, row)
-        }).unzip();
-
+            return (label, row);
+        })
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
-        }
-        ).collect();
+            v.into_iter()
+                .map(|v| v.parse::<f64>().unwrap())
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -278,38 +281,38 @@ pub fn read_glass() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }
 
-
-
-
 pub fn read_ionosphere() -> Vec<AntiGen> {
-
     let mut data_vec = read_csv("./datasets/ionosphere/ionosphere.data");
 
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
         .map(|mut row| {
             let label = row.pop().unwrap();
-            return (label, row)
-        }).unzip();
+            return (label, row);
+        })
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-            v.into_iter().map(|v| v.parse::<f64>().unwrap()).collect::<Vec<f64>>()
-        }
-        ).collect();
+            v.into_iter()
+                .map(|v| v.parse::<f64>().unwrap())
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -317,7 +320,7 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = match label.as_str() {
                 "b" => 0,
                 "g" => 1,
@@ -328,42 +331,42 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }
-
-
 
 pub fn read_pima_diabetes() -> Vec<AntiGen> {
     let mut data_vec = read_csv("./datasets/pima_diabetes/pima_diabetes.csv");
 
     data_vec.remove(0);
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
         .map(|mut row| {
             //remove index
 
             let label = row.pop().unwrap();
-            return (label, row)
-        }).unzip();
-
+            return (label, row);
+        })
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-            v.into_iter().map(|v| {
-                let parsed = v.parse::<f64>();
-                if parsed.is_err(){
-                    println!("err line {:?}", v)
-                }
-                return parsed.unwrap();
-
-            }).collect::<Vec<f64>>()
-        }
-        ).collect();
+            v.into_iter()
+                .map(|v| {
+                    let parsed = v.parse::<f64>();
+                    if parsed.is_err() {
+                        println!("err line {:?}", v)
+                    }
+                    return parsed.unwrap();
+                })
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -371,45 +374,46 @@ pub fn read_pima_diabetes() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }
-
 
 pub fn read_spirals() -> Vec<AntiGen> {
     let mut data_vec = read_csv("./datasets/spirals/spirals.csv");
 
-    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec.into_iter()
+    let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
+        .into_iter()
         .map(|mut row| {
             //remove index
 
             let label = row.pop().unwrap();
-            return (label, row)
-        }).unzip();
-
+            return (label, row);
+        })
+        .unzip();
 
     let mut transformed_dat: Vec<Vec<f64>> = dat
         .into_iter()
         .map(|v| {
-            v.into_iter().map(|v| {
-                let parsed = v.parse::<f64>();
-                if parsed.is_err(){
-                    println!("err line {:?}", v)
-                }
-                return parsed.unwrap();
-
-            }).collect::<Vec<f64>>()
-        }
-        ).collect();
+            v.into_iter()
+                .map(|v| {
+                    let parsed = v.parse::<f64>();
+                    if parsed.is_err() {
+                        println!("err line {:?}", v)
+                    }
+                    return parsed.unwrap();
+                })
+                .collect::<Vec<f64>>()
+        })
+        .collect();
 
     transformed_dat = normalize_features(transformed_dat);
 
@@ -417,15 +421,15 @@ pub fn read_spirals() -> Vec<AntiGen> {
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
-        .map(|(n,(label, features))|{
+        .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
             return AntiGen {
                 id: n,
                 class_label: label_val,
-                values: features
+                values: features,
             };
-        }).collect();
+        })
+        .collect();
 
     return antigens;
-
 }

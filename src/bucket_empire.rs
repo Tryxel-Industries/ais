@@ -13,74 +13,71 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
     let n_lists = lists.len();
 
-    if n_lists == 0{
+    if n_lists == 0 {
         return Some(Vec::new());
-    } else if n_lists == 1{
-        return Some(lists.first().unwrap().clone())
-    }else{
+    } else if n_lists == 1 {
+        return Some(lists.first().unwrap().clone());
+    } else {
         // println!("\n\n&&&&&&&&&&&&&&");
         // lists.iter().enumerate().for_each(|(n,l)|println!("list {:?}: {:?}",n, l));
 
-    let mut found_matches: Vec<usize> = Vec::new();
+        let mut found_matches: Vec<usize> = Vec::new();
 
-    let mut current_idx_list = vec![0 as usize; lists.len()];
-    let mut max_idx_list: Vec<usize> = lists.iter().map(|x| x.len()).collect();
-        if *max_idx_list.iter().min().unwrap() == 0{
-            return Some(Vec::new())
+        let mut current_idx_list = vec![0 as usize; lists.len()];
+        let mut max_idx_list: Vec<usize> = lists.iter().map(|x| x.len()).collect();
+        if *max_idx_list.iter().min().unwrap() == 0 {
+            return Some(Vec::new());
         }
 
+        let (first, rest_of_lists) = lists.split_at(1);
+        let first_list_value = first.get(0)?;
+        let mut first_idx: usize = 0;
 
-    let (first, rest_of_lists) = lists.split_at(1);
-    let first_list_value = first.get(0)?;
-    let mut first_idx: usize = 0;
+        'outer: loop {
+            // println!("outer, cnt {:?} brk& {:?}", first_idx, *max_idx_list.get_mut(0)?);
+            if first_idx >= *max_idx_list.get_mut(0)? {
+                break 'outer;
+            }
+            let check_val = first_list_value.get(first_idx).unwrap();
 
-    'outer: loop {
-        // println!("outer, cnt {:?} brk& {:?}", first_idx, *max_idx_list.get_mut(0)?);
-        if first_idx >= *max_idx_list.get_mut(0)? {
-            break 'outer;
-        }
-        let check_val = first_list_value.get(first_idx).unwrap();
+            let mut found_match = true;
 
-        let mut found_match = true;
+            'row: for (n, list) in rest_of_lists.iter().enumerate() {
+                'internal: loop {
+                    let idx_val = current_idx_list.get_mut(n + 1).unwrap();
+                    let max_idx_val = max_idx_list.get_mut(n + 1).unwrap();
 
-        'row: for (n, list) in rest_of_lists.iter().enumerate() {
-            'internal: loop {
+                    if idx_val >= max_idx_val {
+                        break 'outer;
+                    }
 
-                let idx_val = current_idx_list.get_mut(n + 1).unwrap();
-                let max_idx_val = max_idx_list.get_mut(n + 1).unwrap();
+                    let value = list.get(*idx_val).unwrap();
 
-                if idx_val >= max_idx_val {
-                    break 'outer;
-                }
-
-                let value = list.get(*idx_val).unwrap();
-
-                // println!("internal, cnt {:?} brk& {:?}", value, check_val);
-                if value > check_val {
-                    // if on of the lower cols has a bigger value than
-                    // the check val the check val needs to be increased
-                    found_match = false;
-                    break 'row;
-                } else if value < check_val {
-                    // if the value of the lover cols has a smaller value
-                    // than the check val increase the lower col val
-                    *idx_val = idx_val.add(1);
-                } else {
-                    // if the values are equal continue the iteration of the cols
-                    break 'internal;
+                    // println!("internal, cnt {:?} brk& {:?}", value, check_val);
+                    if value > check_val {
+                        // if on of the lower cols has a bigger value than
+                        // the check val the check val needs to be increased
+                        found_match = false;
+                        break 'row;
+                    } else if value < check_val {
+                        // if the value of the lover cols has a smaller value
+                        // than the check val increase the lower col val
+                        *idx_val = idx_val.add(1);
+                    } else {
+                        // if the values are equal continue the iteration of the cols
+                        break 'internal;
+                    }
                 }
             }
+
+            if found_match {
+                found_matches.push(check_val.clone());
+            }
+
+            first_idx += 1;
         }
-
-        if found_match {
-            found_matches.push(check_val.clone());
-        }
-
-        first_idx += 1;
-    }
-    // println!("out: {:?}", found_matches);
-    return Some(found_matches);
-
+        // println!("out: {:?}", found_matches);
+        return Some(found_matches);
     }
 }
 //
@@ -97,7 +94,7 @@ pub trait Bucketable {
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum BucketEmpireOfficialRangeNotationSystemClasses {
     Open,
-    Symmetric((f64,f64)),
+    Symmetric((f64, f64)),
     UpperBound(f64),
     LowerBound(f64),
 }
@@ -170,25 +167,25 @@ impl BucketKnight {
         let mut ret: Vec<usize> = Vec::new();
 
         match range {
-            BucketEmpireOfficialRangeNotationSystemClasses::Open => {
-                return None
-            }
+            BucketEmpireOfficialRangeNotationSystemClasses::Open => return None,
             BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((lb, ub)) => {
                 // let value_lb = dimensional_value.clone() - v;
                 // let value_ub = dimensional_value.clone() + v;
                 let value_lb = *lb;
                 let value_ub = *ub;
 
-
                 for bucket in self.buckets.iter() {
-                    let contains_left_border = bucket.start_value < value_lb && bucket.end_value > value_lb;
-                    let contains_right_border = bucket.start_value < value_ub && bucket.end_value > value_ub;
-                    let contains_center = bucket.start_value > value_lb && bucket.end_value < value_ub;
+                    let contains_left_border =
+                        bucket.start_value < value_lb && bucket.end_value > value_lb;
+                    let contains_right_border =
+                        bucket.start_value < value_ub && bucket.end_value > value_ub;
+                    let contains_center =
+                        bucket.start_value > value_lb && bucket.end_value < value_ub;
 
                     if contains_left_border | contains_center | contains_right_border {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     }
-                  /*  if bucket.end_value > value_lb && bucket.end_value <= value_ub {
+                    /*  if bucket.end_value > value_lb && bucket.end_value <= value_ub {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     } else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
@@ -291,9 +288,7 @@ impl<T> BucketKing<T> {
             .dimensional_knights
             .iter()
             .filter_map(|k| {
-                k.get_index_in_range(
-                    &BucketEmpireOfficialRangeNotationSystemClasses::Open,
-                )
+                k.get_index_in_range(&BucketEmpireOfficialRangeNotationSystemClasses::Open)
             })
             .collect();
         return roll_comparison(ret);
@@ -302,7 +297,7 @@ impl<T> BucketKing<T> {
         &self,
         ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
     ) -> Option<Vec<usize>> {
-        return self.get_potential_matches_indexes_with_raw_values( ranges);
+        return self.get_potential_matches_indexes_with_raw_values(ranges);
     }
 
     pub fn get_potential_matches_indexes_with_raw_values(
@@ -314,12 +309,10 @@ impl<T> BucketKing<T> {
             .iter()
             .filter_map(|k| {
                 let rgs = ranges.get(k.dimension).unwrap();
-                let a = k.get_index_in_range(
-                    ranges.get(k.dimension).unwrap(),
-                );
-                if let BucketEmpireOfficialRangeNotationSystemClasses::Open = rgs{
+                let a = k.get_index_in_range(ranges.get(k.dimension).unwrap());
+                if let BucketEmpireOfficialRangeNotationSystemClasses::Open = rgs {
                     // println!("shold be empty {:?}",a);
-                }else {
+                } else {
                     // println!("shold not be empty {:?}",a);
                 }
 
@@ -327,9 +320,17 @@ impl<T> BucketKing<T> {
             })
             .collect();
 
-        if ranges.iter().filter(|v| BucketEmpireOfficialRangeNotationSystemClasses::Open.eq(v)).collect::<Vec<_>>().len() > 0{
-            let elments: Vec<_> = self.dimensional_knights
-                .get(0).unwrap()
+        if ranges
+            .iter()
+            .filter(|v| BucketEmpireOfficialRangeNotationSystemClasses::Open.eq(v))
+            .collect::<Vec<_>>()
+            .len()
+            > 0
+        {
+            let elments: Vec<_> = self
+                .dimensional_knights
+                .get(0)
+                .unwrap()
                 .buckets
                 .iter()
                 .flat_map(|bkt| bkt.bucket_contents.iter().map(|x1| x1.index).clone())
@@ -340,7 +341,7 @@ impl<T> BucketKing<T> {
         // ret.iter().enumerate().for_each(|(idx,ls)|{
         //     println!("{:3<}: {:?}", idx, ls);
         // });
-        let r =roll_comparison(ret);
+        let r = roll_comparison(ret);
         // println!("post: {:?}", r.clone().unwrap());
         return r;
     }
@@ -369,7 +370,6 @@ impl<T> BucketKing<T> {
         //         // println!("{:?}",y.bucket_contents.iter().map(|x1|x1.index).collect::<Vec<usize>>())
         //     })
         // })
-
     }
 }
 

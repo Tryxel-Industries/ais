@@ -3,7 +3,6 @@ use rand::prelude::SliceRandom;
 use rand::{distributions::Distribution, thread_rng, Rng};
 use std::collections::HashMap;
 
-
 use crate::evaluation::Evaluation;
 use crate::representation::BCell;
 
@@ -113,13 +112,11 @@ pub fn replace_worst_n_per_cat(
         *p_score = c_score;
         *p_eval = c_eval;
         *p_cell = c_cell;
-
     }
     // println!("{:?}", replacements.len());
 
     return population;
 }
-
 
 pub fn replace_if_better_per_cat(
     mut population: Vec<(f64, Evaluation, BCell)>,
@@ -130,11 +127,19 @@ pub fn replace_if_better_per_cat(
 
     replacements.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
-    let mut rep_map: Vec<(usize,usize)> = Vec::new();
+    let mut rep_map: Vec<(usize, usize)> = Vec::new();
 
-    for (label, snip_n) in snip_list{
-        let label_pop: Vec<_> = population.iter().enumerate().filter(|(_,(_,_,c))| c.class_label==label).collect();
-        let label_rep: Vec<_> = replacements.iter().enumerate().filter(|(_,(_,_,c))| c.class_label==label).collect();
+    for (label, snip_n) in snip_list {
+        let label_pop: Vec<_> = population
+            .iter()
+            .enumerate()
+            .filter(|(_, (_, _, c))| c.class_label == label)
+            .collect();
+        let label_rep: Vec<_> = replacements
+            .iter()
+            .enumerate()
+            .filter(|(_, (_, _, c))| c.class_label == label)
+            .collect();
 
         let mut pop_cur_idx = 0;
         let mut rep_cur_idx = 0;
@@ -142,22 +147,21 @@ pub fn replace_if_better_per_cat(
             let pop_option = label_pop.get(pop_cur_idx);
             let rep_option = label_rep.get(rep_cur_idx);
 
-            if pop_option.is_none() | rep_option.is_none(){
+            if pop_option.is_none() | rep_option.is_none() {
                 break;
             }
 
-            let (pop_idx,(pop_score,_,pop_cell)) = pop_option.unwrap();
-            let (rep_idx,(rep_score,_,rep_cell)) = rep_option.unwrap();
+            let (pop_idx, (pop_score, _, pop_cell)) = pop_option.unwrap();
+            let (rep_idx, (rep_score, _, rep_cell)) = rep_option.unwrap();
 
             if rep_score > pop_score {
-                rep_map.push((pop_idx.clone(),rep_idx.clone()));
+                rep_map.push((pop_idx.clone(), rep_idx.clone()));
                 pop_cur_idx += 1;
                 rep_cur_idx += 1;
             } else {
                 rep_cur_idx += 1;
             }
         }
-
     }
 
     for (pop_idx, rep_idx) in rep_map {
@@ -297,13 +301,13 @@ pub fn labeled_tournament_pick(
             .filter(|(_idx, (_score, _eval, bcell))| bcell.class_label == *v)
             .collect();
 
-        let _index_vali: Vec<_> = filtered.iter()
-            .map(|(_,(_a,_b,c))|c.class_label)
+        let _index_vali: Vec<_> = filtered
+            .iter()
+            .map(|(_, (_a, _b, c))| c.class_label)
             .collect();
 
         // println!("for label {:?}", v);
         // println!("{:?}", index_vali);
-
 
         pop_s = filtered.len();
         idx_list = filtered
