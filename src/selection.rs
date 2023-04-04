@@ -1,38 +1,18 @@
-use crate::ais::Params;
-use rand::prelude::SliceRandom;
-use rand::{distributions::Distribution, thread_rng, Rng};
 use std::collections::HashMap;
 
-use crate::evaluation::Evaluation;
-use crate::representation::BCell;
+use rand::{distributions::Distribution, Rng, thread_rng};
+use rand::prelude::SliceRandom;
 
-fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
-    let mut rng = rand::thread_rng();
-
-    let mut idx_list = Vec::new();
-    while idx_list.len() < n {
-        let idx = rng.gen_range(0..vec.len());
-        if !idx_list.contains(&idx) {
-            idx_list.push(idx.clone());
-        }
-    }
-
-    idx_list.sort();
-
-    let picks = vec
-        .into_iter()
-        .enumerate()
-        .filter(|(idx, _v)| idx_list.contains(idx))
-        .map(|(_a, b)| b)
-        .collect();
-    return picks;
-}
+use crate::evaluation::{Evaluation, MatchCounter};
+use crate::params::Params;
+use crate::representation::antibody::Antibody;
+use crate::util::pick_n_random;
 
 pub fn kill_by_mask_yo(
-    mut population: Vec<(f64, Evaluation, BCell)>,
+    mut population: Vec<(f64, Evaluation, Antibody)>,
     match_mask: &mut Vec<usize>,
-) -> Vec<(f64, Evaluation, BCell)> {
-    let mut survivors: Vec<(f64, Evaluation, BCell)> = Vec::new();
+) -> Vec<(f64, Evaluation, Antibody)> {
+    let mut survivors: Vec<(f64, Evaluation, Antibody)> = Vec::new();
 
     population.shuffle(&mut thread_rng());
 
@@ -58,20 +38,107 @@ pub fn kill_by_mask_yo(
             }
         }
     }
-
     return survivors;
 }
 
+
+/*
+
+
+            let n_to_gen_map = if is_strip_round {
+                let (removed_map, stripped_pop) = remove_strictly_worse(
+                    scored_pop,
+                    &mut match_mask,
+                    &mut error_match_mask,
+                    Some(5),
+                );
+                scored_pop = stripped_pop;
+                println!("\n\nstrip round stripping map {:?}\n\n", removed_map);
+                removed_map
+            } else {
+                let mut replace_map = HashMap::new();
+
+                for (label, fraction) in &frac_map {
+                    let replace_count_for_label = (n_to_leak as f64 * fraction).ceil() as usize;
+                    replace_map.insert(label.clone(), replace_count_for_label);
+                }
+                replace_map
+            };
+ */
+pub fn remove_strictly_worse(
+    mut scored_pop: Vec<(f64, Evaluation, Antibody)>,
+    match_mask: &mut Vec<usize>,
+    error_match_mask: &mut Vec<usize>,
+    max_rm: Option<usize>,
+) -> (HashMap<usize, usize>, Vec<(f64, Evaluation, Antibody)>) {
+    //todo: clean up if ends up using it
+    let mut removed_tracker: HashMap<usize, usize> = HashMap::new();
+    // let mut out_vec:Vec<(Evaluation,Antibody)> = Vec::with_capacity(evaluated_pop.len());
+
+    scored_pop.sort_by(|(_, eval_a, _), (_, eval_b, _)| {
+        let errors_a = eval_a.wrongly_matched.len();
+        let errors_b = eval_b.wrongly_matched.len();
+
+        if errors_a != errors_b {
+            return eval_b.matched_ids.len().cmp(&eval_a.matched_ids.len());
+        } else {
+            return errors_b.cmp(&errors_a);
+        }
+    });
+
+    let out_vec: Vec<(f64, Evaluation, Antibody)> = scored_pop
+        .into_iter()
+        // .filter(|(a,b)|b.class_label == *label)
+        .filter_map(|(s, a, b)| {
+            // println!("match mask: {:?}", match_mask);
+            let removed_count = removed_tracker.get(&b.class_label).unwrap_or(&0);
+            if let Some(max_v) = max_rm {
+                if *removed_count > max_v {
+                    return Some((s, a, b));
+                }
+            }
+
+            let mut strictly_worse = true;
+            for id in &a.matched_ids {
+                let sharers = match_mask.get(*id).unwrap();
+                let errors = error_match_mask.get(*id).unwrap();
+
+                if sharers - 1 <= *errors {
+                    // to avoid snipping that results in acc loss
+                    strictly_worse = false;
+                    break;
+                }
+            }
+
+            // println!("is sw {:?}", strictly_worse);
+
+            if strictly_worse {
+                a.matched_ids
+                    .iter()
+                    .for_each(|v| *match_mask.get_mut(*v).unwrap() -= 1);
+                a.wrongly_matched
+                    .iter()
+                    .for_each(|v| *error_match_mask.get_mut(*v).unwrap() -= 1);
+                removed_tracker.insert(b.class_label, removed_count + 1);
+                return None;
+            } else {
+                return Some((s, a, b));
+            }
+        })
+        .collect();
+
+    return (removed_tracker, out_vec);
+}
 pub fn snip_worst_n(
-    mut population: Vec<(f64, Evaluation, BCell)>,
+    mut population: Vec<(f64, Evaluation, Antibody)>,
     num_to_snip: usize,
-) -> Vec<(f64, Evaluation, BCell)> {
+) -> Vec<(f64, Evaluation, Antibody)> {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
     // println!("pre {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
     let survivors = population.split_off(num_to_snip);
     // println!("post {:?}", survivors.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
-    // let snipped: Vec<(f64, Evaluation, BCell)> = population
+    // let snipped: Vec<(f64, Evaluation, Antibody)> = population
     //     .drain(0..num_to_snip)
     //     .collect();
 
@@ -79,10 +146,10 @@ pub fn snip_worst_n(
 }
 
 pub fn replace_worst_n_per_cat(
-    mut population: Vec<(f64, Evaluation, BCell)>,
-    mut replacements: Vec<(f64, Evaluation, BCell)>,
+    mut population: Vec<(f64, Evaluation, Antibody)>,
+    mut replacements: Vec<(f64, Evaluation, Antibody)>,
     mut snip_list: HashMap<usize, usize>,
-) -> Vec<(f64, Evaluation, BCell)> {
+) -> Vec<(f64, Evaluation, Antibody)> {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
     let mut kill_list: Vec<_> = Vec::new();
@@ -119,10 +186,11 @@ pub fn replace_worst_n_per_cat(
 }
 
 pub fn replace_if_better_per_cat(
-    mut population: Vec<(f64, Evaluation, BCell)>,
-    mut replacements: Vec<(f64, Evaluation, BCell)>,
+    mut population: Vec<(f64, Evaluation, Antibody)>,
+    mut replacements: Vec<(f64, Evaluation, Antibody)>,
     mut snip_list: HashMap<usize, usize>,
-) -> Vec<(f64, Evaluation, BCell)> {
+    match_counter: &mut MatchCounter
+) -> Vec<(f64, Evaluation, Antibody)> {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
     replacements.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
@@ -164,10 +232,14 @@ pub fn replace_if_better_per_cat(
         }
     }
 
+
     for (pop_idx, rep_idx) in rep_map {
         // let mut parent_value = scored_pop.get_mut(idx).unwrap();
         let (p_score, p_eval, p_cell) = population.get_mut(pop_idx).unwrap();
         let (c_score, c_eval, c_cell) = replacements.get(rep_idx).unwrap();
+
+        match_counter.remove_evaluations(vec![&p_eval]);
+        match_counter.add_evaluations(vec![&c_eval]);
         // std::mem::replace(p_score, c_score);
         // std::mem::replace(p_eval, c_eval);
         // std::mem::replace(p_cell, c_cell);
@@ -175,51 +247,15 @@ pub fn replace_if_better_per_cat(
         *p_eval = c_eval.clone();
         *p_cell = c_cell.clone();
     }
-    //
-    // // sorted inversely for efficiency
-    // replacements.sort_by(|(score_a, _, _), (score_b, _, _)| score_b.total_cmp(score_a));
-    //
-    // let mut kill_list: Vec<_> = Vec::new();
-    // let mut cur_idx = 0;
-    // let mut rep_idx = replacements.len()-1;
-    // while snip_list.keys().len() > 0 {
-    //     if let Some((_, _, cell)) = population.get(cur_idx) {
-    //         if let Some(remaining_count) = snip_list.get_mut(&cell.class_label) {
-    //             kill_list.push(cur_idx.clone());
-    //             *remaining_count -= 1;
-    //             if *remaining_count <= 0 {
-    //                 snip_list.remove(&cell.class_label);
-    //             }
-    //         }
-    //     } else {
-    //         break;
-    //     }
-    //     cur_idx += 1;
-    // }
-    //
-    // let to_kill_pop = population.iter().filter()
-    //
-    // for idx in kill_list {
-    //     // let mut parent_value = scored_pop.get_mut(idx).unwrap();
-    //     let (p_score, p_eval, p_cell) = population.get_mut(idx).unwrap();
-    //     let (c_score, c_eval, c_cell) = replacements.pop().unwrap();
-    //     // std::mem::replace(p_score, c_score);
-    //     // std::mem::replace(p_eval, c_eval);
-    //     // std::mem::replace(p_cell, c_cell);
-    //     *p_score = c_score;
-    //     *p_eval = c_eval;
-    //     *p_cell = c_cell;
-    //
-    // }
-    // // println!("{:?}", replacements.len());
+
 
     return population;
 }
 
 pub fn pick_best_n(
-    mut population: Vec<(f64, Evaluation, BCell)>,
+    mut population: Vec<(f64, Evaluation, Antibody)>,
     num_to_pick: usize,
-) -> Vec<(f64, Evaluation, BCell)> {
+) -> Vec<(f64, Evaluation, Antibody)> {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_b.total_cmp(score_a));
 
     // println!("pre {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
@@ -231,18 +267,18 @@ pub fn pick_best_n(
 
 pub fn selection(
     _params: &Params,
-    population: Vec<(f64, Evaluation, BCell)>,
+    population: Vec<(f64, Evaluation, Antibody)>,
     _match_mask: &mut Vec<usize>,
-) -> Vec<(f64, Evaluation, BCell)> {
+) -> Vec<(f64, Evaluation, Antibody)> {
     let (selected, _drained) = elitism_selection(population, &150);
     // selected.extend(pick_n_random(drained, 70).into_iter());
     return selected;
 }
 
 pub fn elitism_selection(
-    mut population: Vec<(f64, Evaluation, BCell)>,
+    mut population: Vec<(f64, Evaluation, Antibody)>,
     num: &usize,
-) -> (Vec<(f64, Evaluation, BCell)>, Vec<(f64, Evaluation, BCell)>) {
+) -> (Vec<(f64, Evaluation, Antibody)>, Vec<(f64, Evaluation, Antibody)>) {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.partial_cmp(score_b).unwrap());
 
     // let mut res_cells  = population.into_iter().map(|(a, b)| b).collect::<Vec<_>>();
@@ -251,7 +287,7 @@ pub fn elitism_selection(
     // println!("{:?}", res_cells.get(res_cells.len()-1).unwrap());
     // return res_cells.drain(..num).collect();
 
-    let select: Vec<(f64, Evaluation, BCell)> = res_cells
+    let select: Vec<(f64, Evaluation, Antibody)> = res_cells
         .drain((res_cells.len() - num)..res_cells.len())
         .collect();
     if false {
@@ -283,7 +319,7 @@ pub fn elitism_selection(
 }
 
 pub fn labeled_tournament_pick(
-    population: &Vec<(f64, Evaluation, BCell)>,
+    population: &Vec<(f64, Evaluation, Antibody)>,
     num_to_pick: &usize,
     tournament_size: &usize,
     label_to_filter: Option<&usize>,
@@ -298,7 +334,7 @@ pub fn labeled_tournament_pick(
         let filtered: Vec<_> = population
             .iter()
             .enumerate()
-            .filter(|(_idx, (_score, _eval, bcell))| bcell.class_label == *v)
+            .filter(|(_idx, (_score, _eval, Antibody))| Antibody.class_label == *v)
             .collect();
 
         let _index_vali: Vec<_> = filtered
@@ -361,7 +397,7 @@ pub fn labeled_tournament_pick(
 }
 
 pub fn tournament_pick(
-    population: &Vec<(f64, Evaluation, BCell)>,
+    population: &Vec<(f64, Evaluation, Antibody)>,
     num_to_pick: &usize,
     tournament_size: &usize,
 ) -> Vec<usize> {

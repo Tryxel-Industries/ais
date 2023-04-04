@@ -1,31 +1,40 @@
 use std::cmp::Ordering;
-
+use std::collections::HashSet;
 use std::ops::Add;
 
+/// Given a vector of vector of sorted usize values `lists`, this function compares the values of each list
+/// and returns a new vector containing values that are found in every list.
+/// If the given `lists` is an empty vector, an empty vector is returned.
+/// If the given `lists` contains only one vector, that vector is returned as is.
+///
+/// # Arguments
+///
+/// * `lists` - A vector of vectors of usize values.
+///
+/// # Returns
+///
+/// An optional vector of usize values. If the function succeeds, it returns a vector containing
+/// values that are found in every list. If the given `lists` is an empty vector,
+/// an empty vector is returned. If the given `lists` contains only one vector, that vector is returned
+/// as is. If the function fails to produce a result, it returns `None`.
 fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
-    //  a = 1,4,6,7,8
-    //  b = 1,2,7,9
-    //
-    //
-    //
-
-    // println!("in: {:?}", lists);
+    // todo: mabye improve speed by sorting by shortest and using that as start point
 
     let n_lists = lists.len();
 
     if n_lists == 0 {
+        // if no lists are given return a new empty vec
         return Some(Vec::new());
     } else if n_lists == 1 {
+        // if only one lists, this lists matches with itself and is therefore returned
         return Some(lists.first().unwrap().clone());
     } else {
-        // println!("\n\n&&&&&&&&&&&&&&");
-        // lists.iter().enumerate().for_each(|(n,l)|println!("list {:?}: {:?}",n, l));
-
         let mut found_matches: Vec<usize> = Vec::new();
 
         let mut current_idx_list = vec![0 as usize; lists.len()];
         let mut max_idx_list: Vec<usize> = lists.iter().map(|x| x.len()).collect();
         if *max_idx_list.iter().min().unwrap() == 0 {
+            // if any of the given lists are empty there wont be any matches so we return an empty vec
             return Some(Vec::new());
         }
 
@@ -80,23 +89,18 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
         return Some(found_matches);
     }
 }
-//
-// Traits
-//
-pub trait Bucketable {
-    fn get_dimensional_value(&self, dim: usize) -> &f64;
-}
+
+
 
 //
 // structs
 //
 
+
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum BucketEmpireOfficialRangeNotationSystemClasses {
+pub enum ValueRangeType {
     Open,
     Symmetric((f64, f64)),
-    UpperBound(f64),
-    LowerBound(f64),
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -120,11 +124,58 @@ pub struct BucketKnight {
     dimension: usize,
 }
 
+
+// todo: the example here is not good (chatgpt used for docs)
+
+/// A data structure for multi-dimensional indexing of data points. It uses a bucketing approach,
+/// where each dimension is divided into several buckets and data points are placed into the
+/// corresponding buckets according to their values in each dimension. This allows for fast
+/// retrieval of potential matches based on a given query.
+///
+/// # Examples
+///
+/// ```
+/// use my_crate::BucketKing;
+///
+/// // Define a simple struct to index
+/// #[derive(Clone, PartialEq)]
+/// struct Person {
+///     name: String,
+///     age: u8,
+/// }
+///
+/// // Create a BucketKing that indexes Person objects by age
+/// let bucket_range = (0.0, 100.0);
+/// let num_buckets = 10;
+/// let mut bucket_king = BucketKing::new(
+///     1,
+///     bucket_range,
+///     num_buckets,
+///     |person: &Person| person.age as usize,
+///     |person: &Person| vec![person.age as f64],
+/// );
+///
+/// // Add some Person objects to the index
+/// let alice = Person {
+///     name: "Alice".to_string(),
+///     age: 25,
+/// };
+/// let bob = Person {
+///     name: "Bob".to_string(),
+///     age: 35,
+/// };
+/// bucket_king.add_values_to_index(&vec![alice, bob]);
+///
+/// // Get the indexes of potential matches for a given value
+/// let potential_matches = bucket_king.get_potential_matches_indexes(&bob);
+/// assert_eq!(potential_matches.unwrap(), vec![3, 4, 5]);
+/// ```
 pub struct BucketKing<T> {
     // he who rules the buckets
     dimensional_knights: Vec<BucketKnight>,
     index_fn: fn(&T) -> usize,
     value_fn: fn(&T) -> &Vec<f64>,
+    full_index_set: HashSet<usize>
 }
 
 //
@@ -138,7 +189,6 @@ impl Bucket {
     fn add_item(&mut self, item: BucketValue) {
         self.bucket_contents.push(item);
     }
-
     fn sort(&mut self) {
         self.bucket_contents.sort_unstable_by_key(|k| k.index);
     }
@@ -162,15 +212,13 @@ impl BucketKnight {
 
     pub fn get_index_in_range(
         &self,
-        range: &BucketEmpireOfficialRangeNotationSystemClasses,
+        range: &ValueRangeType,
     ) -> Option<Vec<usize>> {
         let mut ret: Vec<usize> = Vec::new();
 
         match range {
-            BucketEmpireOfficialRangeNotationSystemClasses::Open => return None,
-            BucketEmpireOfficialRangeNotationSystemClasses::Symmetric((lb, ub)) => {
-                // let value_lb = dimensional_value.clone() - v;
-                // let value_ub = dimensional_value.clone() + v;
+            ValueRangeType::Open => return None,
+            ValueRangeType::Symmetric((lb, ub)) => {
                 let value_lb = *lb;
                 let value_ub = *ub;
 
@@ -183,28 +231,6 @@ impl BucketKnight {
                         bucket.start_value > value_lb && bucket.end_value < value_ub;
 
                     if contains_left_border | contains_center | contains_right_border {
-                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
-                    }
-                    /*  if bucket.end_value > value_lb && bucket.end_value <= value_ub {
-                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
-                    } else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
-                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
-                    }
-                    */
-                }
-            }
-            BucketEmpireOfficialRangeNotationSystemClasses::UpperBound(v) => {
-                let value_ub = *v;
-                for bucket in self.buckets.iter() {
-                    if bucket.start_value <= value_ub {
-                        ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
-                    }
-                }
-            }
-            BucketEmpireOfficialRangeNotationSystemClasses::LowerBound(v) => {
-                let value_lb = *v;
-                for bucket in self.buckets.iter() {
-                    if bucket.end_value > value_lb {
                         ret.extend(bucket.bucket_contents.iter().map(|x1| x1.index).clone())
                     }
                 }
@@ -237,6 +263,24 @@ impl BucketKnight {
 }
 
 impl<T> BucketKing<T> {
+    /// Creates a new `BucketKing` instance with the given parameters.
+    ///
+    /// The `BucketKing` will use `n_dims` `BucketKnight`s to index elements based on their values.
+    /// Each `BucketKnight` will contain `num_buckets` `Bucket`s, with each bucket representing a range of
+    /// values in the range specified by `bucket_range`. The `index_fn` parameter is a function that takes an
+    /// element of type `T` and returns an index that corresponds to a specific `Bucket` in the `BucketKing`.
+    /// The `value_fn` parameter is a function that takes an element of type `T` and returns a vector of values
+    /// that will be used to determine which `Bucket`s the element belongs to.
+    ///
+    /// # Arguments
+    ///
+    /// * `n_dims` - The number of dimensions that the `BucketKing` will index elements by.
+    /// * `bucket_range` - A tuple specifying the range of values that will be used to create the `Bucket`s.
+    /// * `num_buckets` - The number of `Bucket`s that will be created for each `BucketKnight`.
+    /// * `index_fn` - A function that takes an element of type `T` and returns an index that corresponds to a
+    ///                specific `Bucket` in the `BucketKing`.
+    /// * `value_fn` - A function that takes an element of type `T` and returns a vector of values that will be
+    ///                used to determine which `Bucket`s the element belongs to.
     pub fn new(
         n_dims: usize,
         bucket_range: (f64, f64),
@@ -281,70 +325,29 @@ impl<T> BucketKing<T> {
             value_fn,
             index_fn,
             dimensional_knights: bucket_knights,
+            full_index_set: HashSet::new(),
         };
     }
-    pub fn get_potential_matches_indexes(&self, _value: &T) -> Option<Vec<usize>> {
-        let ret: Vec<Vec<usize>> = self
-            .dimensional_knights
-            .iter()
-            .filter_map(|k| {
-                k.get_index_in_range(&BucketEmpireOfficialRangeNotationSystemClasses::Open)
-            })
-            .collect();
-        return roll_comparison(ret);
-    }
-    pub fn get_potential_matches_indexes_with_ranges(
-        &self,
-        ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
-    ) -> Option<Vec<usize>> {
-        return self.get_potential_matches_indexes_with_raw_values(ranges);
-    }
 
-    pub fn get_potential_matches_indexes_with_raw_values(
+
+    pub fn get_potential_matches(
         &self,
-        ranges: &Vec<BucketEmpireOfficialRangeNotationSystemClasses>,
+        ranges: &Vec<ValueRangeType>,
     ) -> Option<Vec<usize>> {
         let mut ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
-            .filter_map(|k| {
-                let rgs = ranges.get(k.dimension).unwrap();
-                let a = k.get_index_in_range(ranges.get(k.dimension).unwrap());
-                if let BucketEmpireOfficialRangeNotationSystemClasses::Open = rgs {
-                    // println!("shold be empty {:?}",a);
-                } else {
-                    // println!("shold not be empty {:?}",a);
-                }
-
-                return a;
-            })
+            .filter_map(|k|  k.get_index_in_range(ranges.get(k.dimension).unwrap()))
             .collect();
 
-        if ranges
-            .iter()
-            .filter(|v| BucketEmpireOfficialRangeNotationSystemClasses::Open.eq(v))
-            .collect::<Vec<_>>()
-            .len()
-            > 0
-        {
-            let elments: Vec<_> = self
-                .dimensional_knights
-                .get(0)
-                .unwrap()
-                .buckets
-                .iter()
-                .flat_map(|bkt| bkt.bucket_contents.iter().map(|x1| x1.index).clone())
-                .collect();
-            ret = vec![elments];
+        if ret.len() ==0 {
+            // all the dimensions are open
+            return Some(self.full_index_set.clone().into_iter().collect());
         }
-        // println!("pre:");
-        // ret.iter().enumerate().for_each(|(idx,ls)|{
-        //     println!("{:3<}: {:?}", idx, ls);
-        // });
-        let r = roll_comparison(ret);
-        // println!("post: {:?}", r.clone().unwrap());
-        return r;
+
+        return roll_comparison(ret);
     }
+
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {
         let value_values: Vec<(usize, &Vec<f64>)> = values
             .iter()
@@ -354,6 +357,7 @@ impl<T> BucketKing<T> {
             let as_bucket_values: Vec<BucketValue> = value_values
                 .iter()
                 .map(|(index, value_vec)| {
+                    self.full_index_set.insert(index.clone());
                     return BucketValue {
                         value: value_vec.get(n).unwrap().clone(),
                         index: index.clone(),

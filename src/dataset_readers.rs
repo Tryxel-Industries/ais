@@ -1,11 +1,8 @@
 use std::fs::File;
-use std::io::prelude::*;
 use std::io::BufReader;
+use std::io::prelude::*;
 
-use crate::representation::AntiGen;
-use csv::StringRecord;
-
-use serde::Deserialize;
+use crate::representation::antigen::AntiGen;
 
 fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
     let n_features = feature_vec.first().unwrap().len();
@@ -78,7 +75,6 @@ fn read_csv(path: &str) -> Vec<Vec<String>> {
 
     // println!("{:?}", ret_vec);
     return ret_vec;
-    let mut reader = csv::Reader::from_path("./datasets/wine/wine.data").unwrap();
 }
 
 pub fn read_iris() -> Vec<AntiGen> {

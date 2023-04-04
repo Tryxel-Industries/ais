@@ -1,17 +1,17 @@
-use crate::ais::{MutationType, Params};
 use rand::{distributions::Distribution, Rng};
 
-use crate::representation::{BCell, DimValueType};
+use crate::params::{MutationType, Params};
+use crate::representation::antibody::{Antibody, DimValueType};
 
-pub fn mutate(params: &Params, fitness_scaler: f64, b_cell: BCell) -> BCell {
+pub fn mutate(params: &Params, fitness_scaler: f64, antibody: Antibody) -> Antibody {
     let _rng = rand::thread_rng();
 
     let mutated = match params.roll_mutation_type() {
-        MutationType::Offset => mutate_offset(&params, b_cell, fitness_scaler),
-        MutationType::Multiplier => mutate_multiplier(&params, b_cell, fitness_scaler),
-        MutationType::ValueType => mutate_value_type(&params, b_cell),
-        MutationType::Radius => mutate_radius(&params, b_cell, fitness_scaler),
-        MutationType::Label => mutate_label(&params, b_cell),
+        MutationType::Offset => mutate_offset(&params, antibody, fitness_scaler),
+        MutationType::Multiplier => mutate_multiplier(&params, antibody, fitness_scaler),
+        MutationType::ValueType => mutate_value_type(&params, antibody),
+        MutationType::Radius => mutate_radius(&params, antibody, fitness_scaler),
+        MutationType::Label => mutate_label(&params, antibody),
     };
     return mutated;
 }
@@ -28,7 +28,7 @@ pub fn get_rand_range(max: usize) -> (usize, usize) {
 }
 
 //TODO: fix this
-pub fn mutate_orientation(params: &Params, mut genome: BCell) -> BCell {
+pub fn mutate_orientation(params: &Params, mut genome: Antibody) -> Antibody {
     let mut rng = rand::thread_rng();
 
     let candidates_dims: Vec<usize> = genome
@@ -46,7 +46,7 @@ pub fn mutate_orientation(params: &Params, mut genome: BCell) -> BCell {
     genome
 }
 
-pub fn mutate_multiplier(params: &Params, mut genome: BCell, fitness_scaler: f64) -> BCell {
+pub fn mutate_multiplier(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
     let mut rng = rand::thread_rng();
 
     let candidates_dims: Vec<usize> = genome
@@ -73,7 +73,7 @@ pub fn mutate_multiplier(params: &Params, mut genome: BCell, fitness_scaler: f64
     return genome;
 }
 
-pub fn mutate_offset(params: &Params, mut genome: BCell, fitness_scaler: f64) -> BCell {
+pub fn mutate_offset(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
     let mut rng = rand::thread_rng();
     let candidates_dims: Vec<usize> = genome
         .dim_values
@@ -104,7 +104,7 @@ pub fn mutate_offset(params: &Params, mut genome: BCell, fitness_scaler: f64) ->
     genome
 }
 
-pub fn mutate_value_type(params: &Params, mut genome: BCell) -> BCell {
+pub fn mutate_value_type(params: &Params, mut genome: Antibody) -> Antibody {
     let mut rng = rand::thread_rng();
 
     let dim_to_mutate = rng.gen_range(0..genome.dim_values.len());
@@ -136,7 +136,7 @@ pub fn mutate_value_type(params: &Params, mut genome: BCell) -> BCell {
     return genome;
 }
 
-pub fn mutate_label(params: &Params, mut genome: BCell) -> BCell {
+pub fn mutate_label(params: &Params, mut genome: Antibody) -> Antibody {
     let mut rng = rand::thread_rng();
 
     let dim_type = params
@@ -150,7 +150,7 @@ pub fn mutate_label(params: &Params, mut genome: BCell) -> BCell {
     return genome;
 }
 
-pub fn mutate_radius(params: &Params, mut genome: BCell, fitness_scaler: f64) -> BCell {
+pub fn mutate_radius(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
     let mut rng = rand::thread_rng();
 
     let multi = rng.gen_range(params.radius_mutation_multiplier_range.clone());
