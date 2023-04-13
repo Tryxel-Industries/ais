@@ -51,10 +51,11 @@ fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params:
 
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
-    for (train, test) in folds.iter() {
+    for (n,(train, test)) in folds.iter().enumerate() {
         let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params);
         train_acc_vals.push(train_acc);
         test_acc_vals.push(test_acc);
+        println!("on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}", n,test_acc, train_acc);
     }
 
     let train_mean: f64 = train_acc_vals.iter().mean();
