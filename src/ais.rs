@@ -10,7 +10,7 @@ use statrs::statistics::Statistics;
 use crate::bucket_empire::BucketKing;
 use crate::evaluation::{evaluate_antibody, Evaluation, MatchCounter};
 use crate::mutate;
-use crate::params::Params;
+use crate::params::{Params, VerbosityParams};
 use crate::representation::antibody::Antibody;
 use crate::representation::antibody_factory::AntibodyFactory;
 use crate::representation::antigen::AntiGen;
@@ -96,7 +96,7 @@ impl ArtificialImmuneSystem {
         &mut self,
         antigens: &Vec<AntiGen>,
         params: &Params,
-        verbose: bool,
+        verbosity_params: &VerbosityParams,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         // =======  init misc training params  ======= //
 
@@ -188,7 +188,7 @@ impl ArtificialImmuneSystem {
         scored_pop = score_antibodies(evaluated_pop, &count_map, &match_counter);
 
         //
-        if verbose {
+        if verbosity_params.show_initial_pop_info {
             println!("initial");
             class_labels.clone().into_iter().for_each(|cl| {
                 let filtered: Vec<usize> = scored_pop
@@ -212,28 +212,20 @@ impl ArtificialImmuneSystem {
             let avg_score =
                 scored_pop.iter().map(|(score, _, _)| score).sum::<f64>() / scored_pop.len() as f64;
 
-            if verbose {
-                println!(
-                    "iter: {:<5} avg score {:.6}, max score {:.6}, last acc {:.6}",
-                    i,
-                    avg_score,
-                    max_score,
-                    train_acc_hist.last().unwrap_or(&0.0)
-                );
-                println!("pop size {:} ", scored_pop.len());
+            if let Some(n) = verbosity_params.iter_info_interval {
+                if i % n == 0 {
+                    println!(
+                        "iter: {:<5} avg score {:.6}, max score {:.6}, last acc {:.6}",
+                        i,
+                        avg_score,
+                        max_score,
+                        train_acc_hist.last().unwrap_or(&0.0)
+                    );
+                    println!("pop size {:} ", scored_pop.len());
+                }
             }
 
             train_score_hist.push(avg_score);
-
-            if i % 500 == 0 {
-                println!(
-                    "iter: {:<5} avg score {:.6}, max score {:.6}, last acc {:.6}",
-                    i,
-                    avg_score,
-                    max_score,
-                    train_acc_hist.last().unwrap_or(&0.0)
-                );
-            }
 
             // =======  parent selection  ======= //
             let replace_exponent = (3.0 / 2.0) * (((i as f64) + 1.0) / params.generations as f64);
@@ -459,7 +451,7 @@ impl ArtificialImmuneSystem {
 
             scored_pop = score_antibodies(evaluated_pop, &count_map, &match_counter);
 
-            if true {
+            if let Some(n) = verbosity_params.full_pop_acc_interval {
                 let antibody: Vec<Antibody> =
                     scored_pop.iter().map(|(a, b, c)| c.clone()).collect();
 
@@ -488,10 +480,11 @@ impl ArtificialImmuneSystem {
                 }
                 train_acc_hist.push(avg_acc);
             } else {
-                train_acc_hist.push(0.0);
+                let last = train_acc_hist.last().unwrap_or(&0.0);
+                train_acc_hist.push(last.clone());
             }
 
-            if verbose {
+            if verbosity_params.show_class_info {
                 println!("replacing {:} leaking {:}", n_to_replace, n_to_leak);
                 class_labels.clone().into_iter().for_each(|cl| {
                     let filtered: Vec<usize> = scored_pop

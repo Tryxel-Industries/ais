@@ -71,3 +71,32 @@ impl Params {
             .clone();
     }
 }
+
+
+pub struct VerbosityParams {
+    pub show_initial_pop_info: bool,
+    pub iter_info_interval: Option<usize>,
+    pub full_pop_acc_interval: Option<usize>,
+    pub show_class_info: bool,
+    pub make_plots: bool,
+
+    pub display_final_ab_info: bool,
+    pub display_detailed_error_info: bool,
+    pub display_final_acc_info: bool,
+}
+
+impl VerbosityParams {
+    pub fn n_fold_defaults()-> VerbosityParams{
+        return VerbosityParams{
+            show_initial_pop_info: false,
+            iter_info_interval: None,
+            full_pop_acc_interval: None,
+            show_class_info: false,
+            make_plots: false,
+            display_final_ab_info: false,
+            display_detailed_error_info: false,
+            display_final_acc_info: false,
+        }
+    }
+
+}

@@ -8,6 +8,7 @@ use std::collections::{HashMap, HashSet};
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
+use std::process::exit;
 use std::time::Instant;
 
 use plotters::prelude::*;
@@ -17,13 +18,10 @@ use statrs::statistics::Statistics;
 
 use crate::ais::{ArtificialImmuneSystem, evaluate_population};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{
-    read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_pima_diabetes,
-    read_sonar, read_spirals, read_wine,
-};
+use crate::dataset_readers::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_kaggle_semantic, read_pima_diabetes, read_sonar, read_spirals, read_wine};
 use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
-use crate::params::Params;
+use crate::params::{Params, VerbosityParams};
 use crate::plotting::plot_hist;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
@@ -46,7 +44,7 @@ mod result_export;
 mod params;
 
 
-fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>) {
+fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     let folds = split_train_test_n_fold(&antigens, 5);
@@ -54,7 +52,7 @@ fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>) {
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
     for (train, test) in folds.iter() {
-        let (train_acc, test_acc) = ais_test(&antigens, train, test, false, &params);
+        let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params);
         train_acc_vals.push(train_acc);
         test_acc_vals.push(test_acc);
     }
@@ -70,7 +68,7 @@ fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>) {
     // println!("train size: {:?}, test size {:?}", train.len(), test.len());
 }
 
-fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbose: bool) {
+fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     // let mut rng = rand::thread_rng();
@@ -83,7 +81,7 @@ fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbose: bool) {
 
     let (train_slice, test) = split_train_test(&antigens, 0.2);
 
-    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbose, &params);
+    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params);
 
     println!("train_acc: {:?} test_acc: {:?} ", train_acc, test_acc)
 }
@@ -92,7 +90,7 @@ fn ais_test(
     antigens: &Vec<AntiGen>,
     train_slice: &Vec<AntiGen>,
     test: &Vec<AntiGen>,
-    verbose: bool,
+    verbosity_params: &VerbosityParams,
     params: &Params,
 ) -> (f64, f64) {
     let class_labels = antigens
@@ -100,7 +98,7 @@ fn ais_test(
         .map(|x| x.class_label)
         .collect::<HashSet<_>>();
 
-    if verbose {
+    if verbosity_params.show_initial_pop_info {
         println!(
             "train size: {:?} test size: {:?}",
             train_slice.len(),
@@ -112,9 +110,9 @@ fn ais_test(
     let train = train_slice.clone().to_vec();
 
     let mut ais = ArtificialImmuneSystem::new();
-    let (train_acc_hist, train_score_hist, init_scored_pop) = ais.train(&train, &params, verbose);
+    let (train_acc_hist, train_score_hist, init_scored_pop) = ais.train(&train, &params, verbosity_params);
 
-    if verbose {
+    if verbosity_params.make_plots {
         plot_hist(train_acc_hist, "acuracy");
         plot_hist(train_score_hist, "score");
     }
@@ -173,7 +171,7 @@ fn ais_test(
 
         let score = with_same_label.len() as f64 / (num_wrong.len() as f64 + 1.0);
 
-        if verbose {
+        if verbosity_params.display_final_ab_info {
             //registered_antigens.len() > 0 {
             println!(
                 "genome dim values    {:?}",
@@ -218,7 +216,7 @@ fn ais_test(
         }
     });
 
-    if verbose {
+    if verbosity_params.display_detailed_error_info {
         println!("zero reg cells {}", zero_reg_cells);
         println!("########## error mask \n{:?}", match_counter.incorrect_match_counter);
         println!("########## match mask \n{:?}", match_counter.correct_match_counter);
@@ -278,7 +276,7 @@ fn ais_test(
 
     let test_acc = test_n_corr as f64 / (test.len() as f64);
 
-    if verbose {
+    if verbosity_params.display_final_acc_info {
         println!("=============================================================================");
         println!("      TRAIN");
         println!("=============================================================================");
@@ -331,9 +329,10 @@ fn modify_config_by_args(params: &mut Params) {
 }
 
 fn main() {
+
     // let mut antigens = read_iris();
-    let mut antigens = read_iris_snipped();
-    // let mut antigens = read_wine();
+    // let mut antigens = read_iris_snipped();
+    let mut antigens = read_wine();
     // let mut antigens = read_diabetes();
     // let mut antigens = read_spirals();
 
@@ -341,6 +340,10 @@ fn main() {
     // let mut antigens = read_sonar();
     // let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
+
+
+    // let mut antigens = read_kaggle_semantic();
+    // let _ = antigens.split_off(3000);
 
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
@@ -370,18 +373,18 @@ fn main() {
         radius_mutation_multiplier_range: 0.5..=1.5,
         // value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle],
         value_type_valid_mutations: vec![
-            // DimValueType::Circle,
-            // DimValueType::Disabled,
-            DimValueType::Open,
+            DimValueType::Circle,
+            DimValueType::Disabled,
+            // DimValueType::Open,
         ],
         // value_type_valid_mutations: vec![DimValueType::Circle],
         label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
 
         //selection
-        leak_fraction: 0.0,
+        leak_fraction: 0.3,
         leak_rand_prob: 0.5,
-        max_replacment_frac: 0.7,
-        tournament_size: 10,
+        max_replacment_frac: 0.6,
+        tournament_size: 1,
         n_parents_mutations: 40,
 
         antibody_init_expand_radius: true,
@@ -393,7 +396,7 @@ fn main() {
         antibody_ag_init_value_types: vec![
             DimValueType::Circle,
             DimValueType::Disabled,
-            DimValueType::Open,
+            // DimValueType::Open,
         ],
         antibody_ag_init_range_range: 0.1..=0.4,
 
@@ -404,12 +407,24 @@ fn main() {
         antibody_rand_init_value_types: vec![
             DimValueType::Circle,
             DimValueType::Disabled,
-            DimValueType::Open,
+            // DimValueType::Open,
         ],
         antibody_rand_init_range_range: 0.1..=0.4,
     };
+
+    let frac_verbosity_params = VerbosityParams{
+        show_initial_pop_info: false,
+        iter_info_interval: Some(1),
+        full_pop_acc_interval: Some(2),
+        // full_pop_acc_interval: None,
+        show_class_info: false,
+        make_plots: true,
+        display_final_ab_info: false,
+        display_detailed_error_info: true,
+        display_final_acc_info: true,
+    };
     modify_config_by_args(&mut params);
 
-    ais_frac_test(params, antigens, true)
-    // ais_n_fold_test(params, antigens)
+    // ais_frac_test(params, antigens, &frac_verbosity_params);
+    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults())
 }
