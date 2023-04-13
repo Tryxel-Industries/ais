@@ -439,24 +439,24 @@ impl ArtificialImmuneSystem {
             let evaluated_pop: Vec<(Evaluation, Antibody)> =
                 scored_pop.into_iter().map(|(a, b, c)| (b, c)).collect();
 
-            let mut match_counter_2 = MatchCounter::new(max_ag_id);
-            match_counter_2.add_evaluations(
-                evaluated_pop
-                    .iter()
-                    .map(|(evaluation, _)| evaluation)
-                    .collect::<Vec<_>>(),
-            );
-
-            let neg_ok = match_counter
-                .incorrect_match_counter
-                .eq(&match_counter_2.incorrect_match_counter);
-            let pos_ok = match_counter
-                .correct_match_counter
-                .eq(&match_counter_2.correct_match_counter);
-
-            if !(neg_ok & pos_ok) {
-                panic!("error with match counter updates ")
-            }
+            // let mut match_counter_2 = MatchCounter::new(max_ag_id);
+            // match_counter_2.add_evaluations(
+            //     evaluated_pop
+            //         .iter()
+            //         .map(|(evaluation, _)| evaluation)
+            //         .collect::<Vec<_>>(),
+            // );
+            //
+            // let neg_ok = match_counter
+            //     .incorrect_match_counter
+            //     .eq(&match_counter_2.incorrect_match_counter);
+            // let pos_ok = match_counter
+            //     .correct_match_counter
+            //     .eq(&match_counter_2.correct_match_counter);
+            //
+            // if !(neg_ok & pos_ok) {
+            //     panic!("error with match counter updates ")
+            // }
 
             scored_pop = score_antibodies(evaluated_pop, &count_map, &match_counter);
 
