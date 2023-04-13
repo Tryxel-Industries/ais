@@ -330,6 +330,7 @@ fn modify_config_by_args(params: &mut Params) {
 }
 
 fn main() {
+    #![ allow(unused)]
 
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
