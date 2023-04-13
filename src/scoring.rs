@@ -103,50 +103,25 @@ pub fn score_antibodies(
 
             // add the pos coverage (0-1) indicating how big of a fraction of the space label space is covered.
             // score += pos_coverage/4.0;
-            score += f1;
-            // score += (true_positives-false_positives)/(true_positives+false_positives).max(1.0);
+            // score += f1;
 
-            // score +=  discounted_match_score/true_positives.max(1.0);
 
-            // let mut score = positive_predictive_value + pos_coverage + discounted_match_score/true_positives.max(1.0);
+            // add a value from 1 -> -1 indicating the fraction of correctness
+            score += (true_positives - (false_positives*2.0))/ (true_positives+false_positives).max(1.0);
 
-            // let precession = if positive_predictive_value.is_finite(){positive_predictive_value} else { 0.0 };
-            // let purity = if purity.is_finite(){purity } else {0.0};
-            // let score = precession + purity;
+            // add a value from (0 - 1) * a indicating the coverage of the label space
+            let a = 1.0;
+            score += pos_coverage * a;
 
-            // let score = true_positives / ((shared_positive_weight + shared_error_weight) as f64).max(1.0);
-            // let score = crowdedness+purity+accuracy ;
+            let b = 0.5;
+            score += (discounted_match_score/(true_positives).max(1.0))* b;
 
-            // let score = f1 / (shared_error_weight as f64).max(1.0);
+            // score -= error_problem_magnitude;
 
-            // let score = pred_pos / (false_positives  as f64).max(1.0);
 
-            // let score = ((base_sum - n_wrong)+(bonus_sum*0.5))*accuracy ;
-            // let score = ((discounted_sum) - (n_wrong).powi(2)) + bonus_sum  - bonus_error;
 
-            // let score = ((true_positives) - (true_negatives).powi(2)) + unique_positives as f64 * 5.0;
 
-            // let mut divisor = (n_wrong + bonus_error).powi(2) + n_shared_error as f64;
-            // divisor = if (divisor.is_finite()) | (divisor != 0.0) {divisor} else { 1.0 };
 
-            // let score = ((n_right + (bonus_sum+1.0).powi(1)) / (divisor+1.0) );
-
-            // let score = precession + discounted_match_score/true_positives.max(1.0);
-
-            // let score = ((true_positives + discounted_match_score) - (false_positives).powi(2)) + unique_positives as f64 * 5.0  - (shared_error_weight as f64/2.0);
-
-            // let score = ((discounted_sum) - (bonus_error)) + bonus_sum * 5.0;
-            // let score = (matched_sum - n_wrong).max(0.0) ;
-
-            // println!("###########################");
-            // println!("match:        {:?}", eval.matched_ids);
-            // println!("wrong match:  {:?}", eval.wrongly_matched);
-            // println!("ppv        {:?}", positive_predictive_value);
-            // println!("pos cov    {:?}", pos_coverage);
-            // println!("penalty    {:?}", penalty);
-            // println!("bonus       {:?}", bonus_sum);
-            // println!("divisor       {:?}", divisor);
-            // println!("final score {:?}", score);
 
             if pred_pos == tot_elements {
                 score = -5.0;
