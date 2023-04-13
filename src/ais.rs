@@ -368,10 +368,13 @@ impl ArtificialImmuneSystem {
             if params.leak_fraction > 0.0 {
                 let inversed = match_counter.get_inversed_correct_match_counts();
 
+                let mut local_match_counter = match_counter.clone();
+
                 for (label, count) in &n_to_gen_map {
                     if *count <= 0 {
                         continue;
                     }
+
 
                     let filtered: Vec<_> = antigens
                         .iter()
@@ -406,7 +409,13 @@ impl ArtificialImmuneSystem {
                         })
                         .collect();
 
-                    let leaked_to_add = score_antibodies(new_pop_pop, &count_map, &match_counter);
+                    let new_evals: Vec<_> = new_pop_pop.iter().map(|(e,_)|e).collect();
+                    local_match_counter.add_evaluations(new_evals);
+                    let leaked_to_add = score_antibodies(new_pop_pop, &count_map, &local_match_counter);
+
+                    let cleanup_evals: Vec<_> = leaked_to_add.iter().map(|(_,e,_)|e).collect();
+                    local_match_counter.remove_evaluations(cleanup_evals);
+
                     new_leaked.extend(leaked_to_add);
                 }
             }
