@@ -80,7 +80,7 @@ fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
 
-    let (train_slice, test) = split_train_test(&antigens, 0.2);
+    let (train_slice, test) = split_train_test(&antigens, 0.33);
 
     let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params);
 
@@ -334,11 +334,11 @@ fn main() {
 
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
-    let mut antigens = read_wine();
+    // let mut antigens = read_wine();
     // let mut antigens = read_diabetes();
     // let mut antigens = read_spirals();
 
-    // let mut antigens = read_pima_diabetes();
+    let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
     // let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
@@ -417,16 +417,16 @@ fn main() {
     let frac_verbosity_params = VerbosityParams{
         show_initial_pop_info: false,
         iter_info_interval: Some(1),
-        full_pop_acc_interval: Some(2),
+        full_pop_acc_interval: None,
         // full_pop_acc_interval: None,
         show_class_info: false,
         make_plots: true,
-        display_final_ab_info: false,
+        display_final_ab_info: true,
         display_detailed_error_info: true,
         display_final_acc_info: true,
     };
     modify_config_by_args(&mut params);
 
-    // ais_frac_test(params, antigens, &frac_verbosity_params);
-    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults())
+    ais_frac_test(params, antigens, &frac_verbosity_params);
+    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults())
 }
