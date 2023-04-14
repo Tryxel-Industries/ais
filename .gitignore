@@ -12,3 +12,5 @@ Cargo.lock
 .idea
 display/.py_env
 display/.ipynb_checkpoints/*
+
+datasets/fake_news/*
