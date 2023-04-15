@@ -90,12 +90,9 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     }
 }
 
-
-
 //
 // structs
 //
-
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ValueRangeType {
@@ -123,7 +120,6 @@ pub struct BucketKnight {
     buckets: Vec<Bucket>,
     dimension: usize,
 }
-
 
 // todo: the example here is not good (chatgpt used for docs)
 
@@ -175,7 +171,7 @@ pub struct BucketKing<T> {
     dimensional_knights: Vec<BucketKnight>,
     index_fn: fn(&T) -> usize,
     value_fn: fn(&T) -> &Vec<f64>,
-    full_index_set: HashSet<usize>
+    full_index_set: HashSet<usize>,
 }
 
 //
@@ -210,10 +206,7 @@ impl BucketKnight {
         return None;
     }
 
-    pub fn get_index_in_range(
-        &self,
-        range: &ValueRangeType,
-    ) -> Option<Vec<usize>> {
+    pub fn get_index_in_range(&self, range: &ValueRangeType) -> Option<Vec<usize>> {
         let mut ret: Vec<usize> = Vec::new();
 
         match range {
@@ -329,18 +322,14 @@ impl<T> BucketKing<T> {
         };
     }
 
-
-    pub fn get_potential_matches(
-        &self,
-        ranges: &Vec<ValueRangeType>,
-    ) -> Option<Vec<usize>> {
+    pub fn get_potential_matches(&self, ranges: &Vec<ValueRangeType>) -> Option<Vec<usize>> {
         let mut ret: Vec<Vec<usize>> = self
             .dimensional_knights
             .iter()
-            .filter_map(|k|  k.get_index_in_range(ranges.get(k.dimension).unwrap()))
+            .filter_map(|k| k.get_index_in_range(ranges.get(k.dimension).unwrap()))
             .collect();
 
-        if ret.len() ==0 {
+        if ret.len() == 0 {
             // all the dimensions are open
             return Some(self.full_index_set.clone().into_iter().collect());
         }

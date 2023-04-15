@@ -1,8 +1,8 @@
+use json::JsonValue;
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::BufReader;
 use std::io::prelude::*;
-use json::JsonValue;
+use std::io::BufReader;
 
 use crate::representation::antigen::AntiGen;
 
@@ -55,11 +55,12 @@ fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
 fn normalize_features_ag(mut ag_vec: Vec<AntiGen>) -> Vec<AntiGen> {
     let mut feature_vec: Vec<_> = ag_vec.iter().map(|ag| ag.values.clone()).collect();
     let norm_features = normalize_features(feature_vec);
-    ag_vec.iter_mut().zip(norm_features).for_each(|(ag,norm_f)| ag.values = norm_f);
+    ag_vec
+        .iter_mut()
+        .zip(norm_features)
+        .for_each(|(ag, norm_f)| ag.values = norm_f);
     return ag_vec;
-
 }
-
 
 fn read_csv(path: &str) -> Vec<Vec<String>> {
     let mut ret_vec: Vec<Vec<String>> = Vec::new();
@@ -350,7 +351,8 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
 }
 
 pub fn read_pima_diabetes() -> Vec<AntiGen> {
-    let mut data_vec = read_csv(format!("{}/pima_diabetes/pima_diabetes.csv", REF_DATASET_DIR).as_str());
+    let mut data_vec =
+        read_csv(format!("{}/pima_diabetes/pima_diabetes.csv", REF_DATASET_DIR).as_str());
 
     data_vec.remove(0);
     let (labels, dat): (Vec<String>, Vec<Vec<String>>) = data_vec
@@ -444,7 +446,6 @@ pub fn read_spirals() -> Vec<AntiGen> {
     return antigens;
 }
 
-
 //
 //   Fake news
 //
@@ -472,49 +473,46 @@ fn read_json(path: &str) -> JsonValue {
     }
     let json_str = lines.join("");
     let js_obj = json::parse(&*json_str).unwrap();
-    return js_obj
+    return js_obj;
 }
 
 pub fn read_kaggle_semantic() -> Vec<AntiGen> {
-    let path = format!("{}/kaggle/semantic_features_kaggle.json", FAKE_NEWS_DATASET_DIR);
+    let path = format!(
+        "{}/kaggle/semantic_features_kaggle.json",
+        FAKE_NEWS_DATASET_DIR
+    );
     let mut json_value = read_json(path.as_str());
 
-    json_value.entries().for_each(|(k,v)| println!("{:?}", k));
+    json_value.entries().for_each(|(k, v)| println!("{:?}", k));
 
     let mut news_entries: Vec<AntiGen> = Vec::new();
 
-
     loop {
         let mut val = json_value.pop();
-        if val.is_null(){
+        if val.is_null() {
             break;
-        }else {
-
+        } else {
             let id = val.remove("id").as_i32().unwrap();
             let title: String = val.remove("title").to_string();
             let pub_date: String = val.remove("publishDate").dump();
-            let label : String = val.remove("label").to_string();
+            let label: String = val.remove("label").to_string();
             let mut res_map = val.remove("resultMap");
 
             let mut feature_values: Vec<f64> = Vec::new();
-            res_map.entries_mut().for_each(|(k,v)|{
+            res_map.entries_mut().for_each(|(k, v)| {
                 let f_val = v.remove("featureValue").as_f64().unwrap();
                 feature_values.push(f_val);
             });
 
-            let ag =  AntiGen {
+            let ag = AntiGen {
                 id: id as usize,
                 class_label: label.parse().unwrap(),
                 values: feature_values,
             };
             news_entries.push(ag)
-
         }
     }
 
-
-
     news_entries = normalize_features_ag(news_entries);
     return news_entries;
-
 }

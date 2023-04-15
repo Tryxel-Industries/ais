@@ -76,10 +76,9 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>) -> (f64, f64)
             .unwrap()
     });
 
-
     let initial_border = if values.get(0).unwrap().get_value() > &0.0 {
         LocalSearchBorder::LeavesAt(0.0001)
-    }else {
+    } else {
         LocalSearchBorder::LeavesAt(-0.0001)
     };
     let initial_matches = values
@@ -115,11 +114,7 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>) -> (f64, f64)
     }
 
     let multi = best_count_at.get_value().clone();
-    let offset_dela = if multi > 0.0{
-        -0.001
-    } else {
-        0.001
-    };
+    let offset_dela = if multi > 0.0 { -0.001 } else { 0.001 };
     // let offset_dela = match best_count_at {
     //     LocalSearchBorder::EntersAt(_) => 0.001,
     //     LocalSearchBorder::LeavesAt(_) => -0.001,
@@ -194,21 +189,16 @@ pub fn mutate_multiplier_local_search(
         // and then reduce the size a bit more to not register that ag,
         // because of funkyness with the open intervals we can not do this with tweaking the multiplier so we shift the offsett a bit instead
         find_optimal_open_dim_multi(mapped_ags)
-
-
     } else {
         panic!("error in local s mutate")
     };
 
-
     let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
 
-       if dim_type == DimValueType::Open {
-            change_dim.offset += new_offsett
-        }
-        change_dim.multiplier = new_multi;
-
-
+    if dim_type == DimValueType::Open {
+        change_dim.offset += new_offsett
+    }
+    change_dim.multiplier = new_multi;
 
     return genome;
 }

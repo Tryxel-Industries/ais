@@ -17,9 +17,12 @@ use rand::prelude::SliceRandom;
 use rand::Rng;
 use statrs::statistics::Statistics;
 
-use crate::ais::{ArtificialImmuneSystem, evaluate_population};
+use crate::ais::{evaluate_population, ArtificialImmuneSystem};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_kaggle_semantic, read_pima_diabetes, read_sonar, read_spirals, read_wine};
+use crate::dataset_readers::{
+    read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_kaggle_semantic,
+    read_pima_diabetes, read_sonar, read_spirals, read_wine,
+};
 use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
 use crate::params::{Params, VerbosityParams};
@@ -35,28 +38,35 @@ mod bucket_empire;
 mod dataset_readers;
 mod evaluation;
 pub mod mutations;
-pub mod representation;
-mod selection;
-mod scoring;
-mod util;
-mod testing;
-mod plotting;
-mod result_export;
 mod params;
+mod plotting;
+pub mod representation;
+mod result_export;
+mod scoring;
+mod selection;
+mod testing;
+mod util;
 
-
-fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams, n_folds: usize) {
+fn ais_n_fold_test(
+    params: Params,
+    mut antigens: Vec<AntiGen>,
+    verbosity_params: &VerbosityParams,
+    n_folds: usize,
+) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     let folds = split_train_test_n_fold(&antigens, n_folds);
 
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
-    for (n,(train, test)) in folds.iter().enumerate() {
+    for (n, (train, test)) in folds.iter().enumerate() {
         let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params);
         train_acc_vals.push(train_acc);
         test_acc_vals.push(test_acc);
-        println!("on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}", n,test_acc, train_acc);
+        println!(
+            "on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}",
+            n, test_acc, train_acc
+        );
     }
 
     let train_mean: f64 = train_acc_vals.iter().mean();
@@ -70,7 +80,12 @@ fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params:
     // println!("train size: {:?}, test size {:?}", train.len(), test.len());
 }
 
-fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams, test_frac: f64) {
+fn ais_frac_test(
+    params: Params,
+    mut antigens: Vec<AntiGen>,
+    verbosity_params: &VerbosityParams,
+    test_frac: f64,
+) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     // let mut rng = rand::thread_rng();
@@ -112,7 +127,8 @@ fn ais_test(
     let train = train_slice.clone().to_vec();
 
     let mut ais = ArtificialImmuneSystem::new();
-    let (train_acc_hist, train_score_hist, init_scored_pop) = ais.train(&train, &params, verbosity_params);
+    let (train_acc_hist, train_score_hist, init_scored_pop) =
+        ais.train(&train, &params, verbosity_params);
 
     if verbosity_params.make_plots {
         plot_hist(train_acc_hist, "acuracy");
@@ -138,7 +154,12 @@ fn ais_test(
     let max_ag_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
     let mut match_counter = MatchCounter::new(max_ag_id);
 
-    match_counter.add_evaluations(evaluated_pop.iter().map(|(evaluation,_)| evaluation).collect::<Vec<_>>());
+    match_counter.add_evaluations(
+        evaluated_pop
+            .iter()
+            .map(|(evaluation, _)| evaluation)
+            .collect::<Vec<_>>(),
+    );
 
     let count_map: HashMap<usize, usize> = class_labels
         .clone()
@@ -206,7 +227,6 @@ fn ais_test(
             println!("genome mutation map    {:?}", antibody.mutation_counter);
             println!("genome clone count     {:?}", antibody.clone_count);
 
-
             println!(
                 "num reg {:?} same label {:?} other label {:?}, score {:?}, discounted score {:?}",
                 registered_antigens.len(),
@@ -223,8 +243,14 @@ fn ais_test(
 
     if verbosity_params.display_detailed_error_info {
         println!("zero reg cells {}", zero_reg_cells);
-        println!("########## error mask \n{:?}", match_counter.incorrect_match_counter);
-        println!("########## match mask \n{:?}", match_counter.correct_match_counter);
+        println!(
+            "########## error mask \n{:?}",
+            match_counter.incorrect_match_counter
+        );
+        println!(
+            "########## match mask \n{:?}",
+            match_counter.correct_match_counter
+        );
 
         for n in (0..match_counter.correct_match_counter.len()) {
             let wrong = match_counter.incorrect_match_counter.get(n).unwrap();
@@ -334,7 +360,6 @@ fn modify_config_by_args(params: &mut Params) {
 }
 
 fn main() {
-
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
     // let mut antigens = read_wine();
@@ -345,7 +370,6 @@ fn main() {
     // let mut antigens = read_sonar();
     let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
-
 
     // let mut antigens = read_kaggle_semantic();
     // let _ = antigens.split_off(3000);
@@ -383,7 +407,7 @@ fn main() {
         value_type_valid_mutations: vec![
             DimValueType::Circle,
             DimValueType::Disabled,
-            DimValueType::Open
+            DimValueType::Open,
         ],
         // value_type_valid_mutations: vec![DimValueType::Circle],
         label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
@@ -420,7 +444,7 @@ fn main() {
         antibody_rand_init_range_range: 0.1..=0.4,
     };
 
-    let frac_verbosity_params = VerbosityParams{
+    let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: false,
         iter_info_interval: Some(1),
         full_pop_acc_interval: Some(2),

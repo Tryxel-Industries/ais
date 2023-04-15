@@ -11,9 +11,8 @@ use crate::representation::antigen::AntiGen;
 pub fn score_antibodies(
     evaluated_population: Vec<(Evaluation, Antibody)>,
     count_map: &HashMap<usize, usize>,
-    match_counter: &MatchCounter
+    match_counter: &MatchCounter,
 ) -> Vec<(f64, Evaluation, Antibody)> {
-
     let merged_mask: &Vec<usize> = match_counter.correct_match_counter.as_ref();
     let error_merged_mask: &Vec<usize> = match_counter.incorrect_match_counter.as_ref();
     // println!("{:?}", merged_mask);
@@ -105,23 +104,18 @@ pub fn score_antibodies(
             // score += pos_coverage/4.0;
             // score += f1;
 
-
             // add a value from 1 -> -1 indicating the fraction of correctness
-            score += (true_positives - (false_positives*2.0))/ (true_positives+false_positives).max(1.0);
+            score += (true_positives - (false_positives * 2.0))
+                / (true_positives + false_positives).max(1.0);
 
             // add a value from (0 - 1) * a indicating the coverage of the label space
             let a = 1.0;
             score += pos_coverage * a;
 
             let b = 0.5;
-            score += (discounted_match_score/(true_positives).max(1.0))* b;
+            score += (discounted_match_score / (true_positives).max(1.0)) * b;
 
             // score -= error_problem_magnitude;
-
-
-
-
-
 
             if pred_pos == tot_elements {
                 score = -5.0;

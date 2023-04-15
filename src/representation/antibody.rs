@@ -1,6 +1,6 @@
+use crate::params::MutationType;
 use std::collections::HashMap;
 use strum_macros::Display;
-use crate::params::MutationType;
 
 use crate::representation::antigen::AntiGen;
 
@@ -10,8 +10,6 @@ pub enum DimValueType {
     Open,
     Circle,
 }
-
-
 
 #[derive(Clone, Debug)]
 pub struct AntibodyDim {
@@ -29,50 +27,37 @@ pub struct Antibody {
     pub radius_constant: f64,
     pub class_label: usize,
     //todo: remove when running hyper optimized
-    pub mutation_counter: HashMap<MutationType,usize>,
-    pub clone_count: usize
+    pub mutation_counter: HashMap<MutationType, usize>,
+    pub clone_count: usize,
 }
 
 #[derive(Debug)]
-pub enum LocalSearchBorder{
+pub enum LocalSearchBorder {
     EntersAt(f64),
     LeavesAt(f64),
 }
 
-impl LocalSearchBorder{
-    pub fn get_value(&self) -> &f64{
+impl LocalSearchBorder {
+    pub fn get_value(&self) -> &f64 {
         match self {
-            LocalSearchBorder::EntersAt(v) => {v},
-            LocalSearchBorder::LeavesAt(v) => {v},
+            LocalSearchBorder::EntersAt(v) => v,
+            LocalSearchBorder::LeavesAt(v) => v,
         }
     }
 
-    pub fn is_same_type(&self, other: &LocalSearchBorder) -> bool{
+    pub fn is_same_type(&self, other: &LocalSearchBorder) -> bool {
         return match self {
-            LocalSearchBorder::EntersAt(_) => {
-                match other {
-                    LocalSearchBorder::EntersAt(_) => {
-                        true
-                    }
-                    LocalSearchBorder::LeavesAt(_) => {
-                        false
-                    }
-                }
+            LocalSearchBorder::EntersAt(_) => match other {
+                LocalSearchBorder::EntersAt(_) => true,
+                LocalSearchBorder::LeavesAt(_) => false,
             },
-            LocalSearchBorder::LeavesAt(_) => {
-                match other {
-                    LocalSearchBorder::EntersAt(_) => {
-                        false
-                    }
-                    LocalSearchBorder::LeavesAt(_) => {
-                        true
-                    }
-                }
+            LocalSearchBorder::LeavesAt(_) => match other {
+                LocalSearchBorder::EntersAt(_) => false,
+                LocalSearchBorder::LeavesAt(_) => true,
             },
-        }
+        };
     }
 }
-
 
 impl Antibody {
     //
@@ -82,11 +67,15 @@ impl Antibody {
     ///
     /// used for local searching
     ///
-    pub fn solve_multi_for_dim_with_antigen(&self, check_dim: usize, antigen: &AntiGen) -> Option<LocalSearchBorder> {
+    pub fn solve_multi_for_dim_with_antigen(
+        &self,
+        check_dim: usize,
+        antigen: &AntiGen,
+    ) -> Option<LocalSearchBorder> {
         let mut roll_sum: f64 = 0.0;
 
         for i in 0..antigen.values.len() {
-            if i == check_dim{
+            if i == check_dim {
                 continue;
             }
             let b_dim = self.dim_values.get(i).unwrap();
@@ -108,46 +97,42 @@ impl Antibody {
 
         // if all parts - radius is < 0 there is a match
         let multi = match cd_value_type {
-            DimValueType::Disabled => {
-                None
-            }
+            DimValueType::Disabled => None,
             DimValueType::Open => {
-                let cd_base = (ag_check_dim_val-cd_offset);
+                let cd_base = (ag_check_dim_val - cd_offset);
                 let affinity_with_zero_multi = roll_sum - self.radius_constant;
 
                 // solve for check dim multi
-                let res_match_multi = (self.radius_constant - roll_sum)/cd_base;
+                let res_match_multi = (self.radius_constant - roll_sum) / cd_base;
 
                 let res_is_pos = res_match_multi > 0.0;
                 let cur_is_pos = cd_multiplier > 0.0;
 
-                if res_is_pos != cur_is_pos{
+                if res_is_pos != cur_is_pos {
                     // if the solved value is on the other side of 0 return as unsolvable
-                    return None
+                    return None;
                 } else {
-
-
-                    if affinity_with_zero_multi <= 0.0{
+                    if affinity_with_zero_multi <= 0.0 {
                         // By testing what ag's the system matches when the multi is set to 0 we
                         // can quicly figure out if the treshold will leave or enter the ag
-                        return Some(LocalSearchBorder::LeavesAt(res_match_multi))
-                    }else {
-                        return Some(LocalSearchBorder::EntersAt(res_match_multi))
+                        return Some(LocalSearchBorder::LeavesAt(res_match_multi));
+                    } else {
+                        return Some(LocalSearchBorder::EntersAt(res_match_multi));
                     }
                 }
             }
             DimValueType::Circle => {
-                let cd_base = (ag_check_dim_val-cd_offset).powi(2);
+                let cd_base = (ag_check_dim_val - cd_offset).powi(2);
 
                 // solve for check dim multi
                 let rest_sub_radius_sum = self.radius_constant - roll_sum;
 
-                if rest_sub_radius_sum < 0.0{
+                if rest_sub_radius_sum < 0.0 {
                     // if the rest sub radius is negative it is not solvable
-                    return None
-                }else {
-                    let res_match_multi = (rest_sub_radius_sum/cd_base).sqrt();
-                    return Some(LocalSearchBorder::EntersAt(res_match_multi))
+                    return None;
+                } else {
+                    let res_match_multi = (rest_sub_radius_sum / cd_base).sqrt();
+                    return Some(LocalSearchBorder::EntersAt(res_match_multi));
                 }
             }
         };
@@ -187,4 +172,3 @@ impl Antibody {
         }
     }
 }
-

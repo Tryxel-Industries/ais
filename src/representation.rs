@@ -1,13 +1,13 @@
 use rayon::prelude::*;
 
-use crate::BucketKing;
 use crate::evaluation::evaluate_antibody;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
+use crate::BucketKing;
 
 pub mod antibody;
-pub mod antigen;
 pub mod antibody_factory;
+pub mod antigen;
 
 pub fn expand_antibody_radius_until_hit(
     mut cell: Antibody,
@@ -30,7 +30,7 @@ pub fn expand_antibody_radius_until_hit(
         return cell;
     }
     let mut evaluation = loop {
-        let evaluation = evaluate_antibody( antigens, &cell);
+        let evaluation = evaluate_antibody(antigens, &cell);
 
         if evaluation.wrongly_matched.len() > 0 {
             break evaluation;

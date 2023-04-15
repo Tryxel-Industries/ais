@@ -37,7 +37,6 @@ impl AntibodyFactory {
 
         class_labels: Vec<usize>,
     ) -> Self {
-
         let range_to_uniform = |range: RangeInclusive<f64>| {
             return vec![range; n_dims]
                 .iter()

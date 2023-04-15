@@ -13,11 +13,7 @@ pub struct Evaluation {
     pub wrongly_matched: Vec<usize>,
 }
 
-
-pub fn evaluate_antibody(
-    antigens: &Vec<AntiGen>,
-    antibody: &Antibody,
-) -> Evaluation {
+pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
     /*
     //todo: this is a mess that does not work if any of the dims are open, some workarounds are possible but probably firmly overoptimizing
     let dim_radus = antibody
@@ -139,69 +135,70 @@ pub struct MatchCounter {
 }
 
 impl MatchCounter {
-    pub fn new(max_id: usize) -> MatchCounter{
-        return MatchCounter{
+    pub fn new(max_id: usize) -> MatchCounter {
+        return MatchCounter {
             max_id,
-            correct_match_counter: vec![0usize; max_id+1],
-            incorrect_match_counter: vec![0usize; max_id+1]
+            correct_match_counter: vec![0usize; max_id + 1],
+            incorrect_match_counter: vec![0usize; max_id + 1],
         };
-
     }
 
-    pub fn get_inversed_correct_match_counts(&self) -> Vec<usize>{
+    pub fn get_inversed_correct_match_counts(&self) -> Vec<usize> {
         let max_val = self.correct_match_counter.iter().max().unwrap();
         let mut inverse = self.correct_match_counter.clone();
         inverse = inverse.iter().map(|v| max_val - v).collect();
         return inverse;
     }
 
-    pub fn get_inversed_incorrect_match_counts(&self) -> Vec<usize>{
+    pub fn get_inversed_incorrect_match_counts(&self) -> Vec<usize> {
         let max_val = self.incorrect_match_counter.iter().max().unwrap();
         let mut inverse = self.incorrect_match_counter.clone();
         inverse = inverse.iter().map(|v| max_val - v).collect();
         return inverse;
     }
 
-    pub fn add_evaluations(&mut self, evaluations: Vec<&Evaluation> ){
-        for evaluation in evaluations{
-            for correct_match_id in &evaluation.matched_ids{
+    pub fn add_evaluations(&mut self, evaluations: Vec<&Evaluation>) {
+        for evaluation in evaluations {
+            for correct_match_id in &evaluation.matched_ids {
                 if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
                     *elem += 1;
-                }else {
-                    println!("match id {:?} arr len {:?}", correct_match_id, self.correct_match_counter.len());
+                } else {
+                    println!(
+                        "match id {:?} arr len {:?}",
+                        correct_match_id,
+                        self.correct_match_counter.len()
+                    );
                     panic!("match count error")
                 }
             }
 
-            for correct_match_id in &evaluation.wrongly_matched{
+            for correct_match_id in &evaluation.wrongly_matched {
                 if let Some(elem) = self.incorrect_match_counter.get_mut(*correct_match_id) {
                     *elem += 1;
-                }else {
+                } else {
                     panic!("match count error")
                 }
             }
         }
-
     }
 
-    pub fn remove_evaluations(&mut self, evaluations: Vec<&Evaluation> ){
-        for evaluation in evaluations{
-            for correct_match_id in &evaluation.matched_ids{
+    pub fn remove_evaluations(&mut self, evaluations: Vec<&Evaluation>) {
+        for evaluation in evaluations {
+            for correct_match_id in &evaluation.matched_ids {
                 if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
                     *elem -= 1;
-                }else {
+                } else {
                     panic!("match count error")
                 }
             }
 
-            for correct_match_id in &evaluation.wrongly_matched{
+            for correct_match_id in &evaluation.wrongly_matched {
                 if let Some(elem) = self.incorrect_match_counter.get_mut(*correct_match_id) {
                     *elem -= 1;
-                }else {
+                } else {
                     panic!("match count error")
                 }
             }
         }
-
     }
 }
