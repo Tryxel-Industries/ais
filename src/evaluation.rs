@@ -15,7 +15,6 @@ pub struct Evaluation {
 
 
 pub fn evaluate_antibody(
-    bk: &BucketKing<AntiGen>,
     antigens: &Vec<AntiGen>,
     antibody: &Antibody,
 ) -> Evaluation {

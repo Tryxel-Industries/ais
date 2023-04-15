@@ -45,7 +45,7 @@ pub fn evaluate_population(
         // .into_iter()
         .map(|antibody| {
             // evaluate antibodies
-            let score = evaluate_antibody(bk, antigens, &antibody);
+            let score = evaluate_antibody( antigens, &antibody);
             return (score, antibody);
         })
         .collect();
@@ -260,7 +260,7 @@ impl ArtificialImmuneSystem {
                     Vec<(Evaluation, Antibody)>,
                     Vec<Option<(Evaluation, Evaluation)>>,
                 ) = parents
-                    .clone()
+                    // .clone()
                     .into_par_iter() // TODO: set paralell
                     // .into_iter()
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
@@ -275,8 +275,9 @@ impl ArtificialImmuneSystem {
                             // .into_iter()
                             .into_par_iter() // TODO: set paralell
                             .map(|_| {
-                                let mutated = mutate(params, frac_of_max, parent_antibody.clone());
-                                let eval = evaluate_antibody(&bucket_king, antigens, &mutated);
+                                let mut mutated = mutate(params, frac_of_max, parent_antibody.clone(), antigens);
+                                mutated.clone_count += 1;
+                                let eval = evaluate_antibody( antigens, &mutated);
                                 return (eval, mutated);
                             })
                             .collect::<Vec<(Evaluation, Antibody)>>(); //.into_iter();//.collect::<Vec<(Evaluation, Antibody)>>()
@@ -404,7 +405,7 @@ impl ArtificialImmuneSystem {
                                     &antigens,
                                 )
                             }
-                            let eval = evaluate_antibody(&bucket_king, antigens, &new_antibody);
+                            let eval = evaluate_antibody( antigens, &new_antibody);
                             return (eval, new_antibody);
                         })
                         .collect();

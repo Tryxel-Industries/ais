@@ -26,10 +26,11 @@ pub fn expand_antibody_radius_until_hit(
         .map(|v| v.value_type)
         .any(|v| v != DimValueType::Disabled)
     {
+        // abort if all dims are disabled
         return cell;
     }
     let mut evaluation = loop {
-        let evaluation = evaluate_antibody(bk, antigens, &cell);
+        let evaluation = evaluate_antibody( antigens, &cell);
 
         if evaluation.wrongly_matched.len() > 0 {
             break evaluation;

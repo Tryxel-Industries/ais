@@ -1,6 +1,7 @@
 #![feature(fn_traits)]
 #![feature(get_many_mut)]
 #![feature(exclusive_range_pattern)]
+#![allow(unused)]
 
 extern crate core;
 
@@ -44,10 +45,10 @@ mod result_export;
 mod params;
 
 
-fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams) {
+fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams, n_folds: usize) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
-    let folds = split_train_test_n_fold(&antigens, 5);
+    let folds = split_train_test_n_fold(&antigens, n_folds);
 
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
@@ -69,7 +70,7 @@ fn ais_n_fold_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params:
     // println!("train size: {:?}, test size {:?}", train.len(), test.len());
 }
 
-fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams) {
+fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &VerbosityParams, test_frac: f64) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     // let mut rng = rand::thread_rng();
@@ -80,7 +81,7 @@ fn ais_frac_test(params: Params, mut antigens: Vec<AntiGen>, verbosity_params: &
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
 
-    let (train_slice, test) = split_train_test(&antigens, 0.2);
+    let (train_slice, test) = split_train_test(&antigens, test_frac);
 
     let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params);
 
@@ -202,6 +203,9 @@ fn ais_test(
             println!("genome errors     {:?}", eval.wrongly_matched);
 
             println!("genome value radius    {:?}", antibody.radius_constant);
+            println!("genome mutation map    {:?}", antibody.mutation_counter);
+            println!("genome clone count     {:?}", antibody.clone_count);
+
 
             println!(
                 "num reg {:?} same label {:?} other label {:?}, score {:?}, discounted score {:?}",
@@ -227,7 +231,7 @@ fn ais_test(
             let right = match_counter.correct_match_counter.get(n).unwrap();
 
             if wrong > right {
-                println!("idx: {:2>?}  cor: {:2>?} - wrong {:2>?}", n, right, wrong);
+                println!("idx: {:>4?}  cor: {:>3?} - wrong {:>3?}", n, right, wrong);
                 // println!("ag dat: {:?}", antigens.iter().filter(|ag| ag.id == n).last().unwrap());
             }
         }
@@ -330,17 +334,16 @@ fn modify_config_by_args(params: &mut Params) {
 }
 
 fn main() {
-    #![ allow(unused)]
 
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
-    let mut antigens = read_wine();
+    // let mut antigens = read_wine();
     // let mut antigens = read_diabetes();
     // let mut antigens = read_spirals();
 
     // let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
-    // let mut antigens = read_glass();
+    let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
 
 
@@ -358,14 +361,17 @@ fn main() {
     let mut params = Params {
         // -- train params -- //
         antigen_pop_fraction: 1.0,
-        generations: 1000,
+        generations: 2000,
 
-        mutation_offset_weight: 3,
-        mutation_multiplier_weight: 3,
-        mutation_radius_weight: 2,
-        mutation_value_type_weight: 0,
+        mutation_offset_weight: 5,
+        mutation_multiplier_weight: 5,
+        mutation_multiplier_local_search_weight: 3,
+        mutation_radius_weight: 5,
+        mutation_value_type_weight: 3,
 
         mutation_label_weight: 0,
+
+        mutation_value_type_local_search_dim: true,
 
         // offset_mutation_multiplier_range: 0.8..=1.2,
         // multiplier_mutation_multiplier_range: 0.8..=1.2,
@@ -377,13 +383,13 @@ fn main() {
         value_type_valid_mutations: vec![
             DimValueType::Circle,
             DimValueType::Disabled,
-            // DimValueType::Open,
+            DimValueType::Open
         ],
         // value_type_valid_mutations: vec![DimValueType::Circle],
         label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
 
         //selection
-        leak_fraction: 0.3,
+        leak_fraction: 0.5,
         leak_rand_prob: 0.5,
         max_replacment_frac: 0.6,
         tournament_size: 1,
@@ -398,7 +404,7 @@ fn main() {
         antibody_ag_init_value_types: vec![
             DimValueType::Circle,
             DimValueType::Disabled,
-            // DimValueType::Open,
+            DimValueType::Open,
         ],
         antibody_ag_init_range_range: 0.1..=0.4,
 
@@ -421,12 +427,12 @@ fn main() {
         // full_pop_acc_interval: None,
         show_class_info: false,
         make_plots: true,
-        display_final_ab_info: false,
+        display_final_ab_info: true,
         display_detailed_error_info: true,
         display_final_acc_info: true,
     };
     modify_config_by_args(&mut params);
 
-    // ais_frac_test(params, antigens, &frac_verbosity_params);
-    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults())
+    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
+    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
 }

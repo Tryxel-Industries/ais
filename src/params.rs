@@ -4,10 +4,11 @@ use rand::prelude::SliceRandom;
 
 use crate::representation::antibody::DimValueType;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq,Hash)]
 pub enum MutationType {
     Offset,
     Multiplier,
+    MultiplierLocalSearch,
     ValueType,
     Radius,
     Label,
@@ -23,9 +24,12 @@ pub struct Params {
 
     pub mutation_offset_weight: usize,
     pub mutation_multiplier_weight: usize,
+    pub mutation_multiplier_local_search_weight: usize,
     pub mutation_radius_weight: usize,
     pub mutation_value_type_weight: usize,
     pub mutation_label_weight: usize,
+
+    pub mutation_value_type_local_search_dim: bool,
 
     pub offset_mutation_multiplier_range: RangeInclusive<f64>,
     pub multiplier_mutation_multiplier_range: RangeInclusive<f64>,
@@ -58,6 +62,7 @@ impl Params {
         let weighted = vec![
             (MutationType::Offset, self.mutation_offset_weight),
             (MutationType::Multiplier, self.mutation_multiplier_weight),
+            (MutationType::MultiplierLocalSearch, self.mutation_multiplier_local_search_weight),
             (MutationType::ValueType, self.mutation_value_type_weight),
             (MutationType::Radius, self.mutation_radius_weight),
             (MutationType::Label, self.mutation_label_weight),
