@@ -427,6 +427,6 @@ fn main() {
     };
     modify_config_by_args(&mut params);
 
-    ais_frac_test(params, antigens, &frac_verbosity_params);
-    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults())
+    // ais_frac_test(params, antigens, &frac_verbosity_params);
+    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults())
 }

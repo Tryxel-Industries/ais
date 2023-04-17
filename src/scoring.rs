@@ -107,7 +107,7 @@ pub fn score_antibodies(
 
 
             // add a value from 1 -> -1 indicating the fraction of correctness
-            score += (true_positives - (false_positives*1.7))/ (true_positives+(false_positives*1.7)).max(1.0);
+            score += (true_positives - (false_positives*2.0))/ (true_positives+(false_positives*2.0)).max(1.0);
 
             // add a value from (0 - 1) * a indicating the coverage of the label space
             let a = 1.0;
