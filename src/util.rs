@@ -2,8 +2,9 @@ use std::collections::HashSet;
 
 use rand::Rng;
 
-use crate::representation::antigen::AntiGen;
-
+use crate::representation::{antigen::AntiGen, antibody::Antibody, antibody::AntibodyDim};
+use core::{self, num};
+use nalgebra::{DMatrix};
 /// Given a vector `vec` and a positive integer `n`, returns a new vector that contains `n`
 /// randomly chosen elements from `vec`. The elements in the resulting vector are in the same
 /// order as they appear in `vec`.
@@ -30,6 +31,26 @@ use crate::representation::antigen::AntiGen;
 /// let picks = pick_n_random(vec, 3);
 /// assert_eq!(picks.len(), 3);
 /// ```
+
+// pub fn construct_orthonormal_vecs(population: &Vec<Antibody>) -> nalgebra::base::Matrix1<f64> {
+pub fn construct_orthonormal_vecs(population: &[Antibody]) -> nalgebra::base::Matrix1<f64> {
+    let nf: usize = 8;
+    
+    let t: Vec<f64>= population.iter()
+        .map(|ab| &ab.dim_values)
+        .map(|f| {
+            f.iter()
+            .map(|m| m.offset)
+            .collect::<Vec<f64>>()
+        }).flatten()
+        .collect();
+    let dm1 = DMatrix::from_vec( nf, population.len(), t.clone()).transpose();
+    println!("{:?}", t.clone());
+    println!("{}", dm1);
+    println!("skadoosh");
+    todo!()
+}
+
 pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     let mut rng = rand::thread_rng();
 
