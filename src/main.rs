@@ -27,6 +27,7 @@ use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
 use crate::params::{Params, VerbosityParams};
 use crate::plotting::plot_hist;
+use crate::proto_test::read_kaggle;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::result_export::dump_to_csv;
@@ -46,6 +47,11 @@ mod scoring;
 mod selection;
 mod testing;
 mod util;
+mod proto_test;
+
+pub mod entities {
+    include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
+}
 
 fn ais_n_fold_test(
     params: Params,
@@ -358,7 +364,9 @@ fn modify_config_by_args(params: &mut Params) {
         }
     }
 }
-
+fn main_(){
+    read_kaggle();
+}
 fn main() {
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();

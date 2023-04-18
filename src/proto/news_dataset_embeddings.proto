@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package protobuf.entities;
+
+message Embedding{
+  int32 sentence_id = 1;
+  repeated double embedding_value = 2;
+}
+
+message NewsEntryEmbeddings{
+  int32 id = 1;
+  int64 publish_date = 2;
+  string label = 4;
+
+
+  repeated Embedding embeddings = 5;
+}
+
+message DatasetEmbeddings{
+  string dataset_name = 1;
+  repeated NewsEntryEmbeddings news_entries = 2;
+}
