@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use rand::{distributions::Distribution, Rng, thread_rng};
 use rand::prelude::SliceRandom;
+use rand::{distributions::Distribution, thread_rng, Rng};
 
 use crate::evaluation::{Evaluation, MatchCounter};
 use crate::params::Params;
@@ -41,30 +41,29 @@ pub fn kill_by_mask_yo(
     return survivors;
 }
 
-
 /*
 
 
-            let n_to_gen_map = if is_strip_round {
-                let (removed_map, stripped_pop) = remove_strictly_worse(
-                    scored_pop,
-                    &mut match_mask,
-                    &mut error_match_mask,
-                    Some(5),
-                );
-                scored_pop = stripped_pop;
-                println!("\n\nstrip round stripping map {:?}\n\n", removed_map);
-                removed_map
-            } else {
-                let mut replace_map = HashMap::new();
+           let n_to_gen_map = if is_strip_round {
+               let (removed_map, stripped_pop) = remove_strictly_worse(
+                   scored_pop,
+                   &mut match_mask,
+                   &mut error_match_mask,
+                   Some(5),
+               );
+               scored_pop = stripped_pop;
+               println!("\n\nstrip round stripping map {:?}\n\n", removed_map);
+               removed_map
+           } else {
+               let mut replace_map = HashMap::new();
 
-                for (label, fraction) in &frac_map {
-                    let replace_count_for_label = (n_to_leak as f64 * fraction).ceil() as usize;
-                    replace_map.insert(label.clone(), replace_count_for_label);
-                }
-                replace_map
-            };
- */
+               for (label, fraction) in &frac_map {
+                   let replace_count_for_label = (n_to_leak as f64 * fraction).ceil() as usize;
+                   replace_map.insert(label.clone(), replace_count_for_label);
+               }
+               replace_map
+           };
+*/
 pub fn remove_strictly_worse(
     mut scored_pop: Vec<(f64, Evaluation, Antibody)>,
     match_mask: &mut Vec<usize>,
@@ -189,7 +188,7 @@ pub fn replace_if_better_per_cat(
     mut population: Vec<(f64, Evaluation, Antibody)>,
     mut replacements: Vec<(f64, Evaluation, Antibody)>,
     mut snip_list: HashMap<usize, usize>,
-    match_counter: &mut MatchCounter
+    match_counter: &mut MatchCounter,
 ) -> Vec<(f64, Evaluation, Antibody)> {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
@@ -232,7 +231,6 @@ pub fn replace_if_better_per_cat(
         }
     }
 
-
     for (pop_idx, rep_idx) in rep_map {
         // let mut parent_value = scored_pop.get_mut(idx).unwrap();
         let (p_score, p_eval, p_cell) = population.get_mut(pop_idx).unwrap();
@@ -247,7 +245,6 @@ pub fn replace_if_better_per_cat(
         *p_eval = c_eval.clone();
         *p_cell = c_cell.clone();
     }
-
 
     return population;
 }
@@ -278,7 +275,10 @@ pub fn selection(
 pub fn elitism_selection(
     mut population: Vec<(f64, Evaluation, Antibody)>,
     num: &usize,
-) -> (Vec<(f64, Evaluation, Antibody)>, Vec<(f64, Evaluation, Antibody)>) {
+) -> (
+    Vec<(f64, Evaluation, Antibody)>,
+    Vec<(f64, Evaluation, Antibody)>,
+) {
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.partial_cmp(score_b).unwrap());
 
     // let mut res_cells  = population.into_iter().map(|(a, b)| b).collect::<Vec<_>>();

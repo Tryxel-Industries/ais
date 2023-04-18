@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
 use rand::distributions::{Distribution, Uniform};
@@ -36,7 +37,6 @@ impl AntibodyFactory {
 
         class_labels: Vec<usize>,
     ) -> Self {
-
         let range_to_uniform = |range: RangeInclusive<f64>| {
             return vec![range; n_dims]
                 .iter()
@@ -114,6 +114,8 @@ impl AntibodyFactory {
             dim_values: dim_multipliers,
             radius_constant,
             class_label,
+            mutation_counter: HashMap::new(),
+            clone_count: 0,
         };
     }
     pub fn generate_random_genome_with_label(&self, label: usize) -> Antibody {
@@ -165,6 +167,8 @@ impl AntibodyFactory {
             dim_values: dim_multipliers,
             radius_constant,
             class_label,
+            mutation_counter: HashMap::new(),
+            clone_count: 0,
         };
     }
 }

@@ -45,7 +45,7 @@ pub fn evaluate_population(
         // .into_iter()
         .map(|antibody| {
             // evaluate antibodies
-            let score = evaluate_antibody(bk, antigens, &antibody);
+            let score = evaluate_antibody(antigens, &antibody);
             return (score, antibody);
         })
         .collect();
@@ -260,7 +260,7 @@ impl ArtificialImmuneSystem {
                     Vec<(Evaluation, Antibody)>,
                     Vec<Option<(Evaluation, Evaluation)>>,
                 ) = parents
-                    .clone()
+                    // .clone()
                     .into_par_iter() // TODO: set paralell
                     // .into_iter()
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
@@ -275,8 +275,10 @@ impl ArtificialImmuneSystem {
                             // .into_iter()
                             .into_par_iter() // TODO: set paralell
                             .map(|_| {
-                                let mutated = mutate(params, frac_of_max, parent_antibody.clone());
-                                let eval = evaluate_antibody(&bucket_king, antigens, &mutated);
+                                let mut mutated =
+                                    mutate(params, frac_of_max, parent_antibody.clone(), antigens);
+                                mutated.clone_count += 1;
+                                let eval = evaluate_antibody(antigens, &mutated);
                                 return (eval, mutated);
                             })
                             .collect::<Vec<(Evaluation, Antibody)>>(); //.into_iter();//.collect::<Vec<(Evaluation, Antibody)>>()
@@ -375,7 +377,6 @@ impl ArtificialImmuneSystem {
                         continue;
                     }
 
-
                     let filtered: Vec<_> = antigens
                         .iter()
                         .filter(|ag| ag.class_label == *label)
@@ -404,16 +405,17 @@ impl ArtificialImmuneSystem {
                                     &antigens,
                                 )
                             }
-                            let eval = evaluate_antibody(&bucket_king, antigens, &new_antibody);
+                            let eval = evaluate_antibody(antigens, &new_antibody);
                             return (eval, new_antibody);
                         })
                         .collect();
 
-                    let new_evals: Vec<_> = new_pop_pop.iter().map(|(e,_)|e).collect();
+                    let new_evals: Vec<_> = new_pop_pop.iter().map(|(e, _)| e).collect();
                     local_match_counter.add_evaluations(new_evals);
-                    let leaked_to_add = score_antibodies(new_pop_pop, &count_map, &local_match_counter);
+                    let leaked_to_add =
+                        score_antibodies(new_pop_pop, &count_map, &local_match_counter);
 
-                    let cleanup_evals: Vec<_> = leaked_to_add.iter().map(|(_,e,_)|e).collect();
+                    let cleanup_evals: Vec<_> = leaked_to_add.iter().map(|(_, e, _)| e).collect();
                     local_match_counter.remove_evaluations(cleanup_evals);
 
                     new_leaked.extend(leaked_to_add);

@@ -52,7 +52,6 @@ pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     return picks;
 }
 
-
 /// Splits a collection of AntiGen instances into training and testing sets, with the specified
 /// proportion of instances reserved for testing. Returns a tuple containing the training set
 /// followed by the test set.
@@ -89,7 +88,6 @@ pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen
 
     return (train, test);
 }
-
 
 /// Splits a collection of AntiGen instances into train and test sets using a "n-fold" cross-validation
 /// method, with the specified number of folds. Returns a vector of tuples, each containing a training
