@@ -43,12 +43,12 @@ fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
                 let max = max_v.get(i).unwrap();
 
                 let val = f_vals[i].clone();
-                f_vals[i] = (val - min) / (max - min);
+                let result = (val - min) / (max - min);
+                f_vals[i] = if result.is_nan() {0.0f64} else {result}
             }
             return f_vals;
         })
         .collect();
-
     return ret;
 }
 
@@ -346,7 +346,6 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
             };
         })
         .collect();
-
     return antigens;
 }
 
