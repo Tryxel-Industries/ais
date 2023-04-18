@@ -368,8 +368,8 @@ fn main() {
 
     // let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
-    let mut antigens = read_glass();
-    // let mut antigens = read_ionosphere();
+    // let mut antigens = read_glass();
+    let mut antigens = read_ionosphere();
 
     // let mut antigens = read_kaggle_semantic();
     // let _ = antigens.split_off(3000);
@@ -385,7 +385,7 @@ fn main() {
     let mut params = Params {
         // -- train params -- //
         antigen_pop_fraction: 1.0,
-        generations: 2000,
+        generations: 200,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,
@@ -457,6 +457,6 @@ fn main() {
     };
     modify_config_by_args(&mut params);
 
-    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
-    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
+    // ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
+    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
 }
