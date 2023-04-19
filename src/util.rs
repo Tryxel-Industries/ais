@@ -1,7 +1,7 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, f64::consts::PI, vec};
 
-use rand::Rng;
-
+use rand::{Rng, random, seq::IteratorRandom};
+use rand_distr::{Normal, Distribution};
 use crate::representation::{antigen::AntiGen, antibody::Antibody, antibody::AntibodyDim};
 use core::{self, num};
 use nalgebra::{DMatrix};
@@ -44,10 +44,36 @@ pub fn construct_orthonormal_vecs(population: &[Antibody]) -> nalgebra::base::Ma
             .collect::<Vec<f64>>()
         }).flatten()
         .collect();
-    let dm1 = DMatrix::from_vec( nf, population.len(), t.clone()).transpose();
+    let mut dm1 = DMatrix::from_vec( nf, population.len(), t.clone()).transpose();
     println!("{:?}", t.clone());
     println!("{}", dm1);
     println!("skadoosh");
+    mutate_orientation(&mut dm1);
+    todo!()
+}
+
+pub fn mutate_orientation(mut m: &mut DMatrix<f64>) {
+    let q = m.shape().1;
+    let mut rng = rand::thread_rng();
+    let distr = Normal::new(0.0, PI/2.0).unwrap();
+    let theta = distr.sample(&mut rng);
+    let column_idxs: Vec<usize> = m.column_iter()
+        .enumerate()
+        .choose_multiple(&mut rng, 2).iter()
+        .map(|f| f.0)
+        .collect();
+    
+    let c1 = m.column(column_idxs[0]);
+    let c2 = m.column(column_idxs[1]);
+    let tmp = c1 * theta.cos() + c2 * theta.sin();
+    let tmp2 = c1 * -theta.sin() + c2 * theta.cos();
+    
+    m.column_mut(column_idxs[0]).copy_from(&tmp);
+    m.column_mut(column_idxs[1]).copy_from(&tmp2);
+
+    println!("{:?}", theta);
+    println!("{}", m);
+    // println!("{:?}", q.clone());
     todo!()
 }
 
