@@ -33,7 +33,6 @@ use crate::representation::antigen::AntiGen;
 use crate::result_export::dump_to_csv;
 use crate::scoring::score_antibodies;
 use crate::util::{split_train_test, split_train_test_n_fold};
-
 mod ais;
 mod bucket_empire;
 mod dataset_readers;
@@ -45,9 +44,10 @@ pub mod representation;
 mod result_export;
 mod scoring;
 mod selection;
-mod testing;
 mod util;
 mod proto_test;
+#[cfg(test)]
+mod tests;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -140,7 +140,7 @@ fn ais_test(
         plot_hist(train_acc_hist, "acuracy");
         plot_hist(train_score_hist, "score");
     }
-    let duration = start.elapsed();
+    let duration: std::time::Duration = start.elapsed();
 
     let mut zero_reg_cells = 0;
     // display final
@@ -155,7 +155,10 @@ fn ais_test(
         .into_iter()
         .map(|(a, b, c)| c)
         .collect();
+
     let evaluated_pop = evaluate_population(&bk, &params, pop, &antigens);
+
+
 
     let max_ag_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
     let mut match_counter = MatchCounter::new(max_ag_id);
@@ -393,7 +396,7 @@ fn main() {
     let mut params = Params {
         // -- train params -- //
         antigen_pop_fraction: 1.0,
-        generations: 500,
+        generations: 250,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,

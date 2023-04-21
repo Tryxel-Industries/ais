@@ -12,6 +12,9 @@ pub enum MutationType {
     ValueType,
     Radius,
     Label,
+    OffsetVector,
+    LengthMatrix,
+    OrientationMatrix,
 }
 
 pub struct Params {
@@ -68,6 +71,9 @@ impl Params {
             (MutationType::ValueType, self.mutation_value_type_weight),
             (MutationType::Radius, self.mutation_radius_weight),
             (MutationType::Label, self.mutation_label_weight),
+            (MutationType::OrientationMatrix, self.mutation_label_weight),
+            (MutationType::LengthMatrix, self.mutation_label_weight),
+            (MutationType::OffsetVector, self.mutation_label_weight),
         ];
 
         let mut rng = rand::thread_rng();

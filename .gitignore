@@ -15,3 +15,5 @@ display/.ipynb_checkpoints/*
 
 datasets/fake_news/*
 out/*
+
+.vscode

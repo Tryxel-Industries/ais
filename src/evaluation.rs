@@ -13,6 +13,11 @@ pub struct Evaluation {
     pub wrongly_matched: Vec<usize>,
 }
 
+pub fn evaluate_antibody_with_orientation(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
+    todo!();
+}
+
+
 pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
     /*
     //todo: this is a mess that does not work if any of the dims are open, some workarounds are possible but probably firmly overoptimizing
