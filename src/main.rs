@@ -27,6 +27,7 @@ use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
 use crate::params::{Params, VerbosityParams};
 use crate::plotting::plot_hist;
+use crate::proto_test::read_kaggle;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::result_export::dump_to_csv;
@@ -46,6 +47,11 @@ mod scoring;
 mod selection;
 mod testing;
 mod util;
+mod proto_test;
+
+pub mod entities {
+    include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
+}
 
 fn ais_n_fold_test(
     params: Params,
@@ -358,13 +364,15 @@ fn modify_config_by_args(params: &mut Params) {
         }
     }
 }
-
+fn main_(){
+    read_kaggle();
+}
 fn main() {
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
     // let mut antigens = read_wine();
-    // let mut antigens = read_diabetes();
-    let mut antigens = read_spirals();
+    let mut antigens = read_diabetes();
+    // let mut antigens = read_spirals();
 
     // let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
@@ -385,7 +393,7 @@ fn main() {
     let mut params = Params {
         // -- train params -- //
         antigen_pop_fraction: 1.0,
-        generations: 1000,
+        generations: 500,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,

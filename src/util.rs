@@ -1,9 +1,10 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, f64::consts::PI, vec};
 
-use rand::Rng;
-
-use crate::representation::antigen::AntiGen;
-
+use rand::{Rng, random, seq::IteratorRandom};
+use rand_distr::{Normal, Distribution};
+use crate::representation::{antigen::AntiGen, antibody::Antibody, antibody::AntibodyDim};
+use core::{self, num};
+use nalgebra::{DMatrix};
 /// Given a vector `vec` and a positive integer `n`, returns a new vector that contains `n`
 /// randomly chosen elements from `vec`. The elements in the resulting vector are in the same
 /// order as they appear in `vec`.
@@ -30,6 +31,52 @@ use crate::representation::antigen::AntiGen;
 /// let picks = pick_n_random(vec, 3);
 /// assert_eq!(picks.len(), 3);
 /// ```
+
+// pub fn construct_orthonormal_vecs(population: &Vec<Antibody>) -> nalgebra::base::Matrix1<f64> {
+pub fn construct_orthonormal_vecs(population: &[Antibody]) -> nalgebra::base::Matrix1<f64> {
+    let nf: usize = 8;
+    
+    let t: Vec<f64>= population.iter()
+        .map(|ab| &ab.dim_values)
+        .map(|f| {
+            f.iter()
+            .map(|m| m.offset)
+            .collect::<Vec<f64>>()
+        }).flatten()
+        .collect();
+    let mut dm1 = DMatrix::from_vec( nf, population.len(), t.clone()).transpose();
+    println!("{:?}", t.clone());
+    println!("{}", dm1);
+    println!("skadoosh");
+    mutate_orientation(&mut dm1);
+    todo!()
+}
+
+pub fn mutate_orientation(mut m: &mut DMatrix<f64>) {
+    let q = m.shape().1;
+    let mut rng = rand::thread_rng();
+    let distr = Normal::new(0.0, PI/2.0).unwrap();
+    let theta = distr.sample(&mut rng);
+    let column_idxs: Vec<usize> = m.column_iter()
+        .enumerate()
+        .choose_multiple(&mut rng, 2).iter()
+        .map(|f| f.0)
+        .collect();
+    
+    let c1 = m.column(column_idxs[0]);
+    let c2 = m.column(column_idxs[1]);
+    let tmp = c1 * theta.cos() + c2 * theta.sin();
+    let tmp2 = c1 * -theta.sin() + c2 * theta.cos();
+    
+    m.column_mut(column_idxs[0]).copy_from(&tmp);
+    m.column_mut(column_idxs[1]).copy_from(&tmp2);
+
+    println!("{:?}", theta);
+    println!("{}", m);
+    // println!("{:?}", q.clone());
+    todo!()
+}
+
 pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     let mut rng = rand::thread_rng();
 

@@ -266,7 +266,7 @@ impl ArtificialImmuneSystem {
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
                     .map(|(parent_score, parent_eval, parent_antibody)| {
                         // find the fraction of max score of the current ab, this is used for the cloning and mutation rates
-                        let frac_of_max = (parent_score / max_score).max(0.2);
+                        let frac_of_max = ((parent_score / max_score)).max(0.2);
                         let n_clones =
                             ((params.n_parents_mutations as f64 * frac_of_max) as usize).max(1);
 
@@ -276,7 +276,7 @@ impl ArtificialImmuneSystem {
                             .into_par_iter() // TODO: set paralell
                             .map(|_| {
                                 let mut mutated =
-                                    mutate(params, frac_of_max, parent_antibody.clone(), antigens);
+                                    mutate(params, (1.0 - frac_of_max), parent_antibody.clone(), antigens);
                                 mutated.clone_count += 1;
                                 let eval = evaluate_antibody(antigens, &mutated);
                                 return (eval, mutated);
