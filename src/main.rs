@@ -439,7 +439,7 @@ fn main() {
         antibody_ag_init_value_types: vec![
             DimValueType::Circle,
             DimValueType::Disabled,
-            DimValueType::Open,
+            // DimValueType::Open,
         ],
         antibody_ag_init_range_range: 0.1..=0.4,
 
@@ -468,6 +468,6 @@ fn main() {
     };
     modify_config_by_args(&mut params);
 
-    // ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
-    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
+    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
+    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
 }

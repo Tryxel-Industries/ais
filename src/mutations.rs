@@ -27,21 +27,21 @@ pub fn mutate(
         .mutation_counter
         .insert(chosen_mutation.clone(), mut_count + 1);
 
-    let mut mutated = match chosen_mutation {
-        MutationType::Offset => mutate_offset(&params, antibody, fitness_scaler),
-        MutationType::Multiplier => mutate_multiplier(&params, antibody, fitness_scaler),
+    match chosen_mutation {
+        MutationType::Offset => mutate_offset(&params, &mut antibody, fitness_scaler),
+        MutationType::Multiplier => mutate_multiplier(&params, &mut antibody, fitness_scaler),
         MutationType::MultiplierLocalSearch => {
-            mutate_multiplier_local_search(&params, antibody, antigens, None)
+            // mutate_multiplier_local_search(&params, antibody, antigens, None)
         }
-        MutationType::ValueType => mutate_value_type(&params, antibody, antigens),
-        MutationType::Radius => mutate_radius(&params, antibody, fitness_scaler),
-        MutationType::Label => mutate_label(&params, antibody),
-        MutationType::OffsetVector => mutate_label(&params, antibody),
-        MutationType::LengthMatrix => mutate_label(&params, antibody),
-        MutationType::OrientationMatrix => mutate_label(&params, antibody),
+        MutationType::ValueType => mutate_value_type(&params, &mut antibody, antigens),
+        MutationType::Radius => mutate_radius(&params, &mut antibody, fitness_scaler),
+        MutationType::Label => mutate_label(&params, &mut antibody),
+        MutationType::OffsetVector => mutate_offset_vector(&params, &mut antibody, fitness_scaler),
+        MutationType::LengthMatrix => mutate_length_matrix(&params, &mut antibody, fitness_scaler),
+        MutationType::OrientationMatrix => mutate_orientation_matrix(&params, &mut antibody),
     };
 
-    return mutated;
+    return antibody;
 }
 pub fn get_rand_range(max: usize) -> (usize, usize) {
     let mut rng = rand::thread_rng();
@@ -55,13 +55,12 @@ pub fn get_rand_range(max: usize) -> (usize, usize) {
     };
 }
 
-//TODO: fix this
 pub fn mutate_orientation_matrix(params: &Params, mut genome: &mut Antibody) {
     let q = genome.orientation_matrix.shape().1;
     let mut rng = rand::thread_rng();
     let distr = Normal::new(0.0, PI/2.0).unwrap();
-    // let theta = distr.sample(&mut rng);
-    let theta = PI/2.0f64;
+    let theta = distr.sample(&mut rng);
+    // let theta = PI/2.0f64;
     let column_idxs: Vec<usize> = genome.orientation_matrix.column_iter()
         .enumerate()
         .choose_multiple(&mut rng, 2).iter()
@@ -75,7 +74,6 @@ pub fn mutate_orientation_matrix(params: &Params, mut genome: &mut Antibody) {
     
     genome.orientation_matrix.column_mut(column_idxs[0]).copy_from(&tmp);
     genome.orientation_matrix.column_mut(column_idxs[1]).copy_from(&tmp2);
-
 }
 
 pub fn mutate_offset_vector(params: &Params, mut genome: &mut Antibody, fitness_scaler: f64) {
@@ -104,6 +102,7 @@ pub fn mutate_length_matrix(params: &Params, mut genome: &mut Antibody, fitness_
 
     t -= scaled_delta;
 
+
 }
 
 fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>) -> (f64, f64) {
@@ -121,7 +120,7 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>) -> (f64, f64)
     };
     let initial_matches = values
         .iter()
-        .map(|v| v.is_same_type(&initial_border))
+        .filter(|v| v.is_same_type(&initial_border))
         .count();
     let mut best_count = initial_matches;
     let mut best_count_at = &initial_border;
@@ -178,7 +177,7 @@ pub fn mutate_multiplier_local_search(
         .map(|(n, _x)| n)
         .collect();
 
-    if candidates_dims.len() == 0 {
+    if candidates_dims.is_empty() {
         return genome;
     }
 
@@ -241,7 +240,7 @@ pub fn mutate_multiplier_local_search(
     return genome;
 }
 
-pub fn mutate_multiplier(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
+pub fn mutate_multiplier(params: &Params, mut genome: &mut Antibody, fitness_scaler: f64){
     let mut rng = rand::thread_rng();
 
     let candidates_dims: Vec<usize> = genome
@@ -253,7 +252,7 @@ pub fn mutate_multiplier(params: &Params, mut genome: Antibody, fitness_scaler: 
         .collect();
 
     if candidates_dims.len() == 0 {
-        return genome;
+        return;
     }
 
     let dim_to_mutate = candidates_dims.choose(&mut rng).unwrap().to_owned();
@@ -266,10 +265,9 @@ pub fn mutate_multiplier(params: &Params, mut genome: Antibody, fitness_scaler: 
     let scaled_delta = val_delta * fitness_scaler;
     change_dim.multiplier -= scaled_delta;
 
-    return genome;
 }
 
-pub fn mutate_offset(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
+pub fn mutate_offset(params: &Params, mut genome: &mut Antibody, fitness_scaler: f64) {
     let mut rng = rand::thread_rng();
     let candidates_dims: Vec<usize> = genome
         .dim_values
@@ -280,7 +278,7 @@ pub fn mutate_offset(params: &Params, mut genome: Antibody, fitness_scaler: f64)
         .collect();
 
     if candidates_dims.len() == 0 {
-        return genome;
+        return;
     }
 
     let dim_to_mutate = candidates_dims.choose(&mut rng).unwrap().to_owned();
@@ -296,15 +294,13 @@ pub fn mutate_offset(params: &Params, mut genome: Antibody, fitness_scaler: f64)
     change_dim.offset -= scaled_delta;
 
     // println!("A: {:?} B: {:?}",a, change_dim.offset);
-
-    genome
 }
 
 pub fn mutate_value_type(
     params: &Params,
-    mut genome: Antibody,
+    mut genome: &mut Antibody,
     antigens: &Vec<AntiGen>,
-) -> Antibody {
+) {
     let mut rng = rand::thread_rng();
 
     let dim_to_mutate = rng.gen_range(0..genome.dim_values.len());
@@ -334,13 +330,11 @@ pub fn mutate_value_type(
     change_dim.value_type = dim_type;
 
     if params.mutation_value_type_local_search_dim && dim_type != DimValueType::Disabled {
-        genome = mutate_multiplier_local_search(&params, genome, antigens, Some(dim_to_mutate));
+        // genome = mutate_multiplier_local_search(&params, genome, antigens, Some(dim_to_mutate));
     }
-
-    return genome;
 }
 
-pub fn mutate_label(params: &Params, mut genome: Antibody) -> Antibody {
+pub fn mutate_label(params: &Params, mut genome: &mut Antibody) {
     let mut rng = rand::thread_rng();
 
     let dim_type = params
@@ -351,10 +345,9 @@ pub fn mutate_label(params: &Params, mut genome: Antibody) -> Antibody {
 
     genome.class_label = dim_type;
 
-    return genome;
 }
 
-pub fn mutate_radius(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
+pub fn mutate_radius(params: &Params, mut genome: &mut Antibody, fitness_scaler: f64)  {
     let mut rng = rand::thread_rng();
 
     let multi = rng.gen_range(params.radius_mutation_multiplier_range.clone());
@@ -364,5 +357,4 @@ pub fn mutate_radius(params: &Params, mut genome: Antibody, fitness_scaler: f64)
     let scaled_delta = val_delta * fitness_scaler;
     genome.radius_constant -= scaled_delta;
 
-    return genome;
 }

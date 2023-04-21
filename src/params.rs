@@ -62,18 +62,18 @@ pub struct Params {
 impl Params {
     pub fn roll_mutation_type(&self) -> MutationType {
         let weighted = vec![
-            (MutationType::Offset, self.mutation_offset_weight),
-            (MutationType::Multiplier, self.mutation_multiplier_weight),
-            (
-                MutationType::MultiplierLocalSearch,
-                self.mutation_multiplier_local_search_weight,
-            ),
-            (MutationType::ValueType, self.mutation_value_type_weight),
-            (MutationType::Radius, self.mutation_radius_weight),
+            // (MutationType::Offset, self.mutation_offset_weight),
+            // (MutationType::Multiplier, self.mutation_multiplier_weight),
+            // (
+            //     MutationType::MultiplierLocalSearch,
+            //     self.mutation_multiplier_local_search_weight,
+            // ),
+            // (MutationType::ValueType, self.mutation_value_type_weight),
+            // (MutationType::Radius, self.mutation_radius_weight),
             (MutationType::Label, self.mutation_label_weight),
-            (MutationType::OrientationMatrix, self.mutation_label_weight),
-            (MutationType::LengthMatrix, self.mutation_label_weight),
-            (MutationType::OffsetVector, self.mutation_label_weight),
+            (MutationType::OrientationMatrix, self.mutation_multiplier_weight),
+            (MutationType::LengthMatrix, self.mutation_radius_weight),
+            (MutationType::OffsetVector, self.mutation_offset_weight),
         ];
 
         let mut rng = rand::thread_rng();

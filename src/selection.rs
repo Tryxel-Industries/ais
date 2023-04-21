@@ -79,9 +79,9 @@ pub fn remove_strictly_worse(
         let errors_b = eval_b.wrongly_matched.len();
 
         if errors_a != errors_b {
-            return eval_b.matched_ids.len().cmp(&eval_a.matched_ids.len());
+            eval_b.matched_ids.len().cmp(&eval_a.matched_ids.len())
         } else {
-            return errors_b.cmp(&errors_a);
+            errors_b.cmp(&errors_a)
         }
     });
 
@@ -119,7 +119,7 @@ pub fn remove_strictly_worse(
                     .iter()
                     .for_each(|v| *error_match_mask.get_mut(*v).unwrap() -= 1);
                 removed_tracker.insert(b.class_label, removed_count + 1);
-                return None;
+                None
             } else {
                 return Some((s, a, b));
             }
@@ -141,7 +141,7 @@ pub fn snip_worst_n(
     //     .drain(0..num_to_snip)
     //     .collect();
 
-    return survivors;
+    survivors
 }
 
 pub fn replace_worst_n_per_cat(
@@ -156,9 +156,9 @@ pub fn replace_worst_n_per_cat(
     while snip_list.keys().len() > 0 {
         if let Some((_, _, cell)) = population.get(cur_idx) {
             if let Some(remaining_count) = snip_list.get_mut(&cell.class_label) {
-                kill_list.push(cur_idx.clone());
+                kill_list.push(cur_idx);
                 *remaining_count -= 1;
-                if *remaining_count <= 0 {
+                if *remaining_count == 0 {
                     snip_list.remove(&cell.class_label);
                 }
             }
@@ -181,7 +181,7 @@ pub fn replace_worst_n_per_cat(
     }
     // println!("{:?}", replacements.len());
 
-    return population;
+    population
 }
 
 pub fn replace_if_better_per_cat(

@@ -154,10 +154,9 @@ impl AntibodyFactory {
             let value_type = self
                 .antibody_allowed_value_types
                 .get(rng.gen_range(0..self.antibody_allowed_value_types.len()))
-                .unwrap()
-                .clone();
+                .unwrap();
 
-            if value_type == DimValueType::Open {
+            if *value_type == DimValueType::Open {
                 num_open += 1;
                 if rng.gen::<bool>() {
                     multiplier *= -1.0;
@@ -174,7 +173,7 @@ impl AntibodyFactory {
             dim_multipliers.push(AntibodyDim {
                 multiplier,
                 offset,
-                value_type,
+                value_type: *value_type,
             })
         }
 

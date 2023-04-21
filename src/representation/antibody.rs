@@ -30,6 +30,7 @@ pub struct Antibody {
     pub orientation_matrix: DMatrix<f64>,
     pub length_matrix: DMatrix<f64>,
     pub offset: DVector<f64>,
+    // pub sigma: DMatrix<f64>,
     //todo: remove when running hyper optimized
     pub mutation_counter: HashMap<MutationType, usize>,
     pub clone_count: usize,
@@ -159,30 +160,31 @@ impl Antibody {
         }
         return roll_sum;
     }
+    // pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
+    //     let affinity_dist = self.get_affinity_dist(antigen);
+
+    //     if affinity_dist == 0.0 {
+    //         // all dims are disabled
+    //         return false;
+    //     }
+
+    //     let v = affinity_dist - self.radius_constant;
+    //     // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
+    //     if v <= 0.0 {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
-        let affinity_dist = self.get_affinity_dist(antigen);
-
-        if affinity_dist == 0.0 {
-            // all dims are disabled
-            return false;
-        }
-
-        let v = affinity_dist - self.radius_constant;
-        // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if v <= 0.0 {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    pub fn test_antigen_w_orientation(&self, antigen: &AntiGen) -> bool {
         let ag_dims: DVector<f64> = DVector::from_vec(antigen.values.clone());
         let it = (&ag_dims - &self.offset).transpose() * 
         &self.orientation_matrix * 
         &self.length_matrix * 
         &self.orientation_matrix.transpose() *
         (&ag_dims - &self.offset);
+        // println!("{}", it);
         if (it[0] <= 1.0f64) {
             return true
         }
