@@ -26,7 +26,7 @@ pub fn dump_to_csv(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
         .map(|ag| {
             let mut ret_vec = vec![ag.class_label.to_string(), ag.id.to_string()];
             ret_vec.extend(ag.values.clone().iter().map(|v| v.to_string()));
-            return ret_vec;
+            ret_vec
         })
         .collect::<Vec<_>>();
     vec_of_vec_to_csv(csv_formatted_antigens, "out/antigens.csv");
@@ -45,7 +45,7 @@ pub fn dump_to_csv(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
                     d.multiplier.to_string(),
                 ]
             }));
-            return ret_vec;
+            ret_vec
         })
         .collect::<Vec<_>>();
     vec_of_vec_to_csv(csv_formatted_antibodies, "out/antibodies.csv");

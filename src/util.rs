@@ -61,19 +61,19 @@ pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     while idx_list.len() < n {
         let idx = rng.gen_range(0..vec.len());
         if !idx_list.contains(&idx) {
-            idx_list.push(idx.clone());
+            idx_list.push(idx);
         }
     }
 
     idx_list.sort();
 
-    let picks = vec
+    
+    vec
         .into_iter()
         .enumerate()
         .filter(|(idx, _v)| idx_list.contains(idx))
         .map(|(_a, b)| b)
-        .collect();
-    return picks;
+        .collect()
 }
 
 /// Splits a collection of AntiGen instances into training and testing sets, with the specified
@@ -110,7 +110,7 @@ pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen
         test.extend(of_class);
     }
 
-    return (train, test);
+    (train, test)
 }
 
 /// Splits a collection of AntiGen instances into train and test sets using a "n-fold" cross-validation
@@ -177,5 +177,5 @@ pub fn split_train_test_n_fold(
     }
 
     // println!("folds {:?}", folds);
-    return ret_folds;
+    ret_folds
 }

@@ -40,15 +40,15 @@ pub fn evaluate_population(
     population: Vec<Antibody>,
     antigens: &Vec<AntiGen>,
 ) -> Vec<(Evaluation, Antibody)> {
-    return population
+    population
         .into_par_iter() // TODO: set paralell
         // .into_iter()
         .map(|antibody| {
             // evaluate antibodies
             let score = evaluate_antibody(antigens, &antibody);
-            return (score, antibody);
+            (score, antibody)
         })
-        .collect();
+        .collect()
 }
 
 fn gen_initial_population(
@@ -65,7 +65,7 @@ fn gen_initial_population(
             .map(|ag| cell_factory.generate_from_antigen(ag))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
-                    expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+                    expand_antibody_radius_until_hit(cell, bucket_king, antigens)
                 } else {
                     cell
                 }
@@ -76,7 +76,7 @@ fn gen_initial_population(
             .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rng).unwrap()))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
-                    expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+                    expand_antibody_radius_until_hit(cell, bucket_king, antigens)
                 } else {
                     cell
                 }
@@ -87,9 +87,9 @@ fn gen_initial_population(
 
 impl ArtificialImmuneSystem {
     pub fn new() -> ArtificialImmuneSystem {
-        return Self {
+        Self {
             antibodies: Vec::new(),
-        };
+        }
     }
 
     pub fn train(
@@ -115,7 +115,7 @@ impl ArtificialImmuneSystem {
             .iter()
             .map(|x| {
                 (
-                    x.clone(),
+                    *x,
                     antigens
                         .iter()
                         .filter(|ag| ag.class_label == *x)
@@ -129,7 +129,7 @@ impl ArtificialImmuneSystem {
             .iter()
             .map(|x| {
                 (
-                    x.clone(),
+                    *x,
                     antigens
                         .iter()
                         .filter(|ag| ag.class_label == *x)
@@ -242,7 +242,7 @@ impl ArtificialImmuneSystem {
             // calculate and preform the replacement selection/mutation for each ab label separately to maintain the label ratios
             for (label, fraction) in &frac_map {
                 let replace_count_for_label = (n_to_replace as f64 * fraction).ceil() as usize;
-                if replace_count_for_label <= 0 {
+                if replace_count_for_label == 0 {
                     continue;
                 }
 
@@ -279,7 +279,7 @@ impl ArtificialImmuneSystem {
                                     mutate(params, (1.0 - frac_of_max), parent_antibody.clone(), antigens);
                                 mutated.clone_count += 1;
                                 let eval = evaluate_antibody(antigens, &mutated);
-                                return (eval, mutated);
+                                (eval, mutated)
                             })
                             .collect::<Vec<(Evaluation, Antibody)>>(); //.into_iter();//.collect::<Vec<(Evaluation, Antibody)>>()
 
@@ -313,12 +313,12 @@ impl ArtificialImmuneSystem {
 
                         // if the best child score beats the parent use the childs score
                         if (best_s > daddy_score) {
-                            return (
+                            (
                                 (best_eval.clone(), best_cell),
                                 Some((daddy_eval, best_eval)),
-                            );
+                            )
                         } else {
-                            return ((daddy_eval, daddy_antibody), None);
+                            ((daddy_eval, daddy_antibody), None)
                         }
                     })
                     .collect::<Vec<_>>()
@@ -326,7 +326,7 @@ impl ArtificialImmuneSystem {
                     .unzip();
 
                 let (removed_evals, added_evals): (Vec<Evaluation>, Vec<Evaluation>) =
-                    match_updates.into_iter().filter_map(|a| a).unzip();
+                    match_updates.into_iter().flatten().unzip();
 
                 match_counter.remove_evaluations(removed_evals.iter().collect());
                 match_counter.add_evaluations(added_evals.iter().collect());
@@ -362,7 +362,7 @@ impl ArtificialImmuneSystem {
 
                 for (label, fraction) in &frac_map {
                     let replace_count_for_label = (n_to_leak as f64 * fraction).ceil() as usize;
-                    replace_map.insert(label.clone(), replace_count_for_label);
+                    replace_map.insert(*label, replace_count_for_label);
                 }
                 replace_map
             };
@@ -373,14 +373,14 @@ impl ArtificialImmuneSystem {
                 let mut local_match_counter = match_counter.clone();
 
                 for (label, count) in &n_to_gen_map {
-                    if *count <= 0 {
+                    if *count == 0 {
                         continue;
                     }
 
                     let filtered: Vec<_> = antigens
                         .iter()
                         .filter(|ag| ag.class_label == *label)
-                        .map(|ag| (ag, inversed.get(ag.id).unwrap_or(&0).clone() as i32)) // todo: validate that this unwrap or does not hide a bug
+                        .map(|ag| (ag, *inversed.get(ag.id).unwrap_or(&0) as i32)) // todo: validate that this unwrap or does not hide a bug
                         .collect();
 
                     let mut new_pop_pop: Vec<_> = (0..*count)
@@ -402,11 +402,11 @@ impl ArtificialImmuneSystem {
                                 new_antibody = expand_antibody_radius_until_hit(
                                     new_antibody,
                                     &bucket_king,
-                                    &antigens,
+                                    antigens,
                                 )
                             }
                             let eval = evaluate_antibody(antigens, &new_antibody);
-                            return (eval, new_antibody);
+                            (eval, new_antibody)
                         })
                         .collect();
 
@@ -422,7 +422,7 @@ impl ArtificialImmuneSystem {
                 }
             }
 
-            if new_leaked.len() > 0 {
+            if !new_leaked.is_empty() {
                 if is_strip_round {
                     scored_pop.extend(new_leaked);
                 } else {
@@ -471,7 +471,7 @@ impl ArtificialImmuneSystem {
                 let mut n_wrong = 0;
                 let mut n_no_detect = 0;
                 for antigen in antigens {
-                    let pred_class = self.is_class_correct(&antigen);
+                    let pred_class = self.is_class_correct(antigen);
                     if let Some(v) = pred_class {
                         if v {
                             n_corr += 1
@@ -492,7 +492,7 @@ impl ArtificialImmuneSystem {
                 train_acc_hist.push(avg_acc);
             } else {
                 let last = train_acc_hist.last().unwrap_or(&0.0);
-                train_acc_hist.push(last.clone());
+                train_acc_hist.push(*last);
             }
 
             if verbosity_params.show_class_info {
@@ -537,7 +537,7 @@ impl ArtificialImmuneSystem {
             .filter(|(score, _, _)| *score > 0.0)
             .map(|(_score, _ev, cell)| cell.clone())
             .collect();
-        return (train_acc_hist, train_score_hist, scored_pop);
+        (train_acc_hist, train_score_hist, scored_pop)
     }
 
     pub fn is_class_correct(&self, antigen: &AntiGen) -> Option<bool> {
@@ -547,7 +547,7 @@ impl ArtificialImmuneSystem {
             .filter(|antibody| antibody.test_antigen(antigen))
             .collect::<Vec<_>>();
 
-        if matching_cells.len() == 0 {
+        if matching_cells.is_empty() {
             return None;
         }
 
@@ -561,10 +561,10 @@ impl ArtificialImmuneSystem {
             .collect::<Vec<_>>();
 
         if class_true.len() > class_false.len() {
-            return Some(true);
+            Some(true)
         } else {
             // println!("wrong match id {:?}, cor: {:?}  incor {:?}", antigen.id, class_true.len(), class_false.len());
-            return Some(false);
+            Some(false)
         }
     }
 }

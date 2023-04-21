@@ -17,39 +17,36 @@ fn normalize_features(feature_vec: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
 
     for i in 0..n_features {
         max_v.push(
-            feature_vec
+            *feature_vec
                 .iter()
                 .map(|x| x.get(i).unwrap())
                 .max_by(|a, b| a.total_cmp(b))
-                .unwrap()
-                .clone(),
+                .unwrap(),
         );
 
         min_v.push(
-            feature_vec
+            *feature_vec
                 .iter()
                 .map(|x| x.get(i).unwrap())
                 .min_by(|a, b| a.total_cmp(b))
-                .unwrap()
-                .clone(),
+                .unwrap(),
         );
     }
 
     let ret: Vec<_> = feature_vec
         .into_iter()
         .map(|mut f_vals| {
-            for i in 0..n_features {
+            for (i, val) in f_vals.iter_mut().enumerate().take((n_features)) {
                 let min = min_v.get(i).unwrap();
                 let max = max_v.get(i).unwrap();
 
-                let val = f_vals[i].clone();
-                let result = (val - min) / (max - min);
-                f_vals[i] = if result.is_nan() {0.0f64} else {result}
+                let result = (*val - min) / (max - min);
+                *val = if result.is_nan() {0.0f64} else {result}
             }
-            return f_vals;
+            f_vals
         })
         .collect();
-    return ret;
+    ret
 }
 
 fn normalize_features_ag(mut ag_vec: Vec<AntiGen>) -> Vec<AntiGen> {
@@ -59,7 +56,7 @@ fn normalize_features_ag(mut ag_vec: Vec<AntiGen>) -> Vec<AntiGen> {
         .iter_mut()
         .zip(norm_features)
         .for_each(|(ag, norm_f)| ag.values = norm_f);
-    return ag_vec;
+    ag_vec
 }
 
 fn read_csv(path: &str) -> Vec<Vec<String>> {
@@ -72,16 +69,16 @@ fn read_csv(path: &str) -> Vec<Vec<String>> {
     loop {
         let len = reader.read_line(&mut line).unwrap();
 
-        if line.ends_with("\n") {
-            line = line.strip_suffix("\n").unwrap().parse().unwrap();
+        if line.ends_with('\n') {
+            line = line.strip_suffix('\n').unwrap().parse().unwrap();
         }
-        if line.ends_with("\r") {
-            line = line.strip_suffix("\r").unwrap().parse().unwrap();
+        if line.ends_with('\r') {
+            line = line.strip_suffix('\r').unwrap().parse().unwrap();
         }
 
-        if line.len() > 0 {
-            let cols = line.split(",");
-            ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
+        if !line.is_empty() {
+            let cols = line.split(',');
+            ret_vec.push(cols.into_iter().map(String::from).collect());
             line.clear();
         } else {
             break;
@@ -89,7 +86,7 @@ fn read_csv(path: &str) -> Vec<Vec<String>> {
     }
 
     // println!("{:?}", ret_vec);
-    return ret_vec;
+    ret_vec
 }
 
 pub fn read_iris() -> Vec<AntiGen> {
@@ -111,7 +108,9 @@ pub fn read_iris() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
@@ -124,26 +123,24 @@ pub fn read_iris() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 pub fn read_iris_snipped() -> Vec<AntiGen> {
     let mut ag = read_iris();
-    return ag
+    ag
         .into_iter()
         .map(|mut ag| {
             let _ = ag.values.pop();
-            return ag;
+            ag
         })
-        .collect::<Vec<_>>();
+        .collect::<Vec<_>>()
 }
 
 pub fn read_wine() -> Vec<AntiGen> {
@@ -165,22 +162,22 @@ pub fn read_wine() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
 
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 pub fn read_diabetes() -> Vec<AntiGen> {
@@ -203,22 +200,22 @@ pub fn read_diabetes() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
 
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 pub fn read_sonar() -> Vec<AntiGen> {
@@ -240,7 +237,9 @@ pub fn read_sonar() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
@@ -252,15 +251,13 @@ pub fn read_sonar() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 pub fn read_glass() -> Vec<AntiGen> {
@@ -273,7 +270,7 @@ pub fn read_glass() -> Vec<AntiGen> {
             row.remove(0);
 
             let label = row.pop().unwrap();
-            return (label, row);
+            (label, row)
         })
         .unzip();
 
@@ -288,21 +285,21 @@ pub fn read_glass() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 pub fn read_ionosphere() -> Vec<AntiGen> {
@@ -312,7 +309,7 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
         .into_iter()
         .map(|mut row| {
             let label = row.pop().unwrap();
-            return (label, row);
+            (label, row)
         })
         .unzip();
 
@@ -327,7 +324,8 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
@@ -339,14 +337,13 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-    return antigens;
+        .collect()
 }
 
 pub fn read_pima_diabetes() -> Vec<AntiGen> {
@@ -360,7 +357,7 @@ pub fn read_pima_diabetes() -> Vec<AntiGen> {
             //remove index
 
             let label = row.pop().unwrap();
-            return (label, row);
+            (label, row)
         })
         .unzip();
 
@@ -373,7 +370,7 @@ pub fn read_pima_diabetes() -> Vec<AntiGen> {
                     if parsed.is_err() {
                         println!("err line {:?}", v)
                     }
-                    return parsed.unwrap();
+                    parsed.unwrap()
                 })
                 .collect::<Vec<f64>>()
         })
@@ -381,21 +378,21 @@ pub fn read_pima_diabetes() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 pub fn read_spirals() -> Vec<AntiGen> {
@@ -407,7 +404,7 @@ pub fn read_spirals() -> Vec<AntiGen> {
             //remove index
 
             let label = row.pop().unwrap();
-            return (label, row);
+            (label, row)
         })
         .unzip();
 
@@ -420,7 +417,7 @@ pub fn read_spirals() -> Vec<AntiGen> {
                     if parsed.is_err() {
                         println!("err line {:?}", v)
                     }
-                    return parsed.unwrap();
+                    parsed.unwrap()
                 })
                 .collect::<Vec<f64>>()
         })
@@ -428,21 +425,21 @@ pub fn read_spirals() -> Vec<AntiGen> {
 
     transformed_dat = normalize_features(transformed_dat);
 
-    let antigens = labels
+    
+
+    labels
         .into_iter()
         .zip(transformed_dat.into_iter())
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
-            return AntiGen {
+            AntiGen {
                 id: n,
                 class_label: label_val,
                 values: features,
-            };
+            }
         })
-        .collect();
-
-    return antigens;
+        .collect()
 }
 
 //
@@ -459,11 +456,11 @@ fn read_json(path: &str) -> JsonValue {
     loop {
         let len = reader.read_line(&mut line).unwrap();
 
-        if line.ends_with("\n") {
-            line = line.strip_suffix("\n").unwrap().parse().unwrap();
+        if line.ends_with('\n') {
+            line = line.strip_suffix('\n').unwrap().parse().unwrap();
         }
 
-        if line.len() > 0 {
+        if !line.is_empty() {
             lines.push(line.clone());
             line.clear();
         } else {
@@ -471,8 +468,8 @@ fn read_json(path: &str) -> JsonValue {
         }
     }
     let json_str = lines.join("");
-    let js_obj = json::parse(&*json_str).unwrap();
-    return js_obj;
+    
+    json::parse(&json_str).unwrap()
 }
 
 pub fn read_kaggle_semantic() -> Vec<AntiGen> {
@@ -513,5 +510,5 @@ pub fn read_kaggle_semantic() -> Vec<AntiGen> {
     }
 
     news_entries = normalize_features_ag(news_entries);
-    return news_entries;
+    news_entries
 }

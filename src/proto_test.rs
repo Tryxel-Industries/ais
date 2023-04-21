@@ -49,7 +49,7 @@ pub fn read_kaggle() -> Vec<AntiGen>{
 
 
 
-    return return_vec;
+    return_vec
 
 
 

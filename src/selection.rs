@@ -38,7 +38,7 @@ pub fn kill_by_mask_yo(
             }
         }
     }
-    return survivors;
+    survivors
 }
 
 /*
@@ -121,12 +121,12 @@ pub fn remove_strictly_worse(
                 removed_tracker.insert(b.class_label, removed_count + 1);
                 None
             } else {
-                return Some((s, a, b));
+                Some((s, a, b))
             }
         })
         .collect();
 
-    return (removed_tracker, out_vec);
+    (removed_tracker, out_vec)
 }
 pub fn snip_worst_n(
     mut population: Vec<(f64, Evaluation, Antibody)>,
@@ -135,13 +135,13 @@ pub fn snip_worst_n(
     population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
 
     // println!("pre {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
-    let survivors = population.split_off(num_to_snip);
+    
     // println!("post {:?}", survivors.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
     // let snipped: Vec<(f64, Evaluation, Antibody)> = population
     //     .drain(0..num_to_snip)
     //     .collect();
 
-    survivors
+    population.split_off(num_to_snip)
 }
 
 pub fn replace_worst_n_per_cat(
@@ -222,7 +222,7 @@ pub fn replace_if_better_per_cat(
             let (rep_idx, (rep_score, _, rep_cell)) = rep_option.unwrap();
 
             if rep_score > pop_score {
-                rep_map.push((pop_idx.clone(), rep_idx.clone()));
+                rep_map.push((*pop_idx, *rep_idx));
                 pop_cur_idx += 1;
                 rep_cur_idx += 1;
             } else {
@@ -236,17 +236,17 @@ pub fn replace_if_better_per_cat(
         let (p_score, p_eval, p_cell) = population.get_mut(pop_idx).unwrap();
         let (c_score, c_eval, c_cell) = replacements.get(rep_idx).unwrap();
 
-        match_counter.remove_evaluations(vec![&p_eval]);
-        match_counter.add_evaluations(vec![&c_eval]);
+        match_counter.remove_evaluations(vec![p_eval]);
+        match_counter.add_evaluations(vec![c_eval]);
         // std::mem::replace(p_score, c_score);
         // std::mem::replace(p_eval, c_eval);
         // std::mem::replace(p_cell, c_cell);
-        *p_score = c_score.clone();
+        *p_score = *c_score;
         *p_eval = c_eval.clone();
         *p_cell = c_cell.clone();
     }
 
-    return population;
+    population
 }
 
 pub fn pick_best_n(
@@ -259,7 +259,7 @@ pub fn pick_best_n(
     let _picked = population.split_off(num_to_pick);
     // println!("post {:?}", population.iter().map(|(a,b,c)| a).collect::<Vec<&f64>>());
 
-    return population;
+    population
 }
 
 pub fn selection(
@@ -269,7 +269,7 @@ pub fn selection(
 ) -> Vec<(f64, Evaluation, Antibody)> {
     let (selected, _drained) = elitism_selection(population, &150);
     // selected.extend(pick_n_random(drained, 70).into_iter());
-    return selected;
+    selected
 }
 
 pub fn elitism_selection(
@@ -315,7 +315,7 @@ pub fn elitism_selection(
         });
         println!();
     }
-    return (select, res_cells);
+    (select, res_cells)
 }
 
 pub fn labeled_tournament_pick(
@@ -348,13 +348,13 @@ pub fn labeled_tournament_pick(
         pop_s = filtered.len();
         idx_list = filtered
             .iter()
-            .map(|(idx, (score, _, _))| (idx.clone(), score.clone()))
+            .map(|(idx, (score, _, _))| (*idx, *score))
             .collect();
     } else {
         idx_list = population
             .iter()
             .enumerate()
-            .map(|(idx, (score, _, _))| (idx, score.clone()))
+            .map(|(idx, (score, _, _))| (idx, *score))
             .collect();
         pop_s = population.len();
     }
@@ -363,7 +363,6 @@ pub fn labeled_tournament_pick(
     for _ in 0..*num_to_pick {
         // make pool
         let mut pool: Vec<&(usize, f64)> = (0..*tournament_size)
-            .into_iter()
             .map(|_| idx_list.get(rng.gen_range(0..pop_s)).unwrap())
             .collect();
         pool.sort_by(|(_, score_a), (_, score_b)| score_a.total_cmp(score_b));
@@ -377,7 +376,7 @@ pub fn labeled_tournament_pick(
             if picks.contains(cand_idx) {
                 cur_fetch_idx += 1;
             } else {
-                picks.push(cand_idx.clone());
+                picks.push(*cand_idx);
                 break;
             }
         }
@@ -393,7 +392,7 @@ pub fn labeled_tournament_pick(
         println!();
     */
 
-    return picks;
+    picks
 }
 
 pub fn tournament_pick(
@@ -401,5 +400,5 @@ pub fn tournament_pick(
     num_to_pick: &usize,
     tournament_size: &usize,
 ) -> Vec<usize> {
-    return labeled_tournament_pick(population, num_to_pick, tournament_size, None);
+    labeled_tournament_pick(population, num_to_pick, tournament_size, None)
 }

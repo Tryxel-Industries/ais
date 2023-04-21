@@ -79,11 +79,10 @@ impl AntibodyFactory {
             let offset = self.rng_offset_ranges.get(i).unwrap().sample(&mut rng);
             let mut multiplier = self.rng_multiplier_ranges.get(i).unwrap().sample(&mut rng);
 
-            let value_type = self
+            let value_type = *self
                 .rng_allowed_value_types
                 .get(rng.gen_range(0..self.rng_allowed_value_types.len()))
-                .unwrap()
-                .clone();
+                .unwrap();
 
             if value_type == DimValueType::Open {
                 num_open += 1;
@@ -111,13 +110,12 @@ impl AntibodyFactory {
         let class_label = if let Some(lbl) = label {
             lbl
         } else {
-            self.class_labels
+            *self.class_labels
                 .get(rng.gen_range(0..self.class_labels.len()))
                 .unwrap()
-                .clone()
         };
 
-        return Antibody {
+        Antibody {
             dim_values: dim_multipliers,
             orientation_matrix: random_orthonormal(self.n_dims),
             offset: offsets,
@@ -126,13 +124,13 @@ impl AntibodyFactory {
             class_label,
             mutation_counter: HashMap::new(),
             clone_count: 0,
-        };
+        }
     }
     pub fn generate_random_genome_with_label(&self, label: usize) -> Antibody {
-        return self.gen_random_genome(Some(label));
+        self.gen_random_genome(Some(label))
     }
     pub fn generate_random_genome(&self) -> Antibody {
-        return self.gen_random_genome(None);
+        self.gen_random_genome(None)
     }
 
     pub fn generate_from_antigen(&self, antigen: &AntiGen) -> Antibody {
@@ -145,7 +143,7 @@ impl AntibodyFactory {
         let mut lengths: DVector<f64> = DVector::identity(self.n_dims);
 
         for i in 0..self.n_dims {
-            let offset = antigen.values.get(i).unwrap().clone();
+            let offset = *antigen.values.get(i).unwrap();
             let mut multiplier = self
                 .antibody_multiplier_ranges
                 .get(i)
@@ -183,7 +181,7 @@ impl AntibodyFactory {
         // for _ in 0..num_open {
         //     radius_constant = radius_constant.sqrt();
         // }
-        return Antibody {
+        Antibody {
             dim_values: dim_multipliers,
             orientation_matrix: random_orthonormal(self.n_dims),
             offset: offsets,
@@ -192,6 +190,6 @@ impl AntibodyFactory {
             class_label,
             mutation_counter: HashMap::new(),
             clone_count: 0,
-        };
+        }
     }
 }

@@ -19,7 +19,9 @@ pub fn score_antibodies(
     // println!("len {:?}", merged_mask.len());
     // println!("sum {:?}", merged_mask.iter().sum::<usize>());
     // println!("match -s: ");
-    let scored = evaluated_population
+    
+
+    evaluated_population
         // .into_iter()
         .into_par_iter() // TODO: set paralell
         .map(|(eval, cell)| {
@@ -121,9 +123,7 @@ pub fn score_antibodies(
                 score = -5.0;
             }
 
-            return (score, eval, cell);
+            (score, eval, cell)
         })
-        .collect();
-
-    return scored;
+        .collect()
 }

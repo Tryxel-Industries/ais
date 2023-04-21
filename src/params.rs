@@ -99,7 +99,7 @@ pub struct VerbosityParams {
 
 impl VerbosityParams {
     pub fn n_fold_defaults() -> VerbosityParams {
-        return VerbosityParams {
+        VerbosityParams {
             show_initial_pop_info: false,
             iter_info_interval: None,
             full_pop_acc_interval: None,
@@ -108,6 +108,6 @@ impl VerbosityParams {
             display_final_ab_info: false,
             display_detailed_error_info: false,
             display_final_acc_info: false,
-        };
+        }
     }
 }

@@ -32,7 +32,7 @@ pub fn expand_antibody_radius_until_hit(
     let mut evaluation = loop {
         let evaluation = evaluate_antibody(antigens, &cell);
 
-        if evaluation.wrongly_matched.len() > 0 {
+        if !evaluation.wrongly_matched.is_empty() {
             break evaluation;
         } else {
             cell.radius_constant *= 2.0;
@@ -62,5 +62,5 @@ pub fn expand_antibody_radius_until_hit(
     // }
     //
 
-    return cell;
+    cell
 }

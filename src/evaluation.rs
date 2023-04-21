@@ -72,7 +72,7 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
                 antibody
                     .dim_values
                     .iter()
-                    .map(|b| b.value_type.clone())
+                    .map(|b| b.value_type)
                     .collect::<Vec<_>>()
             );
             println!(
@@ -80,7 +80,7 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
                 antibody
                     .dim_values
                     .iter()
-                    .map(|b| b.multiplier.clone())
+                    .map(|b| b.multiplier)
                     .collect::<Vec<_>>()
             );
             println!(
@@ -88,7 +88,7 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
                 antibody
                     .dim_values
                     .iter()
-                    .map(|b| b.offset.clone())
+                    .map(|b| b.offset)
                     .collect::<Vec<_>>()
             );
             println!("cell rad : {:?}", antibody.radius_constant);
@@ -121,12 +121,12 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
     // let score = (with_same_label.len()as f64) - ((num_wrong as f64/2.0));
 
     // println!("matched {:?}\n", corr_matched);
-    let ret_evaluation = Evaluation {
+    
+    // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
+    Evaluation {
         matched_ids: corr_matched,
         wrongly_matched: wrong_matched,
-    };
-    // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
-    return ret_evaluation;
+    }
 }
 
 //
@@ -141,25 +141,25 @@ pub struct MatchCounter {
 
 impl MatchCounter {
     pub fn new(max_id: usize) -> MatchCounter {
-        return MatchCounter {
+        MatchCounter {
             max_id,
             correct_match_counter: vec![0usize; max_id + 1],
             incorrect_match_counter: vec![0usize; max_id + 1],
-        };
+        }
     }
 
     pub fn get_inversed_correct_match_counts(&self) -> Vec<usize> {
         let max_val = self.correct_match_counter.iter().max().unwrap();
         let mut inverse = self.correct_match_counter.clone();
         inverse = inverse.iter().map(|v| max_val - v).collect();
-        return inverse;
+        inverse
     }
 
     pub fn get_inversed_incorrect_match_counts(&self) -> Vec<usize> {
         let max_val = self.incorrect_match_counter.iter().max().unwrap();
         let mut inverse = self.incorrect_match_counter.clone();
         inverse = inverse.iter().map(|v| max_val - v).collect();
-        return inverse;
+        inverse
     }
 
     pub fn add_evaluations(&mut self, evaluations: Vec<&Evaluation>) {

@@ -24,14 +24,14 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
     if n_lists == 0 {
         // if no lists are given return a new empty vec
-        return Some(Vec::new());
+        Some(Vec::new())
     } else if n_lists == 1 {
         // if only one lists, this lists matches with itself and is therefore returned
         return Some(lists.first().unwrap().clone());
     } else {
         let mut found_matches: Vec<usize> = Vec::new();
 
-        let mut current_idx_list = vec![0 as usize; lists.len()];
+        let mut current_idx_list = vec![0_usize; lists.len()];
         let mut max_idx_list: Vec<usize> = lists.iter().map(|x| x.len()).collect();
         if *max_idx_list.iter().min().unwrap() == 0 {
             // if any of the given lists are empty there wont be any matches so we return an empty vec
@@ -80,7 +80,7 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
             }
 
             if found_match {
-                found_matches.push(check_val.clone());
+                found_matches.push(*check_val);
             }
 
             first_idx += 1;
@@ -196,14 +196,7 @@ impl BucketKnight {
     }
     pub fn get_bucket(&self, dimensional_value: &f64) -> Option<&Bucket> {
         let value = dimensional_value;
-        for bucket in self.buckets.iter() {
-            if bucket.start_value < *value {
-                if bucket.end_value > *value {
-                    return Some(bucket);
-                }
-            }
-        }
-        return None;
+        self.buckets.iter().find(|&bucket| bucket.start_value < *value && bucket.end_value > *value)
     }
 
     pub fn get_index_in_range(&self, range: &ValueRangeType) -> Option<Vec<usize>> {
@@ -232,19 +225,17 @@ impl BucketKnight {
 
         ret.sort();
         // println!("ret size {:?}", ret.len());
-        return Some(ret);
+        Some(ret)
     }
     pub fn get_bucket_mut(&mut self, dimensional_value: &f64) -> Option<&mut Bucket> {
         let value = dimensional_value;
         for bucket in self.buckets.iter_mut() {
             // println!("value {:?}, start  {:?}, end {:?}, ",*value, bucket.start_value,bucket.end_value);
-            if bucket.start_value < *value {
-                if bucket.end_value >= *value {
-                    return Some(bucket);
-                }
+            if bucket.start_value < *value && bucket.end_value >= *value {
+                return Some(bucket);
             }
         }
-        return None;
+        None
     }
     fn add_items(&mut self, values: Vec<BucketValue>) {
         for value in values {
@@ -308,18 +299,18 @@ impl<T> BucketKing<T> {
                     })
                 }
 
-                return BucketKnight {
+                BucketKnight {
                     dimension: i,
                     buckets,
-                };
+                }
             })
             .collect();
-        return BucketKing::<T> {
+        BucketKing::<T> {
             value_fn,
             index_fn,
             dimensional_knights: bucket_knights,
             full_index_set: HashSet::new(),
-        };
+        }
     }
 
     pub fn get_potential_matches(&self, ranges: &Vec<ValueRangeType>) -> Option<Vec<usize>> {
@@ -329,12 +320,12 @@ impl<T> BucketKing<T> {
             .filter_map(|k| k.get_index_in_range(ranges.get(k.dimension).unwrap()))
             .collect();
 
-        if ret.len() == 0 {
+        if ret.is_empty() {
             // all the dimensions are open
             return Some(self.full_index_set.clone().into_iter().collect());
         }
 
-        return roll_comparison(ret);
+        roll_comparison(ret)
     }
 
     pub fn add_values_to_index(&mut self, values: &Vec<T>) {
@@ -346,10 +337,10 @@ impl<T> BucketKing<T> {
             let as_bucket_values: Vec<BucketValue> = value_values
                 .iter()
                 .map(|(index, value_vec)| {
-                    self.full_index_set.insert(index.clone());
+                    self.full_index_set.insert(*index);
                     return BucketValue {
-                        value: value_vec.get(n).unwrap().clone(),
-                        index: index.clone(),
+                        value: *value_vec.get(n).unwrap(),
+                        index: *index,
                     };
                 })
                 .collect();
@@ -376,12 +367,12 @@ impl PartialEq<Self> for BucketValue {
 
 impl PartialOrd<Self> for BucketValue {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        return self.index.partial_cmp(&other.index);
+        self.index.partial_cmp(&other.index)
     }
 }
 
 impl Ord for BucketValue {
     fn cmp(&self, other: &Self) -> Ordering {
-        return self.index.cmp(&other.index);
+        self.index.cmp(&other.index)
     }
 }

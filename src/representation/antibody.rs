@@ -51,7 +51,7 @@ impl LocalSearchBorder {
     }
 
     pub fn is_same_type(&self, other: &LocalSearchBorder) -> bool {
-        return match self {
+        match self {
             LocalSearchBorder::EntersAt(_) => match other {
                 LocalSearchBorder::EntersAt(_) => true,
                 LocalSearchBorder::LeavesAt(_) => false,
@@ -60,7 +60,7 @@ impl LocalSearchBorder {
                 LocalSearchBorder::EntersAt(_) => false,
                 LocalSearchBorder::LeavesAt(_) => true,
             },
-        };
+        }
     }
 }
 
@@ -101,7 +101,9 @@ impl Antibody {
         let cd_offset = ab_check_dim.offset;
 
         // if all parts - radius is < 0 there is a match
-        let multi = match cd_value_type {
+        
+
+        match cd_value_type {
             DimValueType::Disabled => None,
             DimValueType::Open => {
                 let cd_base = (ag_check_dim_val - cd_offset);
@@ -115,15 +117,13 @@ impl Antibody {
 
                 if res_is_pos != cur_is_pos {
                     // if the solved value is on the other side of 0 return as unsolvable
-                    return None;
+                    None
+                } else if affinity_with_zero_multi <= 0.0 {
+                    // By testing what ag's the system matches when the multi is set to 0 we
+                    // can quicly figure out if the treshold will leave or enter the ag
+                    return Some(LocalSearchBorder::LeavesAt(res_match_multi));
                 } else {
-                    if affinity_with_zero_multi <= 0.0 {
-                        // By testing what ag's the system matches when the multi is set to 0 we
-                        // can quicly figure out if the treshold will leave or enter the ag
-                        return Some(LocalSearchBorder::LeavesAt(res_match_multi));
-                    } else {
-                        return Some(LocalSearchBorder::EntersAt(res_match_multi));
-                    }
+                    return Some(LocalSearchBorder::EntersAt(res_match_multi));
                 }
             }
             DimValueType::Circle => {
@@ -134,15 +134,13 @@ impl Antibody {
 
                 if rest_sub_radius_sum < 0.0 {
                     // if the rest sub radius is negative it is not solvable
-                    return None;
+                    None
                 } else {
                     let res_match_multi = (rest_sub_radius_sum / cd_base).sqrt();
-                    return Some(LocalSearchBorder::EntersAt(res_match_multi));
+                    Some(LocalSearchBorder::EntersAt(res_match_multi))
                 }
             }
-        };
-
-        return multi;
+        }
     }
 
     pub fn get_affinity_dist(&self, antigen: &AntiGen) -> f64 {
@@ -158,7 +156,7 @@ impl Antibody {
                 }
             };
         }
-        return roll_sum;
+        roll_sum
     }
     // pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
     //     let affinity_dist = self.get_affinity_dist(antigen);

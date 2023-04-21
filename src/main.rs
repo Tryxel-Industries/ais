@@ -134,7 +134,7 @@ fn ais_test(
 
     let mut ais = ArtificialImmuneSystem::new();
     let (train_acc_hist, train_score_hist, init_scored_pop) =
-        ais.train(&train, &params, verbosity_params);
+        ais.train(&train, params, verbosity_params);
 
     if verbosity_params.make_plots {
         plot_hist(train_acc_hist, "acuracy");
@@ -148,15 +148,15 @@ fn ais_test(
     let n_dims = antigens.get(0).unwrap().values.len();
     let mut bk: BucketKing<AntiGen> =
         BucketKing::new(n_dims, (0.0, 1.0), 10, |ag| ag.id, |ag| &ag.values);
-    bk.add_values_to_index(&antigens);
+    bk.add_values_to_index(antigens);
 
     let pop = init_scored_pop
-        .clone()
+        
         .into_iter()
         .map(|(a, b, c)| c)
         .collect();
 
-    let evaluated_pop = evaluate_population(&bk, &params, pop, &antigens);
+    let evaluated_pop = evaluate_population(&bk, params, pop, antigens);
 
 
 
@@ -171,11 +171,11 @@ fn ais_test(
     );
 
     let count_map: HashMap<usize, usize> = class_labels
-        .clone()
+        
         .iter()
         .map(|x| {
             (
-                x.clone(),
+                *x,
                 antigens
                     .iter()
                     .filter(|ag| ag.class_label == *x)
@@ -278,7 +278,7 @@ fn ais_test(
     let mut n_wrong = 0;
     let mut n_no_detect = 0;
     for antigen in train_slice {
-        let pred_class = ais.is_class_correct(&antigen);
+        let pred_class = ais.is_class_correct(antigen);
         if let Some(v) = pred_class {
             if v {
                 n_corr += 1;
@@ -300,7 +300,7 @@ fn ais_test(
     let mut test_per_class_corr = HashMap::new();
     let mut test_n_no_detect = 0;
     for antigen in test {
-        let pred_class = ais.is_class_correct(&antigen);
+        let pred_class = ais.is_class_correct(antigen);
         if let Some(v) = pred_class {
             if v {
                 test_n_corr += 1;
@@ -349,7 +349,7 @@ fn ais_test(
 
     dump_to_csv(antigens, &ais.antibodies);
 
-    return (train_acc, test_acc);
+    (train_acc, test_acc)
     // ais.pred_class(test.get(0).unwrap());
 }
 fn modify_config_by_args(params: &mut Params) {
@@ -357,7 +357,7 @@ fn modify_config_by_args(params: &mut Params) {
 
     for arg in args {
         if arg.starts_with("--") {
-            let (key, value) = arg.strip_prefix("--").unwrap().split_once("=").unwrap();
+            let (key, value) = arg.strip_prefix("--").unwrap().split_once('=').unwrap();
             match key {
                 "tournament_size" => params.tournament_size = value.parse().unwrap(),
                 "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
@@ -421,7 +421,7 @@ fn main() {
             DimValueType::Open,
         ],
         // value_type_valid_mutations: vec![DimValueType::Circle],
-        label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
+        label_valid_mutations: class_labels.into_iter().collect::<Vec<usize>>(),
 
         //selection
         leak_fraction: 0.5,

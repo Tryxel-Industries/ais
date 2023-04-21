@@ -7,8 +7,8 @@ pub fn plot_hist(hist: Vec<f64>, file_name: &str) -> Result<(), Box<dyn std::err
     let root = BitMapBackend::new(&path, (3000, 1000)).into_drawing_area();
     root.fill(&WHITE)?;
 
-    let max_y = hist.iter().max_by(|a, b| a.total_cmp(b)).unwrap().clone() as f32;
-    let min_y = hist.iter().min_by(|a, b| a.total_cmp(b)).unwrap().clone() as f32;
+    let max_y = *hist.iter().max_by(|a, b| a.total_cmp(b)).unwrap() as f32;
+    let min_y = *hist.iter().min_by(|a, b| a.total_cmp(b)).unwrap() as f32;
     // let min_y = hist.get(hist.len()/2).unwrap().clone() as f32;
     let mut chart = ChartBuilder::on(&root)
         .caption("y=x^2", ("sans-serif", 50).into_font())
@@ -25,14 +25,14 @@ pub fn plot_hist(hist: Vec<f64>, file_name: &str) -> Result<(), Box<dyn std::err
             &RED,
         ))?
         .label("y = x^2")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], RED));
 
     chart
         .configure_series_labels()
-        .background_style(&WHITE.mix(0.8))
-        .border_style(&BLACK)
+        .background_style(WHITE.mix(0.8))
+        .border_style(BLACK)
         .draw()?;
 
     root.present()?;
-    return Ok(());
+    Ok(())
 }

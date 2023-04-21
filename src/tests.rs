@@ -133,7 +133,8 @@ fn get_params() -> (Params, VerbosityParams) {
 
 fn gen_dummy_ab_factory(dims: usize) -> AntibodyFactory {
     let (params, verbosity_params) = get_params();
-    let t = AntibodyFactory::new(
+    
+    AntibodyFactory::new(
         dims,
         params.antibody_ag_init_multiplier_range.clone(),
         params.antibody_ag_init_range_range.clone(),
@@ -141,10 +142,9 @@ fn gen_dummy_ab_factory(dims: usize) -> AntibodyFactory {
         params.antibody_rand_init_multiplier_range.clone(),
         params.antibody_rand_init_offset_range.clone(),
         params.antibody_rand_init_range_range.clone(),
-        params.antibody_rand_init_value_types.clone(),
+        params.antibody_rand_init_value_types,
         vec![1, 2],
-    );
-    t
+    )
 }
 fn init_pop_for_testing(n_dims: usize) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
 
