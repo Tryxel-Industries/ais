@@ -11,6 +11,7 @@ use crate::representation::antigen::AntiGen;
 pub struct Evaluation {
     pub matched_ids: Vec<usize>,
     pub wrongly_matched: Vec<usize>,
+    pub membership_value: (f64, f64),
 }
 
 pub fn evaluate_antibody_with_orientation(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
@@ -121,9 +122,15 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
     // let score = (with_same_label.len()as f64) - ((num_wrong as f64/2.0));
 
     // println!("matched {:?}\n", corr_matched);
+
+
+    // -- membership value -- //
+    let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
+
     let ret_evaluation = Evaluation {
         matched_ids: corr_matched,
         wrongly_matched: wrong_matched,
+        membership_value: (same_label_membership, 1.0 - same_label_membership),
     };
     // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
     return ret_evaluation;
@@ -137,14 +144,23 @@ pub struct MatchCounter {
     max_id: usize,
     pub correct_match_counter: Vec<usize>,
     pub incorrect_match_counter: Vec<usize>,
+    pub boosting_weight_values: Vec<f64>,
 }
 
 impl MatchCounter {
-    pub fn new(max_id: usize) -> MatchCounter {
+    pub fn new(antigens: &Vec<AntiGen>) -> MatchCounter {
+        let max_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
+        let mut ag_weight_map = vec![0.0; max_id + 1];
+        antigens.iter().for_each(|ag| {
+            if let Some(v) = ag_weight_map.get_mut(ag.id){
+                *v = ag.boosting_weight
+            }
+        } );
         return MatchCounter {
             max_id,
             correct_match_counter: vec![0usize; max_id + 1],
             incorrect_match_counter: vec![0usize; max_id + 1],
+            boosting_weight_values: ag_weight_map,
         };
     }
 

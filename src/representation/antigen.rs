@@ -3,6 +3,7 @@ pub struct AntiGen {
     pub id: usize,
     pub class_label: usize,
     pub values: Vec<f64>,
+    pub boosting_weight: f64,
 }
 
 impl AntiGen {
@@ -11,6 +12,7 @@ impl AntiGen {
             id,
             class_label,
             values,
+            boosting_weight: 1.0,
         }
     }
 }

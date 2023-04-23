@@ -35,13 +35,18 @@ pub fn score_antibodies(
 
             let mut error_problem_magnitude: f64 = 0.0;
 
+            let mut pos_relevance = 0.0;
+            let mut neg_relevance = 0.0;
+
             for mid in &eval.matched_ids {
+                let relevance = match_counter.boosting_weight_values.get(*mid).unwrap();
+                pos_relevance += relevance;
                 true_positives += 1.0;
                 let sharers = merged_mask.get(*mid).unwrap_or(&0);
 
                 if *sharers > 1 {
                     let delta = (1.0 / *sharers as f64).max(0.0);
-                    discounted_match_score += delta;
+                    discounted_match_score += delta * relevance;
                     shared_positive_weight += *sharers;
                 } else {
                     unique_positives += 1;
@@ -49,6 +54,7 @@ pub fn score_antibodies(
             }
 
             for mid in &eval.wrongly_matched {
+                neg_relevance += match_counter.boosting_weight_values.get(*mid).unwrap();
                 false_positives += 1.0;
                 let sharers = *error_merged_mask.get(*mid).unwrap_or(&0) as f64;
                 let cor_shares = *merged_mask.get(*mid).unwrap_or(&0) as f64;
@@ -63,6 +69,19 @@ pub fn score_antibodies(
                 } else {
                 }
             }
+
+
+            // ##################### relevance ajust #####################
+            // println!("");
+            // println!("true pos {:?} false pos {:?}", true_positives, false_positives);
+            pos_relevance /= true_positives.max(1.0);
+            neg_relevance /= false_positives.max(1.0);
+
+            true_positives *= pos_relevance;
+            false_positives *= neg_relevance;
+
+            // println!("true pos {:?} false pos {:?}", true_positives, false_positives);
+
             // ##################### F1 stuff #####################
 
             let label_tot_count = *count_map.get(&cell.class_label).unwrap() as f64;
@@ -105,12 +124,12 @@ pub fn score_antibodies(
             // score += f1;
 
             // add a value from 1 -> -1 indicating the fraction of correctness
-            score += (true_positives - (false_positives * 1.7))
-                / (true_positives + false_positives * 1.7).max(1.0);
+            score += (true_positives - (false_positives * 2.0))
+                / (true_positives + false_positives).max(1.0);
 
             // add a value from (0 - 1) * a indicating the coverage of the label space
             let a = 1.0;
-            score += pos_coverage * a;
+            score += pos_coverage * pos_relevance * a;
 
             let b = 0.5;
             score += (discounted_match_score / (true_positives).max(1.0)) * b;

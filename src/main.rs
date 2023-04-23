@@ -25,7 +25,7 @@ use crate::dataset_readers::{
 };
 use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
-use crate::params::{modify_config_by_args, Params, VerbosityParams};
+use crate::params::{modify_config_by_args, Params, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
 use crate::proto_test::read_kaggle;
 use crate::representation::antibody::{Antibody, DimValueType};
@@ -133,8 +133,15 @@ fn ais_test(
     let train = train_slice.clone().to_vec();
 
     let mut ais = ArtificialImmuneSystem::new();
-    let (train_acc_hist, train_score_hist, init_scored_pop) =
-        ais.train(&train, &params, verbosity_params);
+
+
+    let (train_acc_hist, train_score_hist, init_scored_pop) =if params.boost > 0{
+        ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test)
+    }else {
+        ais.train(&train, &params, verbosity_params)
+    };
+
+
 
     if verbosity_params.make_plots {
         plot_hist(train_acc_hist, "acuracy");
@@ -156,12 +163,12 @@ fn ais_test(
         .map(|(a, b, c)| c)
         .collect();
 
-    let evaluated_pop = evaluate_population(&bk, &params, pop, &antigens);
+    let evaluated_pop = evaluate_population( &params, pop, &antigens);
 
 
 
     let max_ag_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
-    let mut match_counter = MatchCounter::new(max_ag_id);
+    let mut match_counter = MatchCounter::new(antigens);
 
     match_counter.add_evaluations(
         evaluated_pop
@@ -261,6 +268,7 @@ fn ais_test(
             match_counter.correct_match_counter
         );
 
+
         for n in (0..match_counter.correct_match_counter.len()) {
             let wrong = match_counter.incorrect_match_counter.get(n).unwrap();
             let right = match_counter.correct_match_counter.get(n).unwrap();
@@ -278,7 +286,20 @@ fn ais_test(
     let mut n_wrong = 0;
     let mut n_no_detect = 0;
     for antigen in train_slice {
-        let pred_class = ais.is_class_correct(&antigen);
+        let pred_class = ais.is_class_correct_with_membership(&antigen);
+        // let pred_class = ais.is_class_correct(&antigen);
+
+        // if pred_class.is_some() != pred_class_m.is_some(){
+        //     println!("\n\nres value Diff registered, using valilla res was {:?}, using membership {:?}", pred_class, pred_class_m);
+        // }
+        // if pred_class.is_some() && pred_class_m.is_some(){
+        //     if pred_class_m.unwrap() != pred_class.unwrap(){
+        //         println!("Diff registered, using valilla res was {:?}, using membership {:?}", pred_class.unwrap(), pred_class_m.unwrap());
+        //
+        //     }
+        // }
+        //
+
         if let Some(v) = pred_class {
             if v {
                 n_corr += 1;
@@ -297,15 +318,29 @@ fn ais_test(
 
     let mut test_n_corr = 0;
     let mut test_n_wrong = 0;
-    let mut test_per_class_corr = HashMap::new();
+
+    let mut membership_test_n_corr = 0;
+    let mut membership_test_n_wrong = 0;
+
+
+    let mut membership_test_per_class_corr = HashMap::new();
     let mut test_n_no_detect = 0;
     for antigen in test {
+        let pred_class = ais.is_class_correct_with_membership(&antigen);
+
+        if let Some(v) = pred_class {
+            if v {
+                membership_test_n_corr += 1;
+                let class_count = membership_test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+                membership_test_per_class_corr.insert(antigen.class_label, *class_count + 1);
+            } else {
+                membership_test_n_wrong += 1
+            }
+        }
         let pred_class = ais.is_class_correct(&antigen);
         if let Some(v) = pred_class {
             if v {
                 test_n_corr += 1;
-                let class_count = test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
-                test_per_class_corr.insert(antigen.class_label, *class_count + 1);
             } else {
                 test_n_wrong += 1
             }
@@ -315,6 +350,9 @@ fn ais_test(
     }
 
     let test_acc = test_n_corr as f64 / (test.len() as f64);
+    let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
+    let membership_test_acc = membership_test_n_corr as f64 / (test.len() as f64);
+    let membership_test_precession = membership_test_n_corr as f64 / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
 
     if verbosity_params.display_final_acc_info {
         println!("=============================================================================");
@@ -334,11 +372,16 @@ fn ais_test(
 
         println!();
         println!("dataset size {:?}", test.len());
+
         println!(
-            "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
-            test_n_corr, test_n_wrong, test_n_no_detect, test_acc
+            "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+            test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
         );
-        println!("per class cor {:?}", test_per_class_corr);
+        println!(
+            "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+            membership_test_n_corr, membership_test_n_wrong, test.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
+        );
+        println!("per class cor {:?}", membership_test_per_class_corr);
 
         println!(
             "Total runtime: {:?}, \nPer iteration: {:?}",
@@ -349,7 +392,7 @@ fn ais_test(
 
     dump_to_csv(antigens, &ais.antibodies);
 
-    return (train_acc, test_acc);
+    return (train_acc, membership_test_acc);
     // ais.pred_class(test.get(0).unwrap());
 }
 
@@ -361,10 +404,10 @@ fn main() {
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
     // let mut antigens = read_wine();
-    let mut antigens = read_diabetes();
+    // let mut antigens = read_diabetes();
     // let mut antigens = read_spirals();
 
-    // let mut antigens = read_pima_diabetes();
+    let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
     // let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
@@ -381,19 +424,24 @@ fn main() {
         .collect::<HashSet<_>>();
 
     let mut params = Params {
+        boost: 30,
         // -- train params -- //
         antigen_pop_fraction: 1.0,
-        generations: 250,
+        generations: 1000,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,
-        mutation_multiplier_local_search_weight: 3,
+        mutation_multiplier_local_search_weight: 0,
         mutation_radius_weight: 5,
         mutation_value_type_weight: 3,
 
         mutation_label_weight: 0,
 
         mutation_value_type_local_search_dim: true,
+
+        // -- reduction -- //
+        membership_required: 0.7,
+
 
         // offset_mutation_multiplier_range: 0.8..=1.2,
         // multiplier_mutation_multiplier_range: 0.8..=1.2,
@@ -413,7 +461,8 @@ fn main() {
         //selection
         leak_fraction: 0.5,
         leak_rand_prob: 0.5,
-        max_replacment_frac: 0.6,
+        replace_frac_type: ReplaceFractionType::Linear(0.8..0.3),
+        // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.6),
         tournament_size: 1,
         n_parents_mutations: 40,
 
@@ -444,17 +493,18 @@ fn main() {
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: false,
-        iter_info_interval: Some(1),
+        iter_info_interval: None,
         full_pop_acc_interval: None,
-        // full_pop_acc_interval: None,
+        // iter_info_interval: Some(2),
+        // full_pop_acc_interval: Some(5),
         show_class_info: false,
-        make_plots: true,
-        display_final_ab_info: true,
+        make_plots: false,
+        display_final_ab_info: false,
         display_detailed_error_info: true,
         display_final_acc_info: true,
     };
     modify_config_by_args(&mut params);
 
-    // ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
-    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
+    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
+    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
 }

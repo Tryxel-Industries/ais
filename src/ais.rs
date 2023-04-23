@@ -1,3 +1,4 @@
+use json::object;
 use std::collections::{HashMap, HashSet};
 use std::iter::Map;
 use std::ops::{Range, RangeInclusive};
@@ -10,7 +11,7 @@ use statrs::statistics::Statistics;
 use crate::bucket_empire::BucketKing;
 use crate::evaluation::{evaluate_antibody, Evaluation, MatchCounter};
 use crate::mutate;
-use crate::params::{Params, VerbosityParams};
+use crate::params::{Params, ReplaceFractionType, VerbosityParams};
 use crate::representation::antibody::Antibody;
 use crate::representation::antibody_factory::AntibodyFactory;
 use crate::representation::antigen::AntiGen;
@@ -30,12 +31,23 @@ pub struct ArtificialImmuneSystem {
     pub antibodies: Vec<Antibody>,
 }
 
+pub struct ClassPrediction {
+    pub class: usize,
+    pub reg_count: usize,
+    pub valid_count: usize,
+    pub membership_sum: f64,
+    pub valid_membership_sum: f64,
+}
+pub struct Prediction {
+    pub predicted_class: usize,
+    pub class_predictions: Vec<ClassPrediction>,
+}
+
 //
 //  AIS
 //
 
 pub fn evaluate_population(
-    bk: &BucketKing<AntiGen>,
     params: &Params,
     population: Vec<Antibody>,
     antigens: &Vec<AntiGen>,
@@ -59,7 +71,7 @@ fn gen_initial_population(
     pop_size: &usize,
 ) -> Vec<Antibody> {
     let mut rng = rand::thread_rng();
-    return if params.antigen_pop_fraction == 1.0 {
+    return if (*pop_size == antigens.len()) {
         antigens
             .iter()
             .map(|ag| cell_factory.generate_from_antigen(ag))
@@ -85,6 +97,154 @@ fn gen_initial_population(
     };
 }
 
+pub fn is_class_correct(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option<bool> {
+    let matching_cells = antibodies
+        .iter()
+        .filter(|antibody| antibody.test_antigen(antigen))
+        .collect::<Vec<_>>();
+
+    if matching_cells.len() == 0 {
+        return None;
+    }
+
+    let class_true = matching_cells
+        .iter()
+        .filter(|x| x.class_label == antigen.class_label)
+        .collect::<Vec<_>>();
+    let class_false = matching_cells
+        .iter()
+        .filter(|x| x.class_label != antigen.class_label)
+        .collect::<Vec<_>>();
+
+    if class_true.len() > class_false.len() {
+        return Some(true);
+    } else {
+        // println!("wrong match id {:?}, cor: {:?}  incor {:?}", antigen.id, class_true.len(), class_false.len());
+        return Some(false);
+    }
+}
+
+pub fn make_prediction(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option<Prediction> {
+    let matching_cells = antibodies
+        .iter()
+        .filter(|antibody| antibody.test_antigen(antigen))
+        .collect::<Vec<_>>();
+
+    let matching_classes = matching_cells
+        .iter()
+        .map(|ab| ab.class_label)
+        .collect::<HashSet<usize>>();
+
+    let mut label_membership_values = matching_classes
+        .iter()
+        .map(|class| {
+            (
+                class.clone(),
+                ClassPrediction {
+                    class: class.clone(),
+                    reg_count: 0,
+                    membership_sum: 0.0,
+                    valid_count: 0,
+                    valid_membership_sum: 0.0,
+                },
+            )
+        })
+        .collect::<HashMap<usize, ClassPrediction>>();
+
+    for cell in matching_cells {
+        let mut match_class_pred = label_membership_values.get_mut(&cell.class_label).unwrap();
+        match_class_pred.membership_sum += cell.final_train_label_membership.unwrap().0;
+        match_class_pred.reg_count += 1;
+
+        // if cell.final_train_label_membership.unwrap().0 >= 0.95{
+        if cell.final_train_label_membership.unwrap().0 >= 0.0 {
+            match_class_pred.valid_count += 1;
+            // match_class_pred.valid_membership_sum += cell.final_train_label_membership.unwrap().0 * cell.boosting_model_alpha;
+            match_class_pred.valid_membership_sum += 1.0 * cell.boosting_model_alpha;
+        }
+    }
+
+    let mut class_preds = Vec::new();
+
+    let mut best_class = None;
+    let mut best_score = 0.0;
+    for (label, label_membership_value) in label_membership_values {
+        if best_score < label_membership_value.valid_membership_sum {
+            best_class = Some(label);
+            best_score = label_membership_value.valid_membership_sum.clone()
+        }
+        class_preds.push(label_membership_value)
+    }
+
+    return Some(Prediction {
+        predicted_class: best_class?,
+        class_predictions: class_preds,
+    });
+}
+
+pub fn is_class_correct_with_membership(
+    antigen: &AntiGen,
+    antibodies: &Vec<Antibody>,
+) -> Option<bool> {
+    let pred_value = make_prediction(antigen, antibodies)?;
+
+    if pred_value.predicted_class == antigen.class_label {
+        return Some(true);
+    } else {
+        // println!("wrong match id {:?}, cor: {:?}  incor {:?}", antigen.id, class_true.len(), class_false.len());
+        return Some(false);
+    }
+}
+
+fn evaluate_print_population(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
+    let mut test_n_corr = 0;
+    let mut test_n_wrong = 0;
+
+    let mut membership_test_n_corr = 0;
+    let mut membership_test_n_wrong = 0;
+
+    let mut test_per_class_corr = HashMap::new();
+    let mut test_n_no_detect = 0;
+    for antigen in antigens {
+        let pred_class = is_class_correct_with_membership(&antigen, antibodies);
+
+        if let Some(v) = pred_class {
+            if v {
+                membership_test_n_corr += 1;
+            } else {
+                membership_test_n_wrong += 1
+            }
+        }
+        let pred_class = is_class_correct(&antigen, antibodies);
+        if let Some(v) = pred_class {
+            if v {
+                test_n_corr += 1;
+                let class_count = test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+                test_per_class_corr.insert(antigen.class_label, *class_count + 1);
+            } else {
+                test_n_wrong += 1
+            }
+        } else {
+            test_n_no_detect += 1
+        }
+    }
+
+    let test_acc = test_n_corr as f64 / (antigens.len() as f64);
+    let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
+    let membership_test_acc = membership_test_n_corr as f64 / (antigens.len() as f64);
+    let membership_test_precession = membership_test_n_corr as f64
+        / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
+
+    println!(
+        "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+        test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
+    );
+    println!(
+        "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+        membership_test_n_corr, membership_test_n_wrong, antigens.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
+    );
+
+}
 impl ArtificialImmuneSystem {
     pub fn new() -> ArtificialImmuneSystem {
         return Self {
@@ -98,9 +258,155 @@ impl ArtificialImmuneSystem {
         params: &Params,
         verbosity_params: &VerbosityParams,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
+        let pop_size = (antigens.len() as f64 * params.antigen_pop_fraction) as usize;
+
+        let (train_acc_hist, train_score_hist, scored_pop) =
+            self.train_ab_set(antigens, params, verbosity_params, pop_size);
+        let mut save_antibodies = Vec::new();
+        scored_pop
+            .iter()
+            .for_each(|(a, b, cell)| save_antibodies.push(cell.clone()));
+        self.antibodies = save_antibodies;
+        return (train_acc_hist, train_score_hist, scored_pop);
+    }
+
+    pub fn train_immunobosting(
+        &mut self,
+        input_antigens: &Vec<AntiGen>,
+        params: &Params,
+        verbosity_params: &VerbosityParams,
+        boosting_rounds: usize,
+        highly_dubious_practices: &Vec<AntiGen>,
+    ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
+        let mut antigens = input_antigens.clone();
+        let pop_size = (antigens.len() as f64 * params.antigen_pop_fraction) as usize;
+        let train_per_round = ((pop_size as f64) * 1.0 / boosting_rounds as f64) as usize;
+
+        println!(
+            "pop size, final num ab {:?} gained throgh {:?} rounds with {:?}",
+            pop_size, boosting_rounds, train_per_round
+        );
+
+
+
+        let mut ab_pool: Vec<Antibody> = Vec::new();
+
+        for n in 0..boosting_rounds {
+            // using https://towardsdatascience.com/boosting-algorithms-explained-d38f56ef3f30
+
+            // norm weights
+            let ag_weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
+            // println!("sum is {:?},", antigens.iter().map(|ag| ag.boosting_weight).sum::<f64>());
+            antigens
+                .iter_mut()
+                .for_each(|ag| ag.boosting_weight = ag.boosting_weight / ag_weight_sum);
+
+            // println!("sum is {:?},", antigens.iter().map(|ag| ag.boosting_weight).sum::<f64>());
+
+        //   println!();
+        //     let mut match_counter = MatchCounter::new(&antigens);
+        //     println!(
+        //     "########## boost mask \n{:?}",
+        //     match_counter.boosting_weight_values
+        // );
+
+            // train predictor
+            let (train_acc_hist, train_score_hist, scored_pop) =
+                self.train_ab_set(&antigens, params, verbosity_params, train_per_round);
+            let mut antibodies: Vec<_> = scored_pop.into_iter().map(|x| x.2).collect();
+
+            // get predictor error
+
+            let weighted_correct_count: f64 = antigens
+                .iter()
+                .map(|antigen| {
+                    let is_corr = is_class_correct(&antigen, &antibodies).unwrap_or(false);
+                    if is_corr {
+                        return 0.0;
+                    } else {
+                        return 1.0 * antigen.boosting_weight;
+                    }
+                })
+                .sum();
+
+            let weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
+            let error = weighted_correct_count / weight_sum;
+
+            // calculate alpha weight for model
+            let alpha_m = ((1.0 - error) / error).ln();
+
+            // update weights
+            for antigen in &mut antigens {
+                let is_corr = is_class_correct(&antigen, &antibodies).unwrap_or(false);
+                let val = if is_corr { 0.0 } else { alpha_m };
+
+                antigen.boosting_weight = antigen.boosting_weight * val.exp();
+            }
+
+            // save the antibodies
+            antibodies
+                .iter_mut()
+                .for_each(|ab| ab.boosting_model_alpha = alpha_m.clone());
+            ab_pool.extend(antibodies);
+
+            println!("for boost round {:?}:", n);
+            println!("current ab pool s {:?}:", ab_pool.len());
+
+
+            println!("train");
+            evaluate_print_population(&antigens, &ab_pool);
+
+            println!("test");
+            evaluate_print_population(&highly_dubious_practices, &ab_pool)
+        }
+        self.antibodies = ab_pool.clone();
+
+        let mut match_counter = MatchCounter::new(&antigens);
+        let evaluated_pop = evaluate_population(params, ab_pool, &antigens);
+        match_counter.add_evaluations(
+            evaluated_pop
+                .iter()
+                .map(|(evaluation, _)| evaluation)
+                .collect::<Vec<_>>(),
+        );
+
+        let class_labels = antigens
+            .iter()
+            .map(|x| x.class_label)
+            .collect::<HashSet<_>>();
+
+        let count_map: HashMap<usize, usize> = class_labels
+            .iter()
+            .map(|x| {
+                (
+                    x.clone(),
+                    antigens
+                        .iter()
+                        .filter(|ag| ag.class_label == *x)
+                        .collect::<Vec<&AntiGen>>()
+                        .len(),
+                )
+            })
+            .collect();
+        let scored_pop = score_antibodies(evaluated_pop, &count_map, &match_counter);
+
+
+        // println!(
+        //     "########## boost mask \n{:?}",
+        //     match_counter.boosting_weight_values
+        // );
+        return (Vec::new(), Vec::new(), scored_pop);
+    }
+
+    fn train_ab_set(
+        &self,
+        antigens: &Vec<AntiGen>,
+        params: &Params,
+        verbosity_params: &VerbosityParams,
+        pop_size: usize,
+    ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         // =======  init misc training params  ======= //
 
-        let pop_size = (antigens.len() as f64 * params.antigen_pop_fraction) as usize;
         let leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
 
         let mut rng = rand::thread_rng();
@@ -146,7 +452,7 @@ impl ArtificialImmuneSystem {
 
         // keeps track of the matches
         let max_ag_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
-        let mut match_counter = MatchCounter::new(max_ag_id);
+        let mut match_counter = MatchCounter::new(antigens);
 
         // init hist and watchers
         let mut best_run: Vec<(f64, Evaluation, Antibody)> = Vec::new();
@@ -177,7 +483,7 @@ impl ArtificialImmuneSystem {
         // the scored pop is the population where the ab -> ag matches and score has been calculated
         let mut scored_pop: Vec<(f64, Evaluation, Antibody)> = Vec::with_capacity(pop_size);
 
-        evaluated_pop = evaluate_population(&bucket_king, params, initial_population, antigens);
+        evaluated_pop = evaluate_population(params, initial_population, antigens);
         match_counter.add_evaluations(
             evaluated_pop
                 .iter()
@@ -228,11 +534,21 @@ impl ArtificialImmuneSystem {
             train_score_hist.push(avg_score);
 
             // =======  parent selection  ======= //
-            let replace_exponent = (3.0 / 2.0) * (((i as f64) + 1.0) / params.generations as f64);
-            let replace_frac =
-                params.max_replacment_frac * (2.0 / pop_size as f64).powf(replace_exponent);
+            let mut n_to_replace = match &params.replace_frac_type {
+                ReplaceFractionType::Linear(range) => {
+                    let range_span = range.end - range.start;
+                    let round_frac = i as f64 / params.generations as f64;
+                    (pop_size as f64 * (range.start + (range_span * round_frac))).ceil() as usize
+                }
+                ReplaceFractionType::MaxRepFrac(max_frac) => {
+                    let replace_exponent =
+                        (3.0 / 2.0) * (((i as f64) + 1.0) / params.generations as f64);
+                    let replace_frac = max_frac * (2.0 / pop_size as f64).powf(replace_exponent);
+                    (pop_size as f64 * replace_frac).ceil() as usize
+                }
+            };
+
             // params.max_replacment_frac * (2.0 / pop_size as f64).powf(replace_exponent) + 0.05;
-            let mut n_to_replace = (pop_size as f64 * replace_frac).ceil() as usize;
 
             // =======  clone -> mut -> eval  ======= //
             let mut new_gen: Vec<(Evaluation, Antibody)> = Vec::new();
@@ -242,7 +558,7 @@ impl ArtificialImmuneSystem {
             // calculate and preform the replacement selection/mutation for each ab label separately to maintain the label ratios
             for (label, fraction) in &frac_map {
                 let replace_count_for_label = (n_to_replace as f64 * fraction).ceil() as usize;
-                if replace_count_for_label <= 0 {
+                if replace_count_for_label <= 0 || (*count_map.get(label).unwrap() < replace_count_for_label) {
                     continue;
                 }
 
@@ -266,7 +582,7 @@ impl ArtificialImmuneSystem {
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
                     .map(|(parent_score, parent_eval, parent_antibody)| {
                         // find the fraction of max score of the current ab, this is used for the cloning and mutation rates
-                        let frac_of_max = ((parent_score / max_score)).max(0.2);
+                        let frac_of_max = (parent_score / max_score).max(0.2);
                         let n_clones =
                             ((params.n_parents_mutations as f64 * frac_of_max) as usize).max(1);
 
@@ -275,8 +591,12 @@ impl ArtificialImmuneSystem {
                             // .into_iter()
                             .into_par_iter() // TODO: set paralell
                             .map(|_| {
-                                let mut mutated =
-                                    mutate(params, (1.0 - frac_of_max), parent_antibody.clone(), antigens);
+                                let mut mutated = mutate(
+                                    params,
+                                    (1.0 - frac_of_max),
+                                    parent_antibody.clone(),
+                                    antigens,
+                                );
                                 mutated.clone_count += 1;
                                 let eval = evaluate_antibody(antigens, &mutated);
                                 return (eval, mutated);
@@ -466,12 +786,11 @@ impl ArtificialImmuneSystem {
                 let antibody: Vec<Antibody> =
                     scored_pop.iter().map(|(a, b, c)| c.clone()).collect();
 
-                self.antibodies = antibody;
                 let mut n_corr = 0;
                 let mut n_wrong = 0;
                 let mut n_no_detect = 0;
                 for antigen in antigens {
-                    let pred_class = self.is_class_correct(&antigen);
+                    let pred_class = is_class_correct(&antigen, &antibody);
                     if let Some(v) = pred_class {
                         if v {
                             n_corr += 1
@@ -531,40 +850,31 @@ impl ArtificialImmuneSystem {
             );
         }
 
-        self.antibodies = scored_pop
-            .iter()
+        scored_pop = scored_pop
+            .into_iter()
             // .filter(|(score, _, _)| *score >= 2.0)
-            .filter(|(score, _, _)| *score > 0.0)
-            .map(|(_score, _ev, cell)| cell.clone())
+            // .filter(|(score, _, _)| *score > 0.0)
+            .map(|(score, evaluation, cell)| {
+                let mut save_ab = cell.clone();
+                save_ab.final_train_label_membership = Some(evaluation.membership_value);
+                return (score, evaluation, save_ab);
+            })
+
+            .filter(|(score, _, cell)| cell.final_train_label_membership.unwrap().0 > params.membership_required)
             .collect();
+
         return (train_acc_hist, train_score_hist, scored_pop);
     }
 
     pub fn is_class_correct(&self, antigen: &AntiGen) -> Option<bool> {
-        let matching_cells = self
-            .antibodies
-            .iter()
-            .filter(|antibody| antibody.test_antigen(antigen))
-            .collect::<Vec<_>>();
+        return is_class_correct(antigen, &self.antibodies);
+    }
 
-        if matching_cells.len() == 0 {
-            return None;
-        }
+    pub fn make_prediction(&self, antigen: &AntiGen) -> Option<Prediction> {
+        return make_prediction(antigen, &self.antibodies);
+    }
 
-        let class_true = matching_cells
-            .iter()
-            .filter(|x| x.class_label == antigen.class_label)
-            .collect::<Vec<_>>();
-        let class_false = matching_cells
-            .iter()
-            .filter(|x| x.class_label != antigen.class_label)
-            .collect::<Vec<_>>();
-
-        if class_true.len() > class_false.len() {
-            return Some(true);
-        } else {
-            // println!("wrong match id {:?}, cor: {:?}  incor {:?}", antigen.id, class_true.len(), class_false.len());
-            return Some(false);
-        }
+    pub fn is_class_correct_with_membership(&self, antigen: &AntiGen) -> Option<bool> {
+        return is_class_correct_with_membership(antigen, &self.antibodies);
     }
 }

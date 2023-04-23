@@ -1,5 +1,5 @@
 use std::{env, slice};
-use std::ops::RangeInclusive;
+use std::ops::{Range, RangeInclusive};
 
 use rand::prelude::SliceRandom;
 
@@ -18,8 +18,14 @@ pub enum MutationType {
     OrientationMatrix,
 }
 
+pub enum ReplaceFractionType{
+    Linear(Range<f64>),
+    MaxRepFrac(f64)
+}
+
 pub struct Params {
     // -- train params -- //
+    pub boost: usize,
     pub antigen_pop_fraction: f64,
     pub leak_fraction: f64,
     pub leak_rand_prob: f64,
@@ -40,8 +46,11 @@ pub struct Params {
     pub value_type_valid_mutations: Vec<DimValueType>,
     pub label_valid_mutations: Vec<usize>,
 
+    // reduction
+    pub membership_required: f64,
+
     // selection
-    pub max_replacment_frac: f64,
+    pub replace_frac_type: ReplaceFractionType,
     pub tournament_size: usize,
 
     pub n_parents_mutations: usize,
@@ -160,7 +169,7 @@ pub fn modify_config_by_args(params: &mut Params) {
                 "tournament_size" => params.tournament_size = value.parse().unwrap(),
                 "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
                 "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
-                "max_replacment_frac" => params.max_replacment_frac = value.parse().unwrap(),
+                "max_replacment_frac" => params.replace_frac_type = ReplaceFractionType::MaxRepFrac(value.parse().unwrap()),
 
                 "mutation_value_type_local_search_dim" => params.mutation_value_type_local_search_dim = param_string_to_bool(value.parse().unwrap()),
                 "antibody_init_expand_radius" => params.antibody_init_expand_radius = param_string_to_bool(value.parse().unwrap()),

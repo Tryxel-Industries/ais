@@ -30,6 +30,8 @@ pub struct Antibody {
     pub orientation_matrix: DMatrix<f64>,
     pub length_matrix: DMatrix<f64>,
     pub offset: DVector<f64>,
+    pub boosting_model_alpha: f64,
+    pub final_train_label_membership: Option<(f64,f64)>,
     //todo: remove when running hyper optimized
     pub mutation_counter: HashMap<MutationType, usize>,
     pub clone_count: usize,
@@ -175,6 +177,7 @@ impl Antibody {
             return false;
         }
     }
+
 
     pub fn test_antigen_w_orientation(&self, antigen: &AntiGen) -> bool {
         let ag_dims: DVector<f64> = DVector::from_vec(antigen.values.clone());

@@ -124,11 +124,7 @@ pub fn read_iris() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+            return AntiGen::new(n, label_val, features)
         })
         .collect();
 
@@ -172,11 +168,9 @@ pub fn read_wine() -> Vec<AntiGen> {
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
 
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+
+            return AntiGen::new(n, label_val, features)
+
         })
         .collect();
 
@@ -210,11 +204,8 @@ pub fn read_diabetes() -> Vec<AntiGen> {
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
 
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+            return AntiGen::new(n, label_val, features)
+
         })
         .collect();
 
@@ -252,11 +243,8 @@ pub fn read_sonar() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+             return AntiGen::new(n, label_val, features)
+
         })
         .collect();
 
@@ -294,11 +282,8 @@ pub fn read_glass() -> Vec<AntiGen> {
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+                   return AntiGen::new(n, label_val, features)
+
         })
         .collect();
 
@@ -339,11 +324,8 @@ pub fn read_ionosphere() -> Vec<AntiGen> {
                     panic!("parsing error ")
                 }
             };
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+                  return AntiGen::new(n, label_val, features)
+
         })
         .collect();
     return antigens;
@@ -387,11 +369,8 @@ pub fn read_pima_diabetes() -> Vec<AntiGen> {
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+             return AntiGen::new(n, label_val, features)
+
         })
         .collect();
 
@@ -434,11 +413,8 @@ pub fn read_spirals() -> Vec<AntiGen> {
         .enumerate()
         .map(|(n, (label, features))| {
             let label_val = label.parse().unwrap();
-            return AntiGen {
-                id: n,
-                class_label: label_val,
-                values: features,
-            };
+               return AntiGen::new(n, label_val, features)
+
         })
         .collect();
 
@@ -503,11 +479,10 @@ pub fn read_kaggle_semantic() -> Vec<AntiGen> {
                 feature_values.push(f_val);
             });
 
-            let ag = AntiGen {
-                id: id as usize,
-                class_label: label.parse().unwrap(),
-                values: feature_values,
-            };
+
+
+                        let ag = AntiGen::new(id as usize, label.parse().unwrap(), feature_values);
+
             news_entries.push(ag)
         }
     }

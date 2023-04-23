@@ -3,6 +3,11 @@ extern crate core;
 use plotters::prelude::*;
 
 pub fn plot_hist(hist: Vec<f64>, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if hist.len() == 0{
+        println!("empty hist not plotting");
+        return Ok(());
+    }
+    println!("{:?}", hist);
     let path = format!("train_graph{:?}.png", file_name);
     let root = BitMapBackend::new(&path, (3000, 1000)).into_drawing_area();
     root.fill(&WHITE)?;

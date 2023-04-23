@@ -57,6 +57,7 @@ fn test_mutation_orientation() {
 fn get_params() -> (Params, VerbosityParams) {
     let mut params = Params {
         // -- train params -- //
+        boost: 0,
         antigen_pop_fraction: 1.0,
         generations: 500,
 
@@ -86,9 +87,10 @@ fn get_params() -> (Params, VerbosityParams) {
         label_valid_mutations: vec![1, 2],
 
         //selection
+        membership_required: 0.0,
         leak_fraction: 0.5,
         leak_rand_prob: 0.5,
-        max_replacment_frac: 0.6,
+        replace_frac_type: ReplaceFractionType::MaxRepFrac(0.6),
         tournament_size: 1,
         n_parents_mutations: 40,
 
