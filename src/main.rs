@@ -25,7 +25,7 @@ use crate::dataset_readers::{
 };
 use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
-use crate::params::{Params, VerbosityParams};
+use crate::params::{modify_config_by_args, Params, VerbosityParams};
 use crate::plotting::plot_hist;
 use crate::proto_test::read_kaggle;
 use crate::representation::antibody::{Antibody, DimValueType};
@@ -352,21 +352,8 @@ fn ais_test(
     return (train_acc, test_acc);
     // ais.pred_class(test.get(0).unwrap());
 }
-fn modify_config_by_args(params: &mut Params) {
-    let args: Vec<String> = env::args().collect();
 
-    for arg in args {
-        if arg.starts_with("--") {
-            let (key, value) = arg.strip_prefix("--").unwrap().split_once("=").unwrap();
-            match key {
-                "tournament_size" => params.tournament_size = value.parse().unwrap(),
-                "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
-                "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
-                _ => panic!("invalid config arg"),
-            }
-        }
-    }
-}
+
 fn main_(){
     read_kaggle();
 }
