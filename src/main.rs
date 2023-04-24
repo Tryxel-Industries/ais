@@ -177,21 +177,8 @@ fn ais_test(
             .collect::<Vec<_>>(),
     );
 
-    let count_map: HashMap<usize, usize> = class_labels
-        .clone()
-        .iter()
-        .map(|x| {
-            (
-                x.clone(),
-                antigens
-                    .iter()
-                    .filter(|ag| ag.class_label == *x)
-                    .collect::<Vec<&AntiGen>>()
-                    .len(),
-            )
-        })
-        .collect();
-    let scored_pop = score_antibodies(evaluated_pop, &count_map, &match_counter);
+
+    let scored_pop = score_antibodies(evaluated_pop, &match_counter);
 
     scored_pop.iter().for_each(|(disc_score, eval, antibody)| {
         let registered_antigens = test

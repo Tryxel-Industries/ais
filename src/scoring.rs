@@ -10,9 +10,9 @@ use crate::representation::antigen::AntiGen;
 
 pub fn score_antibodies(
     evaluated_population: Vec<(Evaluation, Antibody)>,
-    count_map: &HashMap<usize, usize>,
     match_counter: &MatchCounter,
 ) -> Vec<(f64, Evaluation, Antibody)> {
+    let count_map = &match_counter.count_map;
     let merged_mask: &Vec<usize> = match_counter.correct_match_counter.as_ref();
     let error_merged_mask: &Vec<usize> = match_counter.incorrect_match_counter.as_ref();
     // println!("{:?}", merged_mask);

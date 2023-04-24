@@ -1,5 +1,5 @@
 use std::cmp::min;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use rayon::prelude::*;
 
@@ -144,7 +144,12 @@ pub struct MatchCounter {
     max_id: usize,
     pub correct_match_counter: Vec<usize>,
     pub incorrect_match_counter: Vec<usize>,
+
+
     pub boosting_weight_values: Vec<f64>,
+    pub class_labels: HashSet<usize>,
+    pub frac_map: Vec<(usize,f64)>,
+    pub count_map: HashMap<usize,usize>,
 }
 
 impl MatchCounter {
@@ -156,11 +161,50 @@ impl MatchCounter {
                 *v = ag.boosting_weight
             }
         } );
+
+
+        let class_labels = antigens
+            .iter()
+            .map(|x| x.class_label)
+            .collect::<HashSet<_>>();
+
+        let frac_map: Vec<(usize, f64)> = class_labels
+            .iter()
+            .map(|x| {
+                (
+                    x.clone(),
+                    antigens
+                        .iter()
+                        .filter(|ag| ag.class_label == *x)
+                        .collect::<Vec<&AntiGen>>()
+                        .len() as f64
+                        / antigens.len() as f64,
+                )
+            })
+            .collect();
+        let count_map: HashMap<usize, usize> = class_labels
+            .iter()
+            .map(|x| {
+                (
+                    x.clone(),
+                    antigens
+                        .iter()
+                        .filter(|ag| ag.class_label == *x)
+                        .collect::<Vec<&AntiGen>>()
+                        .len(),
+                )
+            })
+            .collect();
+
         return MatchCounter {
             max_id,
             correct_match_counter: vec![0usize; max_id + 1],
             incorrect_match_counter: vec![0usize; max_id + 1],
             boosting_weight_values: ag_weight_map,
+            class_labels,
+            frac_map,
+            count_map
+
         };
     }
 
