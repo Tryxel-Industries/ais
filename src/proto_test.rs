@@ -9,8 +9,9 @@ use crate::entities;
 use crate::entities::DatasetEmbeddings;
 use crate::representation::antibody::Antibody;
 use crate::representation::antigen::AntiGen;
+use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 
-pub fn read_kaggle() -> Vec<AntiGen>{
+pub fn read_kaggle_embeddings() -> Vec<AntiGen>{
 
     let path= "./datasets/fake_news/kaggle/embeddings_proto.bin";
     let f = File::open(path).unwrap();
@@ -34,11 +35,14 @@ pub fn read_kaggle() -> Vec<AntiGen>{
     };
     let mut return_vec = Vec::new();
 
+    let mut translator = NewsArticleAntigenTranslator::new();
     for entry in embed.news_entries{
-        let entry_id = entry.id as usize;
-        let entry_label: usize = entry.label.parse().unwrap();
+        let ags = translator.translate_article(entry);
+        return_vec.extend(ags);
     }
 
+    return return_vec;
+    // println!("{:?}", return_vec.len());
     // return_vec.extend(embed.news_entries.into_iter().map(|v| AntiGen{
     //     id: v.id as usize,
     //     class_label: v.label.parse().unwrap(),

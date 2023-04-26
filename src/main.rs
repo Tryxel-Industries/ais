@@ -27,7 +27,7 @@ use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
 use crate::params::{modify_config_by_args, Params, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
-use crate::proto_test::read_kaggle;
+use crate::proto_test::{ read_kaggle_embeddings};
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::result_export::dump_to_csv;
@@ -385,7 +385,7 @@ fn ais_test(
 
 
 fn main_(){
-    read_kaggle();
+    read_kaggle_embeddings();
 }
 fn main() {
     // let mut antigens = read_iris();
@@ -394,13 +394,16 @@ fn main() {
     // let mut antigens = read_diabetes();
     // let mut antigens = read_spirals();
 
-    let mut antigens = read_pima_diabetes();
+    // let mut antigens = read_pima_diabetes();
     // let mut antigens = read_sonar();
     // let mut antigens = read_glass();
     // let mut antigens = read_ionosphere();
 
     // let mut antigens = read_kaggle_semantic();
     // let _ = antigens.split_off(3000);
+
+    let mut antigens = read_kaggle_embeddings();
+    let _ = antigens.split_off(1000);
 
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
@@ -411,9 +414,9 @@ fn main() {
         .collect::<HashSet<_>>();
 
     let mut params = Params {
-        boost: 30,
+        boost: 0,
         // -- train params -- //
-        antigen_pop_fraction: 1.0,
+        antigen_pop_fraction: 0.5,
         generations: 1000,
 
         mutation_offset_weight: 5,
@@ -480,9 +483,9 @@ fn main() {
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: false,
-        iter_info_interval: None,
+        // iter_info_interval: None,
         full_pop_acc_interval: None,
-        // iter_info_interval: Some(2),
+        iter_info_interval: Some(2),
         // full_pop_acc_interval: Some(5),
         show_class_info: false,
         make_plots: false,

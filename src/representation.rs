@@ -8,6 +8,7 @@ use crate::BucketKing;
 pub mod antibody;
 pub mod antibody_factory;
 pub mod antigen;
+pub mod news_article_mapper;
 
 pub fn expand_antibody_radius_until_hit(
     mut cell: Antibody,
