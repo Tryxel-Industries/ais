@@ -1,13 +1,10 @@
-use std::io;
-use std::{collections::HashSet, f64::consts::PI, vec, convert::identity};
-use nalgebra::{DVector, Matrix2};
-use nalgebra::givens::GivensRotation;
-use rand::rngs::ThreadRng;
+use std::{collections::HashSet, f64::consts::PI, vec};
+
 use rand::{Rng, random, seq::IteratorRandom};
 use rand_distr::{Normal, Distribution};
 use crate::representation::{antigen::AntiGen, antibody::Antibody, antibody::AntibodyDim};
 use core::{self, num};
-use nalgebra::{DMatrix, Matrix, OMatrix, base::U8, VecStorage, ArrayStorage, debug::RandomOrthogonal};
+use nalgebra::{DMatrix};
 /// Given a vector `vec` and a positive integer `n`, returns a new vector that contains `n`
 /// randomly chosen elements from `vec`. The elements in the resulting vector are in the same
 /// order as they appear in `vec`.
@@ -35,24 +32,50 @@ use nalgebra::{DMatrix, Matrix, OMatrix, base::U8, VecStorage, ArrayStorage, deb
 /// assert_eq!(picks.len(), 3);
 /// ```
 
+// pub fn construct_orthonormal_vecs(population: &Vec<Antibody>) -> nalgebra::base::Matrix1<f64> {
+pub fn construct_orthonormal_vecs(population: &[Antibody]) -> nalgebra::base::Matrix1<f64> {
+    let nf: usize = 8;
+    
+    let t: Vec<f64>= population.iter()
+        .map(|ab| &ab.dim_values)
+        .map(|f| {
+            f.iter()
+            .map(|m| m.offset)
+            .collect::<Vec<f64>>()
+        }).flatten()
+        .collect();
+    let mut dm1 = DMatrix::from_vec( nf, population.len(), t.clone()).transpose();
+    println!("{:?}", t.clone());
+    println!("{}", dm1);
+    println!("skadoosh");
+    mutate_orientation(&mut dm1);
+    todo!()
+}
 
-pub fn random_orthonormal(dim: usize) -> DMatrix<f64> {
-    let mut ret = DMatrix::<f64>::identity(dim, dim);
+pub fn mutate_orientation(mut m: &mut DMatrix<f64>) {
+    let q = m.shape().1;
     let mut rng = rand::thread_rng();
+    let distr = Normal::new(0.0, PI/2.0).unwrap();
+    let theta = distr.sample(&mut rng);
+    let column_idxs: Vec<usize> = m.column_iter()
+        .enumerate()
+        .choose_multiple(&mut rng, 2).iter()
+        .map(|f| f.0)
+        .collect();
+    
+    let c1 = m.column(column_idxs[0]);
+    let c2 = m.column(column_idxs[1]);
+    let tmp = c1 * theta.cos() + c2 * theta.sin();
+    let tmp2 = c1 * -theta.sin() + c2 * theta.cos();
+    
+    m.column_mut(column_idxs[0]).copy_from(&tmp);
+    m.column_mut(column_idxs[1]).copy_from(&tmp2);
 
-    for i in 0..dim-1 {
-        let rot = GivensRotation::new(rng.gen(), rng.gen()).0;
-        rot.rotate(&mut ret.fixed_rows_mut::<2>(i) )
-    }
-
-    ret
+    println!("{:?}", theta);
+    println!("{}", m);
+    // println!("{:?}", q.clone());
+    todo!()
 }
-
-
-pub fn gen_random_lengths(dim: usize) -> DVector<f64> {
-    DVector::<f64>::new_random(dim)
-}
-
 
 pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     let mut rng = rand::thread_rng();

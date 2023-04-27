@@ -33,6 +33,7 @@ use crate::representation::antigen::AntiGen;
 use crate::result_export::dump_to_csv;
 use crate::scoring::score_antibodies;
 use crate::util::{split_train_test, split_train_test_n_fold};
+
 mod ais;
 mod bucket_empire;
 mod dataset_readers;
@@ -44,10 +45,9 @@ pub mod representation;
 mod result_export;
 mod scoring;
 mod selection;
+mod testing;
 mod util;
 mod proto_test;
-#[cfg(test)]
-mod tests;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -147,7 +147,7 @@ fn ais_test(
         plot_hist(train_acc_hist, "acuracy");
         plot_hist(train_score_hist, "score");
     }
-    let duration: std::time::Duration = start.elapsed();
+    let duration = start.elapsed();
 
     let mut zero_reg_cells = 0;
     // display final
@@ -254,7 +254,6 @@ fn ais_test(
             "########## match mask \n{:?}",
             match_counter.correct_match_counter
         );
-
 
         for n in (0..match_counter.correct_match_counter.len()) {
             let wrong = match_counter.incorrect_match_counter.get(n).unwrap();

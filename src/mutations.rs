@@ -1,10 +1,7 @@
 use crate::evaluation::evaluate_antibody;
 use rand::prelude::SliceRandom;
-use rand::seq::IteratorRandom;
 use rand::{distributions::Distribution, Rng};
 use rayon::prelude::*;
-use rand_distr::{Normal};
-use core::f64::consts::PI;
 
 use crate::params::{MutationType, Params};
 use crate::representation::antibody::{Antibody, DimValueType, LocalSearchBorder};
@@ -36,9 +33,6 @@ pub fn mutate(
         MutationType::ValueType => mutate_value_type(&params, antibody, antigens),
         MutationType::Radius => mutate_radius(&params, antibody, fitness_scaler),
         MutationType::Label => mutate_label(&params, antibody),
-        MutationType::OffsetVector => mutate_label(&params, antibody),
-        MutationType::LengthMatrix => mutate_label(&params, antibody),
-        MutationType::OrientationMatrix => mutate_label(&params, antibody),
     };
 
     return mutated;
@@ -56,54 +50,22 @@ pub fn get_rand_range(max: usize) -> (usize, usize) {
 }
 
 //TODO: fix this
-pub fn mutate_orientation_matrix(params: &Params, mut genome: &mut Antibody) {
-    let q = genome.orientation_matrix.shape().1;
+pub fn mutate_orientation(params: &Params, mut genome: Antibody) -> Antibody {
     let mut rng = rand::thread_rng();
-    let distr = Normal::new(0.0, PI/2.0).unwrap();
-    // let theta = distr.sample(&mut rng);
-    let theta = PI/2.0f64;
-    let column_idxs: Vec<usize> = genome.orientation_matrix.column_iter()
+
+    let candidates_dims: Vec<usize> = genome
+        .dim_values
+        .iter()
         .enumerate()
-        .choose_multiple(&mut rng, 2).iter()
-        .map(|f| f.0)
+        .filter(|(_n, x)| x.value_type == DimValueType::Circle)
+        .map(|(n, _x)| n)
         .collect();
-    
-    let c1 = genome.orientation_matrix.column(column_idxs[0]);
-    let c2 = genome.orientation_matrix.column(column_idxs[1]);
-    let tmp = c1 * theta.cos() + c2 * theta.sin();
-    let tmp2 = c1 * -theta.sin() + c2 * theta.cos();
-    
-    genome.orientation_matrix.column_mut(column_idxs[0]).copy_from(&tmp);
-    genome.orientation_matrix.column_mut(column_idxs[1]).copy_from(&tmp2);
 
-}
+    if candidates_dims.len() == 0 {
+        return genome;
+    }
 
-pub fn mutate_offset_vector(params: &Params, mut genome: &mut Antibody, fitness_scaler: f64) {
-    let mut rng = rand::thread_rng();
-    let mut change_dim = genome.offset.iter_mut().choose(&mut rng).unwrap();
-
-    let a = change_dim.clone();
-    let multi = rng.gen_range(params.offset_mutation_multiplier_range.clone());
-
-    let new_val = a * multi;
-    let val_delta = a - new_val;
-    let scaled_delta = val_delta * fitness_scaler;
-    *change_dim -= scaled_delta;
-}
-
-pub fn mutate_length_matrix(params: &Params, mut genome: &mut Antibody, fitness_scaler: f64) {
-    let mut rng = rand::thread_rng();
-
-    let multi = rng.gen_range(params.radius_mutation_multiplier_range.clone());
-    let mut t = genome.length_matrix.column_iter_mut().choose(&mut rng).unwrap();
-    let yu = &t;
-
-    let new_val = yu * multi;
-    let val_delta = yu - new_val;
-    let scaled_delta = val_delta * fitness_scaler;
-
-    t -= scaled_delta;
-
+    genome
 }
 
 fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>) -> (f64, f64) {

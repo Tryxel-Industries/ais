@@ -1,13 +1,11 @@
 use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
-use nalgebra::{DMatrix, DVector};
 use rand::distributions::{Distribution, Uniform};
-use rand::{Rng, random};
+use rand::Rng;
 
 use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType};
 use crate::representation::antigen::AntiGen;
-use crate::util::{random_orthonormal};
 
 pub struct AntibodyFactory {
     n_dims: usize,
@@ -71,8 +69,6 @@ impl AntibodyFactory {
         let mut rng = rand::thread_rng();
 
         let mut dim_multipliers: Vec<AntibodyDim> = Vec::with_capacity(self.n_dims);
-        let mut offsets: DVector<f64> = DVector::identity(self.n_dims);
-        let mut lengths: DVector<f64> = DVector::identity(self.n_dims);
 
         let mut num_open = 0;
         for i in 0..self.n_dims {
@@ -91,8 +87,6 @@ impl AntibodyFactory {
                     multiplier *= -1.0;
                 }
             }
-            lengths[i] = multiplier;
-            offsets[i] = offset;
 
             dim_multipliers.push(AntibodyDim {
                 multiplier,
@@ -100,7 +94,6 @@ impl AntibodyFactory {
                 value_type,
             })
         }
-
 
         let mut radius_constant = self.rng_radius_range.sample(&mut rng);
 
@@ -119,9 +112,6 @@ impl AntibodyFactory {
 
         return Antibody {
             dim_values: dim_multipliers,
-            orientation_matrix: random_orthonormal(self.n_dims),
-            offset: offsets,
-            length_matrix: DMatrix::from_diagonal(&lengths),
             radius_constant,
             class_label,
             mutation_counter: HashMap::new(),
@@ -142,10 +132,6 @@ impl AntibodyFactory {
 
         let mut dim_multipliers: Vec<AntibodyDim> = Vec::with_capacity(self.n_dims);
         let mut num_open = 0;
-
-        let mut offsets: DVector<f64> = DVector::identity(self.n_dims);
-        let mut lengths: DVector<f64> = DVector::identity(self.n_dims);
-
         for i in 0..self.n_dims {
             let offset = antigen.values.get(i).unwrap().clone();
             let mut multiplier = self
@@ -166,13 +152,6 @@ impl AntibodyFactory {
                 }
             }
 
-            
-    
-
-            lengths[i] = multiplier;
-            offsets[i] = offset;
-
-
             dim_multipliers.push(AntibodyDim {
                 multiplier,
                 offset,
@@ -188,9 +167,6 @@ impl AntibodyFactory {
         // }
         return Antibody {
             dim_values: dim_multipliers,
-            orientation_matrix: random_orthonormal(self.n_dims),
-            offset: offsets,
-            length_matrix: DMatrix::from_diagonal(&lengths),
             radius_constant,
             class_label,
             mutation_counter: HashMap::new(),
