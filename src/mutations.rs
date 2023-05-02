@@ -222,11 +222,9 @@ pub fn mutate_multiplier(params: &Params, mut genome: Antibody, fitness_scaler: 
 
     let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
 
-    let multi = rng.gen_range(params.multiplier_mutation_multiplier_range.clone());
-    let new_val = change_dim.multiplier * multi;
-    let val_delta = change_dim.multiplier - new_val;
+    let val_delta = rng.gen_range(params.multiplier_mutation_multiplier_range.clone());
     let scaled_delta = val_delta * fitness_scaler;
-    change_dim.multiplier -= scaled_delta;
+    change_dim.multiplier += scaled_delta;
 
     return genome;
 }
@@ -250,12 +248,9 @@ pub fn mutate_offset(params: &Params, mut genome: Antibody, fitness_scaler: f64)
 
     let a = change_dim.offset.clone();
 
-    let multi = rng.gen_range(params.offset_mutation_multiplier_range.clone());
-
-    let new_val = change_dim.offset * multi;
-    let val_delta = change_dim.offset - new_val;
+    let val_delta = rng.gen_range(params.offset_mutation_multiplier_range.clone());
     let scaled_delta = val_delta * fitness_scaler;
-    change_dim.offset -= scaled_delta;
+    change_dim.offset += scaled_delta;
 
     // println!("A: {:?} B: {:?}",a, change_dim.offset);
 
@@ -319,12 +314,9 @@ pub fn mutate_label(params: &Params, mut genome: Antibody) -> Antibody {
 pub fn mutate_radius(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
     let mut rng = rand::thread_rng();
 
-    let multi = rng.gen_range(params.radius_mutation_multiplier_range.clone());
-
-    let new_val = genome.radius_constant * multi;
-    let val_delta = genome.radius_constant - new_val;
+    let val_delta = rng.gen_range(params.radius_mutation_multiplier_range.clone());
     let scaled_delta = val_delta * fitness_scaler;
-    genome.radius_constant -= scaled_delta;
+    genome.radius_constant += scaled_delta;
 
     return genome;
 }

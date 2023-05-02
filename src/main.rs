@@ -488,9 +488,9 @@ fn main_() {
         // offset_mutation_multiplier_range: 0.8..=1.2,
         // multiplier_mutation_multiplier_range: 0.8..=1.2,
         // radius_mutation_multiplier_range: 0.8..=1.2,
-        offset_mutation_multiplier_range: 0.5..=1.5,
-        multiplier_mutation_multiplier_range: 0.5..=1.5,
-        radius_mutation_multiplier_range: 0.5..=1.5,
+        offset_mutation_multiplier_range: -0.5..=0.5,
+        multiplier_mutation_multiplier_range: -0.5..=0.5,
+        radius_mutation_multiplier_range: -0.5..=0.5,
         // value_type_valid_mutations: vec![DimValueType::Disabled,DimValueType::Circle],
         value_type_valid_mutations: vec![
             DimValueType::Circle,
