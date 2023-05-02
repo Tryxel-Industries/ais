@@ -72,6 +72,7 @@ fn gen_initial_population(
     params: &Params,
     cell_factory: &AntibodyFactory,
     pop_size: &usize,
+    match_counter: &MatchCounter,
 ) -> Vec<Antibody> {
     let mut rng = rand::thread_rng();
     return if (*pop_size == antigens.len()) {
@@ -87,9 +88,17 @@ fn gen_initial_population(
             })
             .collect()
     } else {
-        (0..*pop_size)
+        match_counter.frac_map.iter().flat_map(|(label,frac)| {
+            let replace_count_for_label = (*pop_size as f64 * frac).ceil() as usize;
+
+            let filtered: Vec<_> = antigens
+                .iter()
+                .filter(|ag| ag.class_label == *label)
+                .collect();
+
+            return (0..*pop_size)
             .par_bridge()
-            .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rand::thread_rng()).unwrap()))
+            .map(|_| cell_factory.generate_from_antigen(filtered.choose(&mut rand::thread_rng()).unwrap()))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
                     expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
@@ -97,7 +106,21 @@ fn gen_initial_population(
                     cell
                 }
             })
-            .collect()
+            .collect::<Vec<_>>()
+        }).collect()
+
+
+        // (0..*pop_size)
+        //     .par_bridge()
+        //     .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rand::thread_rng()).unwrap()))
+        //     .map(|cell| {
+        //         if params.antibody_init_expand_radius {
+        //             expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+        //         } else {
+        //             cell
+        //         }
+        //     })
+        //     .collect()
     };
 }
 
@@ -454,7 +477,7 @@ impl ArtificialImmuneSystem {
 
         // =======  set up population  ======= //
         let initial_population: Vec<Antibody> =
-            gen_initial_population(&bucket_king, antigens, params, &cell_factory, &pop_size);
+            gen_initial_population(&bucket_king, antigens, params, &cell_factory, &pop_size, &match_counter);
 
         // the evaluated pop is the population where the ab -> ag matches has been calculated but not scored
         let mut evaluated_pop: Vec<(Evaluation, Antibody)> = Vec::with_capacity(pop_size);
