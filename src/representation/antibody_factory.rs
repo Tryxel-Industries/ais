@@ -1,8 +1,12 @@
 use std::collections::HashMap;
 use std::ops::RangeInclusive;
 
+use nalgebra::{DMatrix, DVector};
 use rand::distributions::{Distribution, Uniform};
-use rand::Rng;
+use rand::{Rng, random};
+
+use rayon::prelude::*;
+use crate::params::Params;
 
 use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType};
 use crate::representation::antigen::AntiGen;
