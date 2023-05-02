@@ -191,6 +191,8 @@ impl MatchCounter {
             })
             .collect();
 
+        println!("count map tot counts: {:?}", count_map);
+
         return MatchCounter {
             max_id,
             correct_match_counter: vec![0usize; max_id + 1],

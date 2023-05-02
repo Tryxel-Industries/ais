@@ -5,7 +5,9 @@ use strum_macros::Display;
 
 use crate::representation::antigen::AntiGen;
 
-#[derive(Clone, Copy, PartialEq, Debug, Display)]
+use strum_macros::EnumString;
+
+#[derive(Clone, Copy, PartialEq, Debug, Display, EnumString)]
 pub enum DimValueType {
     Disabled,
     Open,
@@ -27,6 +29,8 @@ pub struct Antibody {
     pub dim_values: Vec<AntibodyDim>,
     pub radius_constant: f64,
     pub class_label: usize,
+    pub boosting_model_alpha: f64,
+    pub final_train_label_membership: Option<(f64,f64)>,
     //todo: remove when running hyper optimized
     pub mutation_counter: HashMap<MutationType, usize>,
     pub clone_count: usize,

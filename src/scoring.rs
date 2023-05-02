@@ -110,7 +110,7 @@ pub fn score_antibodies(
             let neg_coverage = pred_neg / negatives;
 
             // how shared are the values for the predictor
-            let purity = true_positives / shared_positive_weight as f64;
+            let purity = true_positives / shared_positive_weight.max(1) as f64;
 
             let penalty = 1.0 - (error_problem_magnitude / false_positives.max(1.0));
             let mut score = 0.0;
@@ -124,16 +124,22 @@ pub fn score_antibodies(
             // score += f1;
 
             // add a value from 1 -> -1 indicating the fraction of correctness
-            score += (true_positives - (false_positives * 2.0))
-                / (true_positives + false_positives).max(1.0);
+            let a = 1.0;
+            score += a* ( (true_positives - (false_positives * 2.0))
+                / (true_positives + false_positives).max(1.0));
+
+
 
             // add a value from (0 - 1) * a indicating the coverage of the label space
-            let a = 1.0;
-            score += pos_coverage * pos_relevance * a;
+            let b = 1.0;
+            score += pos_coverage * pos_relevance * b;
 
-            let b = 0.5;
-            score += (discounted_match_score / (true_positives).max(1.0)) * b;
 
+            let c = 0.5;
+            score += (discounted_match_score / (true_positives).max(1.0)) * c;
+
+            // let d = 1.0;
+            // score += positive_predictive_value * d;
             // score -= error_problem_magnitude;
 
             if pred_pos == tot_elements {

@@ -4,6 +4,10 @@ use rand::{Rng, random, seq::IteratorRandom};
 use rand_distr::{Normal, Distribution};
 use crate::representation::{antigen::AntiGen, antibody::Antibody, antibody::AntibodyDim};
 use core::{self, num};
+
+use std::io::prelude::*;
+use std::fs::File;
+use std::io::{BufReader, BufWriter, Write};
 use nalgebra::{DMatrix};
 /// Given a vector `vec` and a positive integer `n`, returns a new vector that contains `n`
 /// randomly chosen elements from `vec`. The elements in the resulting vector are in the same
@@ -201,4 +205,35 @@ pub fn split_train_test_n_fold(
 
     // println!("folds {:?}", folds);
     return ret_folds;
+}
+
+
+pub fn read_csv(path: &str) -> Vec<Vec<String>> {
+    let mut ret_vec: Vec<Vec<String>> = Vec::new();
+
+    let f = File::open(path).unwrap();
+    let mut reader = BufReader::new(f);
+    let mut line = String::new();
+
+    loop {
+        let len = reader.read_line(&mut line).unwrap();
+
+        if line.ends_with("\n") {
+            line = line.strip_suffix("\n").unwrap().parse().unwrap();
+        }
+        if line.ends_with("\r") {
+            line = line.strip_suffix("\r").unwrap().parse().unwrap();
+        }
+
+        if line.len() > 0 {
+            let cols = line.split(",");
+            ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
+            line.clear();
+        } else {
+            break;
+        }
+    }
+
+    // println!("{:?}", ret_vec);
+    return ret_vec;
 }

@@ -1,8 +1,12 @@
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-use crate::representation::antibody::Antibody;
+use rayon::prelude::*;
+
+use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType};
 use crate::representation::antigen::AntiGen;
+use crate::util::read_csv;
+use std::str::FromStr;
 
 fn vec_of_vec_to_csv(dump: Vec<Vec<String>>, path: &str) {
     let f = File::create(path).unwrap();
@@ -37,6 +41,8 @@ pub fn dump_to_csv(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
             let mut ret_vec = vec![
                 cell.class_label.to_string(),
                 cell.radius_constant.to_string(),
+                cell.boosting_model_alpha.to_string(),
+                cell.final_train_label_membership.unwrap().0.to_string(),
             ];
             ret_vec.extend(cell.dim_values.clone().iter().flat_map(|d| {
                 vec![
@@ -49,4 +55,65 @@ pub fn dump_to_csv(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
         })
         .collect::<Vec<_>>();
     vec_of_vec_to_csv(csv_formatted_antibodies, "out/antibodies.csv");
+}
+
+pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
+
+    let mut data_vec = read_csv(filepath.as_str());
+
+    let dim_feature_cols = (data_vec.get(0).unwrap().len()-4);
+    let num_dims = if dim_feature_cols % 3 == 0{
+        dim_feature_cols/3
+    }else {
+        panic!("incorrect ammount of dim cols");
+    };
+
+    let antibodies: Vec<Antibody> = data_vec
+        .into_par_iter()
+        .map(|mut row| {
+            // TODO: if needed this is just inefficient beyond comprehension
+            let class_label: usize = row.remove(0).parse().unwrap();
+            let radius_constant: f64 = row.remove(0).parse().unwrap();
+            let boosting_model_alpha: f64 = row.remove(0).parse().unwrap();
+            let final_train_membership: f64 = row.remove(0).parse().unwrap();
+
+            let mut row_values = Vec::new();
+            for n in 0..dim_feature_cols{
+                let dim_idx = row.len() - 3;
+
+                let mut feature_vals =  if dim_feature_cols -1  == n{
+                    row.split_off(dim_idx)
+                } else {
+                    row.clone()
+                };
+
+                let multiplier: f64 = feature_vals.pop().unwrap().parse().unwrap();
+                let offset: f64 = feature_vals.pop().unwrap().parse().unwrap();
+                let value_type: DimValueType = DimValueType::from_str(&*feature_vals.pop().unwrap()).unwrap();
+
+                row_values.push(AntibodyDim{
+                    multiplier,
+                    offset,
+                    value_type,
+                })
+            }
+            row_values.reverse();
+
+            return Antibody{
+                dim_values: row_values,
+                radius_constant,
+                class_label,
+                boosting_model_alpha,
+                final_train_label_membership: Some((final_train_membership, 1.0-final_train_membership)),
+                mutation_counter: Default::default(),
+                clone_count: 0,
+            }
+
+        }).collect();
+
+
+    return antibodies;
+
+    return Vec::new();
+
 }

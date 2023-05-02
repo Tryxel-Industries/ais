@@ -25,12 +25,13 @@ use crate::dataset_readers::{
 };
 use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
-use crate::params::{modify_config_by_args, Params, ReplaceFractionType, VerbosityParams};
+use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
-use crate::proto_test::{ read_kaggle_embeddings};
+use crate::proto_test::{read_fnn_embeddings, read_kaggle_embeddings};
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
-use crate::result_export::dump_to_csv;
+use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
+use crate::result_export::{dump_to_csv, read_ab_csv};
 use crate::scoring::score_antibodies;
 use crate::util::{split_train_test, split_train_test_n_fold};
 
@@ -53,44 +54,45 @@ pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
 }
 
-fn ais_n_fold_test(
-    params: Params,
-    mut antigens: Vec<AntiGen>,
-    verbosity_params: &VerbosityParams,
-    n_folds: usize,
-) {
-    // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
-
-    let folds = split_train_test_n_fold(&antigens, n_folds);
-
-    let mut train_acc_vals = Vec::new();
-    let mut test_acc_vals = Vec::new();
-    for (n, (train, test)) in folds.iter().enumerate() {
-        let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params);
-        train_acc_vals.push(train_acc);
-        test_acc_vals.push(test_acc);
-        println!(
-            "on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}",
-            n, test_acc, train_acc
-        );
-    }
-
-    let train_mean: f64 = train_acc_vals.iter().mean();
-    let train_std: f64 = train_acc_vals.iter().std_dev();
-
-    let test_mean: f64 = test_acc_vals.iter().mean();
-    let test_std: f64 = test_acc_vals.iter().std_dev();
-
-    println!("train_acc: {:<5.4?} std {:.4}", train_mean, train_std);
-    println!("test_acc: {:<5.4?} std {:.4}", test_mean, test_std);
-    // println!("train size: {:?}, test size {:?}", train.len(), test.len());
-}
+// fn ais_n_fold_test(
+//     params: Params,
+//     mut antigens: Vec<AntiGen>,
+//     verbosity_params: &VerbosityParams,
+//     n_folds: usize,
+// ) {
+//     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
+//
+//     let folds = split_train_test_n_fold(&antigens, n_folds);
+//
+//     let mut train_acc_vals = Vec::new();
+//     let mut test_acc_vals = Vec::new();
+//     for (n, (train, test)) in folds.iter().enumerate() {
+//         let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params);
+//         train_acc_vals.push(train_acc);
+//         test_acc_vals.push(test_acc);
+//         println!(
+//             "on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}",
+//             n, test_acc, train_acc
+//         );
+//     }
+//
+//     let train_mean: f64 = train_acc_vals.iter().mean();
+//     let train_std: f64 = train_acc_vals.iter().std_dev();
+//
+//     let test_mean: f64 = test_acc_vals.iter().mean();
+//     let test_std: f64 = test_acc_vals.iter().std_dev();
+//
+//     println!("train_acc: {:<5.4?} std {:.4}", train_mean, train_std);
+//     println!("test_acc: {:<5.4?} std {:.4}", test_mean, test_std);
+//     // println!("train size: {:?}, test size {:?}", train.len(), test.len());
+// }
 
 fn ais_frac_test(
     params: Params,
     mut antigens: Vec<AntiGen>,
     verbosity_params: &VerbosityParams,
     test_frac: f64,
+    translator: NewsArticleAntigenTranslator
 ) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
@@ -99,12 +101,10 @@ fn ais_frac_test(
 
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
-    let mut rng = rand::thread_rng();
-    antigens.shuffle(&mut rng);
 
     let (train_slice, test) = split_train_test(&antigens, test_frac);
 
-    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params);
+    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params, &translator);
 
     println!("train_acc: {:?} test_acc: {:?} ", train_acc, test_acc)
 }
@@ -115,6 +115,7 @@ fn ais_test(
     test: &Vec<AntiGen>,
     verbosity_params: &VerbosityParams,
     params: &Params,
+    translator: &NewsArticleAntigenTranslator
 ) -> (f64, f64) {
     let class_labels = antigens
         .iter()
@@ -136,7 +137,7 @@ fn ais_test(
 
 
     let (train_acc_hist, train_score_hist, init_scored_pop) =if params.boost > 0{
-        ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test)
+        ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test, translator)
     }else {
         ais.train(&train, &params, verbosity_params)
     };
@@ -335,6 +336,21 @@ fn ais_test(
         }
     }
 
+    let translator_formatted = test.iter().chain(train.iter()).map(|ag| {
+        let pred_class = ais.is_class_correct_with_membership(&ag);
+         if let Some(v) = pred_class {
+            if v {
+                return (Some(true), ag)
+            } else {
+                return (Some(false), ag)
+            }
+        }else {
+             return (None, ag)
+         }
+    }).collect();
+
+    translator.get_show_ag_acc(translator_formatted);
+
     let test_acc = test_n_corr as f64 / (test.len() as f64);
     let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
     let membership_test_acc = membership_test_n_corr as f64 / (test.len() as f64);
@@ -378,15 +394,41 @@ fn ais_test(
 
     dump_to_csv(antigens, &ais.antibodies);
 
+
     return (train_acc, membership_test_acc);
     // ais.pred_class(test.get(0).unwrap());
 }
 
 
-fn main_(){
-    read_kaggle_embeddings();
+fn main(){
+    let ab_file_path = "out/antibodies.csv";
+
+    let mut translator = NewsArticleAntigenTranslator::new();
+    let mut antigens = read_kaggle_embeddings(None, &mut translator, true);
+
+    let antibodies = read_ab_csv(ab_file_path.parse().unwrap());
+
+    let mut ais = ArtificialImmuneSystem::new();
+    ais.antibodies = antibodies;
+
+
+
+   let translator_formatted = antigens.iter().map(|ag| {
+        let pred_class = ais.is_class_correct_with_membership(&ag);
+         if let Some(v) = pred_class {
+            if v {
+                return (Some(true), ag)
+            } else {
+                return (Some(false), ag)
+            }
+        }else {
+             return (None, ag)
+         }
+    }).collect();
+
+    translator.get_show_ag_acc(translator_formatted);
 }
-fn main() {
+fn main_() {
     // let mut antigens = read_iris();
     // let mut antigens = read_iris_snipped();
     // let mut antigens = read_wine();
@@ -401,11 +443,21 @@ fn main() {
     // let mut antigens = read_kaggle_semantic();
     // let _ = antigens.split_off(3000);
 
-    let mut antigens = read_kaggle_embeddings();
-    let _ = antigens.split_off(1000);
 
-    let mut rng = rand::thread_rng();
-    antigens.shuffle(&mut rng);
+    let mut translator = NewsArticleAntigenTranslator::new();
+
+    let mut antigens = read_kaggle_embeddings(None, &mut translator, true);
+    // let mut antigens = read_fnn_embeddings(Some(100), &mut translator, true);
+
+    // antigens.iter().for_each(|x1| {
+    //     if x1.class_label == 1{
+    //         println!("features {:?}", x1.values);
+    //     }
+    // });
+    // let _ = antigens.split_off(1000);
+
+    // let mut rng = rand::thread_rng();
+    // antigens.shuffle(&mut rng);
 
     let class_labels = antigens
         .iter()
@@ -413,14 +465,15 @@ fn main() {
         .collect::<HashSet<_>>();
 
     let mut params = Params {
-        boost: 0,
+        boost: 15,
         // -- train params -- //
-        antigen_pop_fraction: 0.5,
-        generations: 1000,
+        // antigen_pop_size: PopSizeType::Fraction(0.25),
+        antigen_pop_size: PopSizeType::Number(2000),
+        generations: 400,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,
-        mutation_multiplier_local_search_weight: 0,
+        mutation_multiplier_local_search_weight: 1,
         mutation_radius_weight: 5,
         mutation_value_type_weight: 3,
 
@@ -429,7 +482,7 @@ fn main() {
         mutation_value_type_local_search_dim: true,
 
         // -- reduction -- //
-        membership_required: 0.7,
+        membership_required: 0.80,
 
 
         // offset_mutation_multiplier_range: 0.8..=1.2,
@@ -462,9 +515,9 @@ fn main() {
         // antibody_ag_init_value_types: vec![DimValueType::Circle],
         // antibody_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Circle],
         antibody_ag_init_value_types: vec![
-            DimValueType::Circle,
-            DimValueType::Disabled,
-            DimValueType::Open,
+            (DimValueType::Circle,1),
+            (DimValueType::Disabled,1),
+            (DimValueType::Open,1),
         ],
         antibody_ag_init_range_range: 0.1..=0.4,
 
@@ -473,27 +526,27 @@ fn main() {
         antibody_rand_init_multiplier_range: 0.8..=1.2,
         // antibody_rand_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled],
         antibody_rand_init_value_types: vec![
-            DimValueType::Circle,
-            DimValueType::Disabled,
-            // DimValueType::Open,
+            (DimValueType::Circle,1),
+            (DimValueType::Disabled,1),
+            (DimValueType::Open,1),
         ],
         antibody_rand_init_range_range: 0.1..=0.4,
     };
 
     let frac_verbosity_params = VerbosityParams {
-        show_initial_pop_info: false,
-        // iter_info_interval: None,
+        show_initial_pop_info: true,
+        iter_info_interval: None,
         full_pop_acc_interval: None,
-        iter_info_interval: Some(2),
-        // full_pop_acc_interval: Some(5),
+        // iter_info_interval: Some(1),
+        // full_pop_acc_interval: Some(10),
         show_class_info: false,
         make_plots: false,
         display_final_ab_info: false,
-        display_detailed_error_info: true,
+        display_detailed_error_info: false,
         display_final_acc_info: true,
     };
     modify_config_by_args(&mut params);
 
-    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2);
+    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2, translator);
     // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
 }

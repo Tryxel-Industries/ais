@@ -1,3 +1,4 @@
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
@@ -5,16 +6,29 @@ use std::net::Shutdown::Read;
 use bytes::buf;
 use prost::{DecodeError, Message};
 use prost_types::field_descriptor_proto::Type::Bytes;
+use rand::prelude::SliceRandom;
+use rand::thread_rng;
 use crate::entities;
-use crate::entities::DatasetEmbeddings;
+use crate::entities::{DatasetEmbeddings, NewsEntryEmbeddings};
 use crate::representation::antibody::Antibody;
 use crate::representation::antigen::AntiGen;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 
-pub fn read_kaggle_embeddings() -> Vec<AntiGen>{
+pub fn read_kaggle_embeddings(num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
+    read_embeddings("kaggle", num_to_read, translator, use_whitened)
+}
 
-    let path= "./datasets/fake_news/kaggle/embeddings_proto.bin";
-    let f = File::open(path).unwrap();
+pub fn read_fnn_embeddings(num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
+    read_embeddings("fnn", num_to_read, translator, use_whitened)
+}
+fn read_embeddings(dir: &str, num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
+
+    let path = if use_whitened{
+        format!("./datasets/fake_news/{}/embeddings_proto.bin.whitened", dir)
+    } else {
+       format!("./datasets/fake_news/{}/embeddings_proto.bin", dir)
+    };
+    let f = File::open(path.clone()).unwrap();
     let b = match std::fs::read(path) {
         Ok(bytes) => {bytes}
         Err(e) => {
@@ -35,57 +49,78 @@ pub fn read_kaggle_embeddings() -> Vec<AntiGen>{
     };
     let mut return_vec = Vec::new();
 
-    let mut translator = NewsArticleAntigenTranslator::new();
-    for entry in embed.news_entries{
+
+    let mut to_decode = if let Some(n) = num_to_read{
+        let mut embedings = embed.news_entries;
+        pick_n_fairly(embedings, n)
+    } else {
+        embed.news_entries
+    };
+
+    for entry in to_decode{
         let ags = translator.translate_article(entry);
         return_vec.extend(ags);
     }
 
     return return_vec;
-    // println!("{:?}", return_vec.len());
-    // return_vec.extend(embed.news_entries.into_iter().map(|v| AntiGen{
-    //     id: v.id as usize,
-    //     class_label: v.label.parse().unwrap(),
-    //     values: v.embeddings.into_iter().map(|e| e.embedding_value),
-    // }))
-    //
-    // println!("{:?}", embed)
 
 
+}
 
-    return return_vec;
+fn pick_n_fairly(embeddings: Vec<NewsEntryEmbeddings>, n_to_pick: usize) -> Vec<NewsEntryEmbeddings> {
 
 
+    let class_labels = embeddings
+        .iter()
+        .map(|x| x.label.clone())
+        .collect::<HashSet<_>>();
 
-    // prost_build::compile_protos(&["src/items.proto"], &["src/"])?;
-    // let proto_in = NewsEntryEmbeddings::;
-    //
-    // let mut ret_vec: Vec<Vec<String>> = Vec::new();
-    //
-    // let f = File::open("./datasets/fake_news/kaggle/embeddings_proto.bin").unwrap();
-    // let mut reader = CodedInputStream::new(Read::new(f));
-    //
-    // let mut line = String::new();
-    //
-    // loop {
-    //     let len = reader.read_line(&mut line).unwrap();
-    //
-    //     if line.ends_with("\n") {
-    //         line = line.strip_suffix("\n").unwrap().parse().unwrap();
-    //     }
-    //     if line.ends_with("\r") {
-    //         line = line.strip_suffix("\r").unwrap().parse().unwrap();
-    //     }
-    //
-    //     if line.len() > 0 {
-    //         let cols = line.split(",");
-    //         ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
-    //         line.clear();
-    //     } else {
-    //         break;
-    //     }
-    // }
+    let frac_map: HashMap<String, f64> = class_labels
+            .iter()
+            .map(|x| {
+                (
+                    x.clone(),
+                    embeddings
+                        .iter()
+                        .filter(|ag| ag.label == *x)
+                        .collect::<Vec<_>>()
+                        .len() as f64
+                        / embeddings.len() as f64,
+                )
+            })
+            .collect();
+    let count_map: HashMap<String, usize> = class_labels
+            .iter()
+            .map(|x| {
+                (
+                    x.clone(),
+                    embeddings
+                        .iter()
+                        .filter(|ag| ag.label == *x)
+                        .collect::<Vec<_>>()
+                        .len(),
+                )
+            })
+            .collect();
 
+
+    println!("proto test -> frac map:  {:?}", frac_map);
+    println!("proto test -> count map: {:?}", count_map);
+
+    let mut out_vec: Vec<NewsEntryEmbeddings> = Vec::new();
+    for label in class_labels{
+        let label_max = count_map.get(&*label).unwrap();
+        let label_count = ((n_to_pick as f64 * frac_map.get(&*label).unwrap()).ceil() as usize).min(label_max.clone());
+        let filtered: Vec<_> = embeddings.iter().filter(|x1| x1.label == label).cloned().collect();
+        if *label_max == label_count{
+            out_vec.extend(filtered)
+        }else {
+            let picked: Vec<NewsEntryEmbeddings> = filtered.choose_multiple(&mut thread_rng(), label_count).cloned().collect();
+            out_vec.extend(picked)
+        }
+    }
+
+    return out_vec;
 
 
 }

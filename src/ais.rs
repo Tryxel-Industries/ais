@@ -2,6 +2,8 @@ use json::object;
 use std::collections::{HashMap, HashSet};
 use std::iter::Map;
 use std::ops::{Range, RangeInclusive};
+use std::io;
+use std::io::Write;
 
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
@@ -11,11 +13,12 @@ use statrs::statistics::Statistics;
 use crate::bucket_empire::BucketKing;
 use crate::evaluation::{evaluate_antibody, Evaluation, MatchCounter};
 use crate::mutate;
-use crate::params::{Params, ReplaceFractionType, VerbosityParams};
+use crate::params::{Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::representation::antibody::Antibody;
 use crate::representation::antibody_factory::AntibodyFactory;
 use crate::representation::antigen::AntiGen;
 use crate::representation::expand_antibody_radius_until_hit;
+use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use crate::scoring::score_antibodies;
 use crate::selection::{
     elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n,
@@ -73,7 +76,7 @@ fn gen_initial_population(
     let mut rng = rand::thread_rng();
     return if (*pop_size == antigens.len()) {
         antigens
-            .iter()
+            .par_iter()
             .map(|ag| cell_factory.generate_from_antigen(ag))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
@@ -85,7 +88,8 @@ fn gen_initial_population(
             .collect()
     } else {
         (0..*pop_size)
-            .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rng).unwrap()))
+            .par_bridge()
+            .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rand::thread_rng()).unwrap()))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
                     expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
@@ -99,7 +103,7 @@ fn gen_initial_population(
 
 pub fn is_class_correct(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option<bool> {
     let matching_cells = antibodies
-        .iter()
+        .par_iter()
         .filter(|antibody| antibody.test_antigen(antigen))
         .collect::<Vec<_>>();
 
@@ -126,7 +130,7 @@ pub fn is_class_correct(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option
 
 pub fn make_prediction(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option<Prediction> {
     let matching_cells = antibodies
-        .iter()
+        .par_iter()
         .filter(|antibody| antibody.test_antigen(antigen))
         .collect::<Vec<_>>();
 
@@ -258,7 +262,11 @@ impl ArtificialImmuneSystem {
         params: &Params,
         verbosity_params: &VerbosityParams,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
-        let pop_size = (antigens.len() as f64 * params.antigen_pop_fraction) as usize;
+
+        let pop_size = match params.antigen_pop_size {
+            PopSizeType::Fraction(fraction ) => { (antigens.len() as f64 * fraction) as usize}
+            PopSizeType::Number(n) => {n}
+        };
 
         let (train_acc_hist, train_score_hist, scored_pop) =
             self.train_ab_set(antigens, params, verbosity_params, pop_size);
@@ -277,9 +285,16 @@ impl ArtificialImmuneSystem {
         verbosity_params: &VerbosityParams,
         boosting_rounds: usize,
         highly_dubious_practices: &Vec<AntiGen>,
+        translator: &NewsArticleAntigenTranslator
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         let mut antigens = input_antigens.clone();
-        let pop_size = (antigens.len() as f64 * params.antigen_pop_fraction) as usize;
+
+
+        let pop_size = match params.antigen_pop_size {
+            PopSizeType::Fraction(fraction ) => { (antigens.len() as f64 * fraction) as usize}
+            PopSizeType::Number(n) => {n}
+        };
+
         let train_per_round = ((pop_size as f64) * 1.0 / boosting_rounds as f64) as usize;
 
         println!(
@@ -317,20 +332,23 @@ impl ArtificialImmuneSystem {
 
             // get predictor error
 
-            let weighted_correct_count: f64 = antigens
+            let weighted_error_count: f64 = antigens
                 .iter()
                 .map(|antigen| {
-                    let is_corr = is_class_correct(&antigen, &antibodies).unwrap_or(false);
-                    if is_corr {
-                        return 0.0;
-                    } else {
-                        return 1.0 * antigen.boosting_weight;
+                    if let Some(is_corr) = is_class_correct(&antigen, &antibodies){
+                        if is_corr {
+                            return 0.0;
+                        } else {
+                            return 1.0 * antigen.boosting_weight;
+                        }
+                    }else {
+                        return 0.5 * antigen.boosting_weight;
                     }
                 })
                 .sum();
 
             let weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
-            let error = weighted_correct_count / weight_sum;
+            let error = weighted_error_count / weight_sum;
 
             // calculate alpha weight for model
             let alpha_m = ((1.0 - error) / error).ln();
@@ -349,7 +367,7 @@ impl ArtificialImmuneSystem {
                 .for_each(|ab| ab.boosting_model_alpha = alpha_m.clone());
             ab_pool.extend(antibodies);
 
-            println!("for boost round {:?}:", n);
+            println!("\n#\n# for boost round {:?}:\n#", n);
             println!("current ab pool s {:?}:", ab_pool.len());
 
 
@@ -357,7 +375,23 @@ impl ArtificialImmuneSystem {
             evaluate_print_population(&antigens, &ab_pool);
 
             println!("test");
-            evaluate_print_population(&highly_dubious_practices, &ab_pool)
+            evaluate_print_population(&highly_dubious_practices, &ab_pool);
+
+            println!("articles");
+            let translator_formatted = input_antigens.iter().chain(highly_dubious_practices).map(|ag| {
+                let pred_class = is_class_correct_with_membership(&ag, &ab_pool);
+                return if let Some(v) = pred_class {
+                    if v {
+                        (Some(true), ag)
+                    } else {
+                        (Some(false), ag)
+                    }
+                } else {
+                    (None, ag)
+                }
+            }).collect();
+
+            translator.get_show_ag_acc(translator_formatted);
         }
         self.antibodies = ab_pool.clone();
 
@@ -413,14 +447,8 @@ impl ArtificialImmuneSystem {
 
         // make the cell factory
         let cell_factory = AntibodyFactory::new(
+            params,
             n_dims,
-            params.antibody_ag_init_multiplier_range.clone(),
-            params.antibody_ag_init_range_range.clone(),
-            params.antibody_ag_init_value_types.clone(),
-            params.antibody_rand_init_multiplier_range.clone(),
-            params.antibody_rand_init_offset_range.clone(),
-            params.antibody_rand_init_range_range.clone(),
-            params.antibody_rand_init_value_types.clone(),
             Vec::from_iter(match_counter.class_labels.clone().into_iter()),
         );
 
@@ -480,6 +508,13 @@ impl ArtificialImmuneSystem {
                     );
                     println!("pop size {:} ", scored_pop.len());
                 }
+            }else {
+                print!(
+                        "iter: {:<5} of {:<5}\r",
+                        i,
+                        params.generations,
+                    );
+                io::stdout().flush().unwrap();
             }
 
             train_score_hist.push(avg_score);
@@ -734,7 +769,8 @@ impl ArtificialImmuneSystem {
             scored_pop = score_antibodies(evaluated_pop,  &match_counter);
 
             if let Some(n) = verbosity_params.full_pop_acc_interval {
-                let antibody: Vec<Antibody> =
+                if i % n == 0 {
+                    let antibody: Vec<Antibody> =
                     scored_pop.iter().map(|(a, b, c)| c.clone()).collect();
 
                 let mut n_corr = 0;
@@ -760,6 +796,12 @@ impl ArtificialImmuneSystem {
                     best_run = scored_pop.clone();
                 }
                 train_acc_hist.push(avg_acc);
+                } else {
+                    let last = train_acc_hist.last().unwrap_or(&0.0);
+                train_acc_hist.push(last.clone());
+                }
+
+
             } else {
                 let last = train_acc_hist.last().unwrap_or(&0.0);
                 train_acc_hist.push(last.clone());

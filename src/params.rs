@@ -15,15 +15,23 @@ pub enum MutationType {
     Label,
 }
 
+#[derive(Clone)]
 pub enum ReplaceFractionType{
     Linear(Range<f64>),
     MaxRepFrac(f64)
 }
 
+#[derive(Clone)]
+pub enum PopSizeType{
+    Fraction(f64),
+    Number(usize)
+}
+
+#[derive(Clone)]
 pub struct Params {
     // -- train params -- //
     pub boost: usize,
-    pub antigen_pop_fraction: f64,
+    pub antigen_pop_size: PopSizeType,
     pub leak_fraction: f64,
     pub leak_rand_prob: f64,
     pub generations: usize,
@@ -56,13 +64,13 @@ pub struct Params {
 
     // -- B-cell from antigen initialization -- //
     pub antibody_ag_init_multiplier_range: RangeInclusive<f64>,
-    pub antibody_ag_init_value_types: Vec<DimValueType>,
+    pub antibody_ag_init_value_types: Vec<(DimValueType, usize)>,
     pub antibody_ag_init_range_range: RangeInclusive<f64>,
 
     // -- B-cell from random initialization -- //
     pub antibody_rand_init_offset_range: RangeInclusive<f64>,
     pub antibody_rand_init_multiplier_range: RangeInclusive<f64>,
-    pub antibody_rand_init_value_types: Vec<DimValueType>,
+    pub antibody_rand_init_value_types: Vec<(DimValueType, usize)>,
     pub antibody_rand_init_range_range: RangeInclusive<f64>,
 }
 
@@ -79,6 +87,28 @@ impl Params {
             (MutationType::Radius, self.mutation_radius_weight),
             (MutationType::Label, self.mutation_label_weight),
         ];
+
+        let mut rng = rand::thread_rng();
+        return weighted
+            .choose_weighted(&mut rng, |v| v.1)
+            .unwrap()
+            .0
+            .clone();
+    }
+
+      pub fn roll_dim_type_from_ag_ab(&self) -> DimValueType {
+        let weighted = &self.antibody_ag_init_value_types;
+
+        let mut rng = rand::thread_rng();
+        return weighted
+            .choose_weighted(&mut rng, |v| v.1)
+            .unwrap()
+            .0
+            .clone();
+    }
+
+    pub fn roll_dim_type_rand_ab(&self) -> DimValueType {
+        let weighted = &self.antibody_rand_init_value_types;
 
         let mut rng = rand::thread_rng();
         return weighted
@@ -162,7 +192,7 @@ pub fn modify_config_by_args(params: &mut Params) {
             match key {
                 "tournament_size" => params.tournament_size = value.parse().unwrap(),
                 "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
-                "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
+                // "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
                 "max_replacment_frac" => params.replace_frac_type = ReplaceFractionType::MaxRepFrac(value.parse().unwrap()),
 
                 "mutation_value_type_local_search_dim" => params.mutation_value_type_local_search_dim = param_string_to_bool(value.parse().unwrap()),
@@ -187,10 +217,10 @@ pub fn modify_config_by_args(params: &mut Params) {
             }
         }
     }
-    for v in vec![&mut params.value_type_valid_mutations, &mut params.antibody_ag_init_value_types, &mut params.antibody_rand_init_value_types]{
-        filter_category_list::<DimValueType>(will_use_open, DimValueType::Open, v);
-        filter_category_list::<DimValueType>(will_use_disabled, DimValueType::Disabled, v);
-    }
+    // for v in vec![&mut params.value_type_valid_mutations, &mut params.antibody_ag_init_value_types, &mut params.antibody_rand_init_value_types]{
+    //     filter_category_list::<DimValueType>(will_use_open, DimValueType::Open, v);
+    //     filter_category_list::<DimValueType>(will_use_disabled, DimValueType::Disabled, v);
+    // }
 
 
 

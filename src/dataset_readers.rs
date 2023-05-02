@@ -5,6 +5,7 @@ use std::io::prelude::*;
 use std::io::BufReader;
 
 use crate::representation::antigen::AntiGen;
+use crate::util::read_csv;
 
 const REF_DATASET_DIR: &str = "./datasets/reference";
 const FAKE_NEWS_DATASET_DIR: &str = "./datasets/fake_news";
@@ -62,35 +63,6 @@ fn normalize_features_ag(mut ag_vec: Vec<AntiGen>) -> Vec<AntiGen> {
     return ag_vec;
 }
 
-fn read_csv(path: &str) -> Vec<Vec<String>> {
-    let mut ret_vec: Vec<Vec<String>> = Vec::new();
-
-    let f = File::open(path).unwrap();
-    let mut reader = BufReader::new(f);
-    let mut line = String::new();
-
-    loop {
-        let len = reader.read_line(&mut line).unwrap();
-
-        if line.ends_with("\n") {
-            line = line.strip_suffix("\n").unwrap().parse().unwrap();
-        }
-        if line.ends_with("\r") {
-            line = line.strip_suffix("\r").unwrap().parse().unwrap();
-        }
-
-        if line.len() > 0 {
-            let cols = line.split(",");
-            ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
-            line.clear();
-        } else {
-            break;
-        }
-    }
-
-    // println!("{:?}", ret_vec);
-    return ret_vec;
-}
 
 pub fn read_iris() -> Vec<AntiGen> {
     let mut data_vec = read_csv(format!("{}/iris/iris.data", REF_DATASET_DIR).as_str());

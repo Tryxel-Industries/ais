@@ -334,7 +334,7 @@ pub fn labeled_tournament_pick(
         let filtered: Vec<_> = population
             .iter()
             .enumerate()
-            .filter(|(_idx, (_score, _eval, Antibody))| Antibody.class_label == *v)
+            .filter(|(_idx, (_score, _eval, antibody))| antibody.class_label == *v)
             .collect();
 
         let _index_vali: Vec<_> = filtered
