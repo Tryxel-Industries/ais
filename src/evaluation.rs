@@ -1,11 +1,13 @@
 use std::cmp::min;
 use std::collections::{HashMap, HashSet};
+use std::time::Instant;
 
 use rayon::prelude::*;
 
 use crate::bucket_empire::{BucketKing, ValueRangeType};
+use crate::params::Params;
 use crate::representation::antibody::{Antibody, DimValueType};
-use crate::representation::antigen::AntiGen;
+use crate::representation::antigen::{AntiGen, AntiGenPop};
 
 #[derive(Clone, Debug)]
 pub struct Evaluation {
@@ -14,7 +16,10 @@ pub struct Evaluation {
     pub membership_value: (f64, f64),
 }
 
-pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
+pub fn evaluate_antibody(
+    params: &Params,
+    antigen_pop: &AntiGenPop,
+    antibody: &Antibody) -> Evaluation {
     /*
     //todo: this is a mess that does not work if any of the dims are open, some workarounds are possible but probably firmly overoptimizing
     let dim_radus = antibody
@@ -43,25 +48,60 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
 
     idx_list.sort();*/
 
-    let registered_antigens = antigens
-        .iter()
-        // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
-        .filter(|ag| antibody.test_antigen(ag))
-        .collect::<Vec<_>>();
+    let registered_antigens : Vec<_> = if params.gpu_accelerate{
+        let mask = antigen_pop.get_registered_antigens(&antibody, &None);
+        antigen_pop
+            .antigens
+            .iter()
+            .zip(mask.iter())
+            .filter(|(a, b)| **b)
+            .map(|(a, b)| a)
+            .collect()
+    }else {
 
-    if false {
-        let test_a = antigens
+        antigen_pop.antigens
             .iter()
             // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
             .filter(|ag| antibody.test_antigen(ag))
-            .collect::<Vec<_>>();
+            .collect::<Vec<_>>()
+    };
 
-        let test_b = antigens
+
+
+
+    //
+    // let registered_antigens = antigens
+    //     .iter()
+    //     // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
+    //     .filter(|ag| antibody.test_antigen(ag))
+    //     .collect::<Vec<_>>();
+
+    if true {
+        let gpu_start = Instant::now();
+        let mask = antigen_pop.get_registered_antigens(&antibody, &None);
+        let test_a: Vec<_> = antigen_pop
+            .antigens
             .iter()
+            .zip(mask.iter())
+            .filter(|(a, b)| **b)
+            .map(|(a, b)| a)
+            .collect();
+        let duration_gpu = gpu_start.elapsed();
+
+        let cpu_start = Instant::now();
+        let test_b: Vec<_> = antigen_pop.antigens
+            .par_iter()
+            // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
             .filter(|ag| antibody.test_antigen(ag))
             .collect::<Vec<_>>();
-        if test_a.len() != test_b.len() {
-            println!("{:?} vs {:?}", test_a.len(), test_b.len());
+        let duration_cpu = cpu_start.elapsed();
+        println!("cpu time {:?}, gpu time {:?}", duration_cpu, duration_gpu);
+
+        let is_eq = test_a.iter().zip(&test_b).all(|(a,b)| a.id == b.id);
+        println!("is eq: {:?}", is_eq);
+
+        if !is_eq{//test_a.len() != test_b.len() {
+            println!("gpu: {:?} vs cpu: {:?}", test_a.len(), test_b.len());
             println!();
             println!(
                 "cell vt    {:?}",
@@ -90,19 +130,18 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
             println!("cell rad : {:?}", antibody.radius_constant);
             println!();
             // println!("dim rad: {:?}", dim_radus);
-            println!("bk  res: {:?}", test_a);
+            println!("gpu  res: {:?}", test_a);
             println!();
-            println!("otr res: {:?}", test_b);
-            panic!("bucket empire error")
+            println!("cpu res: {:?}", test_b);
         }
 
         // println!("a {:?} b {:?}", test_a.len(), test_b.len());
     }
 
-    let mut corr_matched = Vec::with_capacity(registered_antigens.len());
-    let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
+    let mut corr_matched = Vec::with_capacity(antigen_pop.antigens.len());
+    let mut wrong_matched = Vec::with_capacity(antigen_pop.antigens.len());
 
-    for registered_antigen in registered_antigens {
+    for registered_antigen in &registered_antigens {
         if registered_antigen.class_label == antibody.class_label {
             corr_matched.push(registered_antigen.id)
         } else {
@@ -118,9 +157,9 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
 
     // println!("matched {:?}\n", corr_matched);
 
-
     // -- membership value -- //
-    let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
+    let same_label_membership = corr_matched.len() as f64
+        / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
 
     let ret_evaluation = Evaluation {
         matched_ids: corr_matched,
@@ -140,11 +179,10 @@ pub struct MatchCounter {
     pub correct_match_counter: Vec<usize>,
     pub incorrect_match_counter: Vec<usize>,
 
-
     pub boosting_weight_values: Vec<f64>,
     pub class_labels: HashSet<usize>,
-    pub frac_map: Vec<(usize,f64)>,
-    pub count_map: HashMap<usize,usize>,
+    pub frac_map: Vec<(usize, f64)>,
+    pub count_map: HashMap<usize, usize>,
 }
 
 impl MatchCounter {
@@ -152,11 +190,10 @@ impl MatchCounter {
         let max_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
         let mut ag_weight_map = vec![0.0; max_id + 1];
         antigens.iter().for_each(|ag| {
-            if let Some(v) = ag_weight_map.get_mut(ag.id){
+            if let Some(v) = ag_weight_map.get_mut(ag.id) {
                 *v = ag.boosting_weight
             }
-        } );
-
+        });
 
         let class_labels = antigens
             .iter()
@@ -191,7 +228,7 @@ impl MatchCounter {
             })
             .collect();
 
-        println!("count map tot counts: {:?}", count_map);
+        // println!("count map tot counts: {:?}", count_map);
 
         return MatchCounter {
             max_id,
@@ -200,8 +237,7 @@ impl MatchCounter {
             boosting_weight_values: ag_weight_map,
             class_labels,
             frac_map,
-            count_map
-
+            count_map,
         };
     }
 

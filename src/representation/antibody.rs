@@ -1,5 +1,6 @@
 use crate::params::MutationType;
 use std::collections::HashMap;
+use arrayfire::{af_print, Array, Dim4, tile};
 use nalgebra::{DVector, DMatrix};
 use strum_macros::Display;
 
@@ -64,7 +65,47 @@ impl LocalSearchBorder {
     }
 }
 
+pub struct AntibodyVectorValues{
+    pub offset: Array<f64>,
+    pub multiplier: Array<f64>,
+    pub exponent: Array<u8>,
+}
+
+
 impl Antibody {
+
+    pub fn get_as_vector_values(&self) -> AntibodyVectorValues {
+
+
+      /*  self.dim_values.iter().enumerate().for_each(|(n,v)|{
+           println!("n: {:<5} offset: {:<5} value t: {:<5} multi: {:<5} ", n , v.offset, v.value_type, v.multiplier)
+        });*/
+        let num_dims = self.dim_values.len() as u64;
+        let offsets: Vec<_> = self.dim_values.iter().map(|x| x.offset).collect();
+        let multipliers: Vec<_> = self.dim_values.iter().map(|x| x.multiplier).collect();
+        let exponents: Vec<_> = self.dim_values.iter().map(|x| {
+            match x.value_type {
+                DimValueType::Disabled => {0}
+                DimValueType::Open => {1}
+                DimValueType::Circle => {2}
+            }
+        }).collect();
+
+
+        let offset_array = Array::<f64>::new(offsets.as_slice(),Dim4::new(&[1, num_dims ,1, 1]));
+        let multiplier_array = Array::<f64>::new(multipliers.as_slice(),Dim4::new(&[1, num_dims ,1, 1]));
+        let exponent_array = Array::<u8>::new(exponents.as_slice(),Dim4::new(&[1, num_dims ,1, 1]));
+
+
+        return AntibodyVectorValues{
+            offset: offset_array,
+            multiplier: multiplier_array,
+            exponent: exponent_array,
+        }
+    }
+
+
+
     //
     // initializers
     //

@@ -16,7 +16,7 @@ use crate::mutate;
 use crate::params::{Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::representation::antibody::Antibody;
 use crate::representation::antibody_factory::AntibodyFactory;
-use crate::representation::antigen::AntiGen;
+use crate::representation::antigen::{AntiGen, AntiGenPop};
 use crate::representation::expand_antibody_radius_until_hit;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use crate::scoring::score_antibodies;
@@ -53,35 +53,34 @@ pub struct Prediction {
 pub fn evaluate_population(
     params: &Params,
     population: Vec<Antibody>,
-    antigens: &Vec<AntiGen>,
+    antigen_pop: &AntiGenPop,
 ) -> Vec<(Evaluation, Antibody)> {
     return population
         .into_par_iter() // TODO: set paralell
         // .into_iter()
         .map(|antibody| {
             // evaluate antibodies
-            let score = evaluate_antibody(antigens, &antibody);
+            let score = evaluate_antibody(params,antigen_pop, &antibody);
             return (score, antibody);
         })
         .collect();
 }
 
 fn gen_initial_population(
-    bucket_king: &BucketKing<AntiGen>,
-    antigens: &Vec<AntiGen>,
+    antigen_pop: &AntiGenPop,
     params: &Params,
     cell_factory: &AntibodyFactory,
     pop_size: &usize,
     match_counter: &MatchCounter,
 ) -> Vec<Antibody> {
     let mut rng = rand::thread_rng();
-    return if (*pop_size == antigens.len()) {
-        antigens
+    return if (*pop_size == antigen_pop.antigens.len()) {
+        antigen_pop.antigens
             .par_iter()
             .map(|ag| cell_factory.generate_from_antigen(ag))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
-                    expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+                    expand_antibody_radius_until_hit(params,cell, antigen_pop)
                 } else {
                     cell
                 }
@@ -89,19 +88,19 @@ fn gen_initial_population(
             .collect()
     } else {
         match_counter.frac_map.iter().flat_map(|(label,frac)| {
-            let replace_count_for_label = (*pop_size as f64 * frac).ceil() as usize;
+            let label_gen_count = (*pop_size as f64 * frac).ceil() as usize;
 
-            let filtered: Vec<_> = antigens
+            let filtered: Vec<_> = antigen_pop.antigens
                 .iter()
                 .filter(|ag| ag.class_label == *label)
                 .collect();
 
-            return (0..*pop_size)
+            return (0..label_gen_count)
             .par_bridge()
             .map(|_| cell_factory.generate_from_antigen(filtered.choose(&mut rand::thread_rng()).unwrap()))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
-                    expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+                    expand_antibody_radius_until_hit(params,cell, antigen_pop)
                 } else {
                     cell
                 }
@@ -312,6 +311,8 @@ impl ArtificialImmuneSystem {
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         let mut antigens = input_antigens.clone();
 
+        let antigen_pop = AntiGenPop::new(input_antigens.clone());
+
 
         let pop_size = match params.antigen_pop_size {
             PopSizeType::Fraction(fraction ) => { (antigens.len() as f64 * fraction) as usize}
@@ -419,7 +420,7 @@ impl ArtificialImmuneSystem {
         self.antibodies = ab_pool.clone();
 
         let mut match_counter = MatchCounter::new(&antigens);
-        let evaluated_pop = evaluate_population(params, ab_pool, &antigens);
+        let evaluated_pop = evaluate_population(params, ab_pool, &antigen_pop);
         match_counter.add_evaluations(
             evaluated_pop
                 .iter()
@@ -440,27 +441,29 @@ impl ArtificialImmuneSystem {
 
     fn train_ab_set(
         &self,
-        antigens: &Vec<AntiGen>,
+        inp_antigens: &Vec<AntiGen>,
         params: &Params,
         verbosity_params: &VerbosityParams,
         pop_size: usize,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         // =======  init misc training params  ======= //
 
-        let leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
+        let antigen_pop = AntiGenPop::new(inp_antigens.clone());
+
+        let leak_size = (antigen_pop.antigens.len() as f64 * params.leak_fraction) as usize;
 
         let mut rng = rand::thread_rng();
         // check dims and classes
-        let n_dims = antigens.get(0).unwrap().values.len();
+        let n_dims = antigen_pop.antigens.get(0).unwrap().values.len();
 
         // build ag index
-        let mut bucket_king: BucketKing<AntiGen> =
-            BucketKing::new(n_dims, (0.0, 1.0), 10, |ag| ag.id, |ag| &ag.values);
-        bucket_king.add_values_to_index(antigens);
+        // let mut bucket_king: BucketKing<AntiGen> =
+        //     BucketKing::new(n_dims, (0.0, 1.0), 10, |ag| ag.id, |ag| &ag.values);
+        // bucket_king.add_values_to_index(antigens);
 
         // keeps track of the matches
-        let max_ag_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
-        let mut match_counter = MatchCounter::new(antigens);
+        let max_ag_id = antigen_pop.antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
+        let mut match_counter = MatchCounter::new(&antigen_pop.antigens);
 
         // init hist and watchers
         let mut best_run: Vec<(f64, Evaluation, Antibody)> = Vec::new();
@@ -477,7 +480,7 @@ impl ArtificialImmuneSystem {
 
         // =======  set up population  ======= //
         let initial_population: Vec<Antibody> =
-            gen_initial_population(&bucket_king, antigens, params, &cell_factory, &pop_size, &match_counter);
+            gen_initial_population( &antigen_pop, params, &cell_factory, &pop_size, &match_counter);
 
         // the evaluated pop is the population where the ab -> ag matches has been calculated but not scored
         let mut evaluated_pop: Vec<(Evaluation, Antibody)> = Vec::with_capacity(pop_size);
@@ -485,7 +488,7 @@ impl ArtificialImmuneSystem {
         // the scored pop is the population where the ab -> ag matches and score has been calculated
         let mut scored_pop: Vec<(f64, Evaluation, Antibody)> = Vec::with_capacity(pop_size);
 
-        evaluated_pop = evaluate_population(params, initial_population, antigens);
+        evaluated_pop = evaluate_population(params, initial_population, &antigen_pop);
         match_counter.add_evaluations(
             evaluated_pop
                 .iter()
@@ -604,10 +607,10 @@ impl ArtificialImmuneSystem {
                                     params,
                                     (1.0 - frac_of_max),
                                     parent_antibody.clone(),
-                                    antigens,
+                                    &antigen_pop.antigens,
                                 );
                                 mutated.clone_count += 1;
-                                let eval = evaluate_antibody(antigens, &mutated);
+                                let eval = evaluate_antibody(params, &antigen_pop, &mutated);
                                 return (eval, mutated);
                             })
                             .collect::<Vec<(Evaluation, Antibody)>>(); //.into_iter();//.collect::<Vec<(Evaluation, Antibody)>>()
@@ -706,7 +709,7 @@ impl ArtificialImmuneSystem {
                         continue;
                     }
 
-                    let filtered: Vec<_> = antigens
+                    let filtered: Vec<(&AntiGen,i32)> = antigen_pop.antigens
                         .iter()
                         .filter(|ag| ag.class_label == *label)
                         .map(|ag| (ag, inversed.get(ag.id).unwrap_or(&0).clone() as i32)) // todo: validate that this unwrap or does not hide a bug
@@ -729,12 +732,12 @@ impl ArtificialImmuneSystem {
 
                             if params.antibody_init_expand_radius {
                                 new_antibody = expand_antibody_radius_until_hit(
+                                    params,
                                     new_antibody,
-                                    &bucket_king,
-                                    &antigens,
+                                    &antigen_pop,
                                 )
                             }
-                            let eval = evaluate_antibody(antigens, &new_antibody);
+                            let eval = evaluate_antibody(params,&antigen_pop, &new_antibody);
                             return (eval, new_antibody);
                         })
                         .collect();
@@ -799,7 +802,7 @@ impl ArtificialImmuneSystem {
                 let mut n_corr = 0;
                 let mut n_wrong = 0;
                 let mut n_no_detect = 0;
-                for antigen in antigens {
+                for antigen in &antigen_pop.antigens {
                     let pred_class = is_class_correct(&antigen, &antibody);
                     if let Some(v) = pred_class {
                         if v {
@@ -812,7 +815,7 @@ impl ArtificialImmuneSystem {
                     }
                 }
 
-                let avg_acc = n_corr as f64 / antigens.len() as f64;
+                let avg_acc = n_corr as f64 / antigen_pop.antigens.len() as f64;
                 // let avg_score = scored_pop.iter().map(|(a, _b, _)| a).sum::<f64>() / scored_pop.len() as f64;
                 if avg_acc >= best_score {
                     best_score = avg_acc;

@@ -29,6 +29,7 @@ pub enum PopSizeType{
 
 #[derive(Clone)]
 pub struct Params {
+    pub gpu_accelerate: bool,
     // -- train params -- //
     pub boost: usize,
     pub antigen_pop_size: PopSizeType,

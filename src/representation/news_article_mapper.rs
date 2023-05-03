@@ -71,6 +71,10 @@ impl NewsArticleAntigenTranslator {
     }
 
     pub fn get_show_ag_acc(&self, mut pred_res: Vec<(Option<bool>, &AntiGen)>){
+        if self.id_counter==0{
+            return;
+        }
+
         pred_res.sort_by_key(|(_, ag)| ag.id);
 
 

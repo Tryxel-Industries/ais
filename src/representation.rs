@@ -1,9 +1,11 @@
 use rayon::prelude::*;
+use statrs::statistics::Statistics;
 
 use crate::evaluation::evaluate_antibody;
 use crate::representation::antibody::{Antibody, DimValueType};
-use crate::representation::antigen::AntiGen;
+use crate::representation::antigen::{AntiGen, AntiGenPop};
 use crate::BucketKing;
+use crate::params::Params;
 
 pub mod antibody;
 pub mod antibody_factory;
@@ -11,9 +13,9 @@ pub mod antigen;
 pub mod news_article_mapper;
 
 pub fn expand_antibody_radius_until_hit(
+    params: &Params,
     mut cell: Antibody,
-    bk: &BucketKing<AntiGen>,
-    antigens: &Vec<AntiGen>,
+    antigen_pop: &AntiGenPop,
 ) -> Antibody {
     /*
     ha en middels høy range
@@ -21,32 +23,41 @@ pub fn expand_antibody_radius_until_hit(
     iterer deretter gjennom de som er feil og for hver som er innenfor reduser rangen til den er lavere en den
      */
 
-    if !cell
-        .dim_values
-        .iter()
-        .map(|v| v.value_type)
-        .any(|v| v != DimValueType::Disabled)
-    {
-        // abort if all dims are disabled
-        return cell;
-    }
-    let mut evaluation = loop {
-        let evaluation = evaluate_antibody(antigens, &cell);
+    let min_range = if params.gpu_accelerate{
+        let antigens = &antigen_pop.antigens;
+        antigen_pop.get_antibody_required_range(&cell, &Some(cell.class_label)).min()
+    }else {
 
-        if evaluation.wrongly_matched.len() > 0 {
-            break evaluation;
-        } else {
-            cell.radius_constant *= 2.0;
+        if !cell
+            .dim_values
+            .iter()
+            .map(|v| v.value_type)
+            .any(|v| v != DimValueType::Disabled)
+        {
+            // abort if all dims are disabled
+            return cell;
         }
-    };
-    evaluation.wrongly_matched.sort();
+        let mut evaluation = loop {
+            let evaluation = evaluate_antibody(params,antigen_pop, &cell);
 
-    let min_range = antigens
-        .par_iter()
-        .filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok())
-        .map(|ag| cell.get_affinity_dist(ag))
-        .min_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
+            if evaluation.wrongly_matched.len() > 0 {
+                break evaluation;
+            } else {
+                cell.radius_constant *= 2.0;
+            }
+        };
+        evaluation.wrongly_matched.sort();
+
+  antigen_pop.antigens
+            .par_iter()
+            .filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok())
+            .map(|ag| cell.get_affinity_dist(ag))
+            .min_by(|a, b| a.partial_cmp(b).unwrap())
+            .unwrap()
+    };
+
+
+
 
     cell.radius_constant = min_range * 0.99;
 
