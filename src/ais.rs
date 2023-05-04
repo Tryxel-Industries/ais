@@ -428,7 +428,7 @@ impl ArtificialImmuneSystem {
         );
 
 
-        let scored_pop = score_antibodies(evaluated_pop, &match_counter);
+        let scored_pop = score_antibodies(params,evaluated_pop, &match_counter);
 
 
         // println!(
@@ -493,7 +493,7 @@ impl ArtificialImmuneSystem {
                 .collect::<Vec<_>>(),
         );
 
-        scored_pop = score_antibodies(evaluated_pop,  &match_counter);
+        scored_pop = score_antibodies(params,evaluated_pop,  &match_counter);
 
         //
         if verbosity_params.show_initial_pop_info {
@@ -621,10 +621,10 @@ impl ArtificialImmuneSystem {
                         let mut local_match_counter = match_counter.clone();
                         local_match_counter.add_evaluations(child_evals);
 
-                        let new_gen_scored = score_antibodies(children, &match_counter);
+                        let new_gen_scored = score_antibodies(params,children, &match_counter);
                         // rescore the parent ab with the new match counter vals to correctly fitness share the score
                         let (daddy_score, daddy_eval, daddy_antibody) = score_antibodies(
-                            vec![(parent_eval, parent_antibody)],
+                            params,vec![(parent_eval, parent_antibody)],
 
                             &match_counter,
                         )
@@ -662,7 +662,7 @@ impl ArtificialImmuneSystem {
                 new_gen.extend(label_gen)
             }
 
-            let new_gen_scored = score_antibodies(new_gen, &match_counter);
+            let new_gen_scored = score_antibodies(params,new_gen, &match_counter);
 
             // filter to the n best new antigens
             // let mut to_add = pick_best_n(new_gen_scored, n_to_replace);
@@ -742,7 +742,7 @@ impl ArtificialImmuneSystem {
                     let new_evals: Vec<_> = new_pop_pop.iter().map(|(e, _)| e).collect();
                     local_match_counter.add_evaluations(new_evals);
                     let leaked_to_add =
-                        score_antibodies(new_pop_pop,  &local_match_counter);
+                        score_antibodies(params,new_pop_pop,  &local_match_counter);
 
                     let cleanup_evals: Vec<_> = leaked_to_add.iter().map(|(_, e, _)| e).collect();
                     local_match_counter.remove_evaluations(cleanup_evals);
@@ -789,7 +789,7 @@ impl ArtificialImmuneSystem {
             //     panic!("error with match counter updates ")
             // }
 
-            scored_pop = score_antibodies(evaluated_pop,  &match_counter);
+            scored_pop = score_antibodies(params,evaluated_pop,  &match_counter);
 
             if let Some(n) = verbosity_params.full_pop_acc_interval {
                 if i % n == 0 {

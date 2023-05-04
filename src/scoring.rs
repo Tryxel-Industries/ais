@@ -5,10 +5,12 @@ use rayon::prelude::*;
 
 use crate::bucket_empire::{BucketKing, ValueRangeType};
 use crate::evaluation::{Evaluation, MatchCounter};
+use crate::params::Params;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 
 pub fn score_antibodies(
+    params: &Params,
     evaluated_population: Vec<(Evaluation, Antibody)>,
     match_counter: &MatchCounter,
 ) -> Vec<(f64, Evaluation, Antibody)> {
@@ -113,7 +115,7 @@ pub fn score_antibodies(
             let purity = true_positives / shared_positive_weight.max(1) as f64;
 
             let penalty = 1.0 - (error_problem_magnitude / false_positives.max(1.0));
-            let mut score = 0.0;
+
             // positive_predictive_value + pos_coverage * discounted_match_score/true_positives.max(1.0) + penalty;
 
             // add ppv (0-1) indicating the accuracy of the prediction
@@ -124,25 +126,18 @@ pub fn score_antibodies(
             // score += f1;
 
             // add a value from 1 -> -1 indicating the fraction of correctness
-            let a = 1.0;
-            score += a* ( (true_positives - (false_positives * 2.0))
-                / (true_positives + false_positives).max(1.0));
-
+            let correctness =  (true_positives - (false_positives * 2.0))
+                / (true_positives + false_positives).max(1.0);
 
 
             // add a value from (0 - 1) * a indicating the coverage of the label space
-            let b = 1.0;
-            score += pos_coverage * pos_relevance * b;
+            let coverage = pos_coverage * pos_relevance;
 
+            let uniqueness = (discounted_match_score / (true_positives).max(1.0));
 
-            let c = 0.5;
-            score += (discounted_match_score / (true_positives).max(1.0)) * c;
+            let mut score = correctness*params.correctness_weight + coverage * params.coverage_weight + uniqueness * params.uniqueness_weight;
 
-            // let d = 1.0;
-            // score += positive_predictive_value * d;
-            // score -= error_problem_magnitude;
-
-            if pred_pos == tot_elements {
+                 if pred_pos == tot_elements {
                 score = -5.0;
             }
 

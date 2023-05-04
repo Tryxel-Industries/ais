@@ -51,6 +51,11 @@ pub struct Params {
     pub value_type_valid_mutations: Vec<DimValueType>,
     pub label_valid_mutations: Vec<usize>,
 
+    // -- train params -- //
+    pub correctness_weight: f64,
+    pub coverage_weight: f64,
+    pub uniqueness_weight: f64,
+
     // reduction
     pub membership_required: f64,
 
@@ -147,8 +152,8 @@ impl VerbosityParams {
 }
 
 
-fn width_to_range(width: f64) -> RangeInclusive<f64>{
-    return (1.0-width)..=(1.0+width)
+fn width_to_range( center: f64, width: f64) -> RangeInclusive<f64>{
+    return (center-width)..=(center+width)
 }
 
 fn param_string_to_bool(param_string: String) -> bool{
@@ -208,9 +213,9 @@ pub fn modify_config_by_args(params: &mut Params) {
                 "use_open_dims" => will_use_open = Some(param_string_to_bool(value.parse().unwrap())),
                 "use_disabled_dims" => will_use_disabled = Some(param_string_to_bool(value.parse().unwrap())),
 
-                "offset_mutation_multiplier_range" => params.offset_mutation_multiplier_range = width_to_range(value.parse().unwrap()),
-                "multiplier_mutation_multiplier_range" => params.multiplier_mutation_multiplier_range = width_to_range(value.parse().unwrap()),
-                "radius_mutation_multiplier_range" => params.radius_mutation_multiplier_range = width_to_range(value.parse().unwrap()),
+                "offset_mutation_multiplier_range" => params.offset_mutation_multiplier_range = width_to_range(0.0,value.parse().unwrap()),
+                "multiplier_mutation_multiplier_range" => params.multiplier_mutation_multiplier_range = width_to_range(0.0,value.parse().unwrap()),
+                "radius_mutation_multiplier_range" => params.radius_mutation_multiplier_range = width_to_range(0.0,value.parse().unwrap()),
 
 
                 _ => panic!("invalid config arg"),

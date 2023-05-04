@@ -162,6 +162,7 @@ impl Antibody {
         return roll_sum;
     }
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
+
         if self.dim_values.iter().all(|ab| ab.value_type==DimValueType::Disabled) {
             // all dims are disabled
             return false;

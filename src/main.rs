@@ -179,7 +179,7 @@ fn ais_test(
     );
 
 
-    let scored_pop = score_antibodies(evaluated_pop, &match_counter);
+    let scored_pop = score_antibodies(params,evaluated_pop, &match_counter);
 
     scored_pop.iter().for_each(|(disc_score, eval, antibody)| {
         let registered_antigens = test
@@ -499,6 +499,11 @@ fn main_() {
         ],
         // value_type_valid_mutations: vec![DimValueType::Circle],
         label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
+
+
+        correctness_weight: 1.0,
+        coverage_weight: 1.0,
+        uniqueness_weight: 0.5,
 
         //selection
         leak_fraction: 0.5,
