@@ -69,7 +69,7 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
     };
 
     let antibodies: Vec<Antibody> = data_vec
-        .into_par_iter()
+        .into_iter()
         .map(|mut row| {
             // TODO: if needed this is just inefficient beyond comprehension
             let class_label: usize = row.remove(0).parse().unwrap();
@@ -78,18 +78,12 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
             let final_train_membership: f64 = row.remove(0).parse().unwrap();
 
             let mut row_values = Vec::new();
-            for n in 0..dim_feature_cols{
-                let dim_idx = row.len() - 3;
+            for n in 0..num_dims{
+                let base_idx = n * 3;
 
-                let mut feature_vals =  if dim_feature_cols -1  == n{
-                    row.split_off(dim_idx)
-                } else {
-                    row.clone()
-                };
-
-                let multiplier: f64 = feature_vals.pop().unwrap().parse().unwrap();
-                let offset: f64 = feature_vals.pop().unwrap().parse().unwrap();
-                let value_type: DimValueType = DimValueType::from_str(&*feature_vals.pop().unwrap()).unwrap();
+                let value_type: DimValueType = DimValueType::from_str(&*row.get(base_idx).unwrap()).unwrap();
+                let offset: f64 = row.get(base_idx+1).unwrap().parse().unwrap();
+                let multiplier: f64 = row.get(base_idx+2).unwrap().parse().unwrap();
 
                 row_values.push(AntibodyDim{
                     multiplier,
