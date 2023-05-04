@@ -11,21 +11,21 @@ use rand::thread_rng;
 use crate::entities;
 use crate::entities::{DatasetEmbeddings, NewsEntryEmbeddings};
 use crate::representation::antibody::Antibody;
-use crate::representation::antigen::AntiGen;
+use crate::representation::antigen::{AntiGen, AntiGenSplitShell};
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 
 
 
 
 
-pub fn read_kaggle_embeddings(num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
-    read_embeddings("kaggle", num_to_read, translator, use_whitened)
+pub fn read_kaggle_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
+    read_embeddings("kaggle", num_to_read, sentence_limit,translator, use_whitened)
 }
 
-pub fn read_fnn_embeddings(num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
-    read_embeddings("fnn", num_to_read, translator, use_whitened)
+pub fn read_fnn_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
+    read_embeddings("fnn", num_to_read, sentence_limit,translator, use_whitened)
 }
-fn read_embeddings(dir: &str, num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
+fn read_embeddings(dir: &str, num_to_read: Option<usize>,sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
 
     let path = if use_whitened{
         format!("./datasets/fake_news/{}/embeddings_proto.bin.whitened", dir)
@@ -62,8 +62,8 @@ fn read_embeddings(dir: &str, num_to_read: Option<usize>, translator: &mut NewsA
     };
 
     for entry in to_decode{
-        let ags = translator.translate_article(entry);
-        return_vec.extend(ags);
+        let ags = translator.translate_article(entry, sentence_limit);
+        return_vec.push(AntiGenSplitShell::build_from_article(ags));
     }
 
     return return_vec;

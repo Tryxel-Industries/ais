@@ -24,7 +24,7 @@ pub enum ReplaceFractionType{
 #[derive(Clone)]
 pub enum PopSizeType{
     Fraction(f64),
-    Number(usize)
+    Number(usize),
 }
 
 #[derive(Clone)]

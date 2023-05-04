@@ -414,7 +414,7 @@ impl ArtificialImmuneSystem {
                 }
             }).collect();
 
-            translator.get_show_ag_acc(translator_formatted);
+            translator.get_show_ag_acc(translator_formatted, false);
         }
         self.antibodies = ab_pool.clone();
 
@@ -892,5 +892,12 @@ impl ArtificialImmuneSystem {
 
     pub fn is_class_correct_with_membership(&self, antigen: &AntiGen) -> Option<bool> {
         return is_class_correct_with_membership(antigen, &self.antibodies);
+    }
+    pub fn print_current_ab(&self){
+        let mut ab = self.antibodies.clone();
+        ab.sort_by(|a, b|  a.dim_values.first().unwrap().multiplier.total_cmp(&b.dim_values.first().unwrap().multiplier));
+        ab.iter().for_each(|ag|{
+            println!("{:?}", ag);
+        });
     }
 }

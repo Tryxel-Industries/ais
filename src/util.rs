@@ -9,6 +9,8 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Write};
 use nalgebra::{DMatrix};
+use crate::representation::antigen::AntiGenSplitShell;
+
 /// Given a vector `vec` and a positive integer `n`, returns a new vector that contains `n`
 /// randomly chosen elements from `vec`. The elements in the resulting vector are in the same
 /// order as they appear in `vec`.
@@ -118,11 +120,12 @@ pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
 /// let antigens = vec![...];
 /// let (train, test) = split_train_test(&antigens, 0.2);
 /// ```
-pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, Vec<AntiGen>) {
+pub fn split_train_test(antigens: &Vec<AntiGenSplitShell>, test_frac: f64) -> (Vec<AntiGen>, Vec<AntiGen>) {
     let classes: HashSet<usize> = antigens.iter().map(|ag| ag.class_label).collect();
 
-    let mut train: Vec<AntiGen> = Vec::new();
-    let mut test: Vec<AntiGen> = Vec::new();
+    println!("clasess: {:?}", classes);
+    let mut train: Vec<_> = Vec::new();
+    let mut test: Vec<_> = Vec::new();
 
     for class in classes {
         let mut of_class: Vec<_> = antigens
@@ -131,13 +134,16 @@ pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen
             .cloned()
             .collect();
         let num_test = (of_class.len() as f64 * test_frac) as usize;
+        println!("in class {:?} -> train: {:?} - test: {:?}", of_class.len(), of_class.len()-num_test,num_test);
         let class_train = of_class.split_off(num_test);
 
         train.extend(class_train);
         test.extend(of_class);
     }
 
-    return (train, test);
+    let train_unpacked = train.into_iter().flat_map(|ag| ag.upack()).collect();
+    let test_unpacked = test.into_iter().flat_map(|ag| ag.upack()).collect();
+    return (train_unpacked, test_unpacked);
 }
 
 /// Splits a collection of AntiGen instances into train and test sets using a "n-fold" cross-validation
@@ -159,13 +165,13 @@ pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen
 /// }
 /// ```
 pub fn split_train_test_n_fold(
-    antigens: &Vec<AntiGen>,
+    antigens: &Vec<AntiGenSplitShell>,
     n_folds: usize,
 ) -> Vec<(Vec<AntiGen>, Vec<AntiGen>)> {
     let classes: HashSet<usize> = antigens.iter().map(|ag| ag.class_label).collect();
     let fold_frac = 1.0 / n_folds as f64;
 
-    let mut folds: Vec<Vec<AntiGen>> = Vec::new();
+    let mut folds: Vec<Vec<AntiGenSplitShell>> = Vec::new();
     for _ in 0..n_folds {
         folds.push(Vec::new());
     }
@@ -200,7 +206,9 @@ pub fn split_train_test_n_fold(
                 train_fold.extend(folds.get(join_fold).unwrap().clone());
             }
         }
-        ret_folds.push((train_fold, test_fold))
+        let train_fold_unpacked = train_fold.into_iter().flat_map(|ag| ag.upack()).collect();
+        let test_fold_unpacked = test_fold.into_iter().flat_map(|ag| ag.upack()).collect();
+        ret_folds.push((train_fold_unpacked, test_fold_unpacked))
     }
 
     // println!("folds {:?}", folds);

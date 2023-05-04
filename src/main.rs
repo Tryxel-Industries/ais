@@ -26,7 +26,7 @@ use crate::mutations::mutate;
 use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
 use crate::representation::antibody::{Antibody, DimValueType};
-use crate::representation::antigen::AntiGen;
+use crate::representation::antigen::{AntiGen, AntiGenSplitShell};
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use crate::result_export::{dump_to_csv, read_ab_csv};
 use crate::scoring::score_antibodies;
@@ -52,14 +52,15 @@ pub mod entities {
 
 fn ais_n_fold_test(
     params: Params,
-    mut antigens: Vec<AntiGen>,
+    mut shelled_antigens: Vec<AntiGenSplitShell>,
     verbosity_params: &VerbosityParams,
     n_folds: usize,
     translator: NewsArticleAntigenTranslator
 ) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
-    let folds = split_train_test_n_fold(&antigens, n_folds);
+    let folds = split_train_test_n_fold(&shelled_antigens, n_folds);
+    let antigens = shelled_antigens.into_iter().flat_map(|ag| ag.upack()).collect();
 
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
@@ -86,7 +87,7 @@ fn ais_n_fold_test(
 
 fn ais_frac_test(
     params: Params,
-    mut antigens: Vec<AntiGen>,
+    mut shelled_antigens: Vec<AntiGenSplitShell>,
     verbosity_params: &VerbosityParams,
     test_frac: f64,
     translator: NewsArticleAntigenTranslator
@@ -99,7 +100,8 @@ fn ais_frac_test(
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
 
-    let (train_slice, test) = split_train_test(&antigens, test_frac);
+    let (train_slice, test) = split_train_test(&shelled_antigens, test_frac);
+    let antigens = shelled_antigens.into_iter().flat_map(|ag| ag.upack()).collect();
 
     let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params, &translator);
 
@@ -271,19 +273,6 @@ fn ais_test(
     let mut n_no_detect = 0;
     for antigen in train_slice {
         let pred_class = ais.is_class_correct_with_membership(&antigen);
-        // let pred_class = ais.is_class_correct(&antigen);
-
-        // if pred_class.is_some() != pred_class_m.is_some(){
-        //     println!("\n\nres value Diff registered, using valilla res was {:?}, using membership {:?}", pred_class, pred_class_m);
-        // }
-        // if pred_class.is_some() && pred_class_m.is_some(){
-        //     if pred_class_m.unwrap() != pred_class.unwrap(){
-        //         println!("Diff registered, using valilla res was {:?}, using membership {:?}", pred_class.unwrap(), pred_class_m.unwrap());
-        //
-        //     }
-        // }
-        //
-
         if let Some(v) = pred_class {
             if v {
                 n_corr += 1;
@@ -346,7 +335,7 @@ fn ais_test(
          }
     }).collect();
 
-    translator.get_show_ag_acc(translator_formatted);
+    translator.get_show_ag_acc(translator_formatted, true);
 
     let test_acc = test_n_corr as f64 / (test.len() as f64);
     let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
@@ -389,6 +378,7 @@ fn ais_test(
         );
     }
 
+
     dump_to_csv(antigens, &ais.antibodies);
 
 
@@ -403,18 +393,19 @@ fn trail_run_from_ab_csv(){
 
     let dataset_used = Datasets::EmbeddingKaggle;
     // embedding params
-    let use_num_to_fetch = Some(200);
+    // let use_num_to_fetch = Some(1000);
+    let use_num_to_fetch = None;
     let use_whitening = true;
 
 
     let mut translator = NewsArticleAntigenTranslator::new();
-    let mut antigens =  get_dataset(dataset_used, use_num_to_fetch, &mut translator, use_whitening);
+    let mut shelled_antigens =  get_dataset(dataset_used, use_num_to_fetch, None,&mut translator, use_whitening);
+    let mut antigens: Vec<_> = shelled_antigens.into_iter().flat_map(|sag| sag.upack()).collect();
 
     let antibodies = read_ab_csv(ab_file_path.parse().unwrap());
 
     let mut ais = ArtificialImmuneSystem::new();
     ais.antibodies = antibodies;
-
 
 
    let translator_formatted = antigens.iter().map(|ag| {
@@ -430,18 +421,55 @@ fn trail_run_from_ab_csv(){
          }
     }).collect();
 
-    translator.get_show_ag_acc(translator_formatted);
+    translator.get_show_ag_acc(translator_formatted, true);
+
+      //train
+    let mut n_corr = 0;
+    let mut per_class_corr: HashMap<usize, usize> = HashMap::new();
+    let mut n_wrong = 0;
+    let mut n_no_detect = 0;
+    for antigen in antigens.clone() {
+        let pred_class = ais.is_class_correct_with_membership(&antigen);
+        if let Some(v) = pred_class {
+            if v {
+                n_corr += 1;
+                let class_count = per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+                per_class_corr.insert(antigen.class_label, *class_count + 1);
+            } else {
+                n_wrong += 1;
+            }
+        } else {
+            n_no_detect += 1
+        }
+    }
+    let train_acc = n_corr as f64 / (antigens.len() as f64);
+
+
+        println!("=============================================================================");
+        println!("      TRAIN");
+        println!("=============================================================================");
+        println!();
+        println!("dataset size {:?}", antigens.len());
+        println!(
+            "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
+            n_corr, n_wrong, n_no_detect, train_acc,
+        );
+        println!("per class cor {:?}", per_class_corr);
+
+
+
+
 }
 fn trail_training() {
 
     let dataset_used = Datasets::EmbeddingKaggle;
     // embedding params
-    let use_num_to_fetch = Some(200);
+    let use_num_to_fetch = Some(2000);
+    let max_sentences_per_article = Some(20);
     let use_whitening = true;
 
     let mut translator = NewsArticleAntigenTranslator::new();
-    let mut antigens =  get_dataset(dataset_used, use_num_to_fetch, &mut translator, use_whitening);
-
+    let mut antigens =  get_dataset(dataset_used, use_num_to_fetch, max_sentences_per_article,&mut translator, use_whitening);
 
 
     // let mut rng = rand::thread_rng();
@@ -454,11 +482,11 @@ fn trail_training() {
         .collect::<HashSet<_>>();
 
     let mut params = Params {
-        boost: 15,
+        boost: 10,
         // -- train params -- //
         // antigen_pop_size: PopSizeType::Fraction(0.25),
         antigen_pop_size: PopSizeType::Number(2000),
-        generations: 400,
+        generations: 500,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,
@@ -471,7 +499,7 @@ fn trail_training() {
         mutation_value_type_local_search_dim: true,
 
         // -- reduction -- //
-        membership_required: 0.80,
+        membership_required: 0.75,
 
 
         // offset_mutation_multiplier_range: 0.8..=1.2,
@@ -539,10 +567,10 @@ fn trail_training() {
     modify_config_by_args(&mut params);
 
     ais_frac_test(params, antigens, &frac_verbosity_params, 0.2, translator);
-    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
+    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5, translator)
 }
 
 fn main(){
-    trail_run_from_ab_csv();
-    // trail_training();
+    // trail_run_from_ab_csv();
+    trail_training();
 }

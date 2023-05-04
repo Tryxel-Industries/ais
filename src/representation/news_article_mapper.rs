@@ -1,6 +1,8 @@
 use std::collections::HashSet;
 use std::vec;
 use rayon::prelude::*;
+use rand::{seq::IteratorRandom, thread_rng};
+use rand::seq::index::sample;
 
 use crate::entities::NewsEntryEmbeddings;
 use crate::representation::antibody::Antibody;
@@ -24,6 +26,9 @@ struct NewsArticleKey{
 pub struct NewsArticleAntigenTranslator{
     news_article_keys: Vec<NewsArticleKey>,
     id_counter: usize,
+
+    pub train_article_ids: Vec<usize>,
+    pub test_article_ids: Vec<usize>,
 }
 
 impl NewsArticleAntigenTranslator {
@@ -31,7 +36,9 @@ impl NewsArticleAntigenTranslator {
        return NewsArticleAntigenTranslator{
            news_article_keys: Vec::new(),
            id_counter: 0,
-       } 
+           train_article_ids: Vec::new(),
+           test_article_ids: Vec::new(),
+       }
     }
     
     fn get_next_local_id(&mut self) -> usize{
@@ -43,15 +50,29 @@ impl NewsArticleAntigenTranslator {
     fn embedding_to_antigen(&self, embedding_id: usize, embedding_label:usize, embedding: Vec<f64>) -> AntiGen{
         return AntiGen::new(embedding_id, embedding_label, embedding)
     }
-    pub fn translate_article(&mut self, article: NewsEntryEmbeddings) -> Vec<AntiGen>{
+
+
+
+    pub fn translate_article(&mut self, article: NewsEntryEmbeddings, num_sentences: Option<usize>) -> Vec<AntiGen>{
         let mut antigens = Vec::new();
         let mut article_ids = Vec::new();
         
         let id = article.id as usize;
         let label = article.label.parse().unwrap();
         let pub_date = article.publish_date;
+
+        let embeddings = if let Some(sample_s) = num_sentences{
+            let mut rng = thread_rng();
+            if article.embeddings.len() >= sample_s {
+                article.embeddings.into_iter().choose_multiple(&mut rng,sample_s)
+            } else {
+                article.embeddings
+            }
+        }else {
+            article.embeddings
+        };
         
-        for embedding in article.embeddings {
+        for embedding in embeddings {
             let new_id = self.get_next_local_id();
             article_ids.push(new_id);
                 
@@ -70,17 +91,21 @@ impl NewsArticleAntigenTranslator {
         return antigens
     }
 
-    pub fn get_show_ag_acc(&self, mut pred_res: Vec<(Option<bool>, &AntiGen)>){
+    pub fn get_show_ag_acc(&self, mut pred_res: Vec<(Option<bool>, &AntiGen)>, table: bool){
         if self.id_counter == 0{
             return;
         }
         pred_res.sort_by_key(|(_, ag)| ag.id);
 
+        let tbl_header = format!("| {:>4} | {:>5} | {:>6} | {:<6} | {:<12} | {:<9} |", "id", "label", "corr", "incorr", "unclassefied", "corr pred");
 
+        if table{
+            println!();
+            println!("############ article train cat deciccion table ##############");
+            println!("{}", tbl_header);
 
-        println!();
-        println!("########### article train cat deciccion table #############");
-        println!("| {:>4} | {:>5} | {:>5} | {:<5} | {:<12} | {:<9} |", "id", "label", "true", "false", "unclassefied", "corr pred");
+        }
+
         let (true_positive, false_positive,true_negative, false_negative, nodetect_positive, nodetect_negative) = self.news_article_keys
             .par_iter()
             .map(|article_key| {
@@ -104,7 +129,15 @@ impl NewsArticleAntigenTranslator {
             }
 
 
-                println!("| {:>4?} | {:>5?} | {:>5?} | {:<5?} | {:<12?} | {:<9?} |", article_key.article_id, article_key.article_label == 1, true_sentences, false_sentences, nodetect_sentences, (true_sentences > false_sentences)&& (article_key.article_label == 0) );
+                if table{
+                    let (t, f) = if article_key.article_label == 1{
+                        (true_sentences, false_sentences)
+                    }else {
+                        (false_sentences, true_sentences)
+                    };
+
+                    println!("| {:>4?} | {:>5?} | {:>6?} | {:<6?} | {:<12?} | {:<9?} |", article_key.article_id, article_key.article_label == 1, t, f, nodetect_sentences, (true_sentences > false_sentences));
+                }
             let mut true_positives = 0;
             let mut false_positives = 0;
                 let mut nodetect_positives = 0;
@@ -135,7 +168,11 @@ impl NewsArticleAntigenTranslator {
             return (true_positives, false_positives,true_negatives, false_negatives , nodetect_positives, nodetect_negatives)
     }).reduce(|| (0,0,0,0,0,0), |a,b| (a.0+b.0, a.1+b.1,a.2+b.2, a.3+b.3, a.4+b.4, a.5+b.5));
 
-        println!("-----------------------------------------------------------");
+        if table{
+
+            println!("{}", tbl_header);
+            println!("-------------------------------------------------------------");
+        }
 
        /* let mut num_cor = 0;
         let mut num_false = 0;
