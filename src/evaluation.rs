@@ -44,7 +44,8 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
     idx_list.sort();*/
 
     let registered_antigens = antigens
-        .iter()
+        // .iter()
+        .par_iter()
         // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
         .filter(|ag| antibody.test_antigen(ag))
         .collect::<Vec<_>>();
