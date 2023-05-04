@@ -91,7 +91,7 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
                     value_type,
                 })
             }
-            row_values.reverse();
+            // row_values.reverse();
 
             return Antibody{
                 dim_values: row_values,
