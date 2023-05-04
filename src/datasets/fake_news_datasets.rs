@@ -14,6 +14,10 @@ use crate::representation::antibody::Antibody;
 use crate::representation::antigen::AntiGen;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 
+
+
+
+
 pub fn read_kaggle_embeddings(num_to_read: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGen>{
     read_embeddings("kaggle", num_to_read, translator, use_whitened)
 }
@@ -26,7 +30,7 @@ fn read_embeddings(dir: &str, num_to_read: Option<usize>, translator: &mut NewsA
     let path = if use_whitened{
         format!("./datasets/fake_news/{}/embeddings_proto.bin.whitened", dir)
     } else {
-       format!("./datasets/fake_news/{}/embeddings_proto.bin", dir)
+        format!("./datasets/fake_news/{}/embeddings_proto.bin", dir)
     };
     let f = File::open(path.clone()).unwrap();
     let b = match std::fs::read(path) {
@@ -76,32 +80,32 @@ fn pick_n_fairly(embeddings: Vec<NewsEntryEmbeddings>, n_to_pick: usize) -> Vec<
         .collect::<HashSet<_>>();
 
     let frac_map: HashMap<String, f64> = class_labels
-            .iter()
-            .map(|x| {
-                (
-                    x.clone(),
-                    embeddings
-                        .iter()
-                        .filter(|ag| ag.label == *x)
-                        .collect::<Vec<_>>()
-                        .len() as f64
-                        / embeddings.len() as f64,
-                )
-            })
-            .collect();
+        .iter()
+        .map(|x| {
+            (
+                x.clone(),
+                embeddings
+                    .iter()
+                    .filter(|ag| ag.label == *x)
+                    .collect::<Vec<_>>()
+                    .len() as f64
+                    / embeddings.len() as f64,
+            )
+        })
+        .collect();
     let count_map: HashMap<String, usize> = class_labels
-            .iter()
-            .map(|x| {
-                (
-                    x.clone(),
-                    embeddings
-                        .iter()
-                        .filter(|ag| ag.label == *x)
-                        .collect::<Vec<_>>()
-                        .len(),
-                )
-            })
-            .collect();
+        .iter()
+        .map(|x| {
+            (
+                x.clone(),
+                embeddings
+                    .iter()
+                    .filter(|ag| ag.label == *x)
+                    .collect::<Vec<_>>()
+                    .len(),
+            )
+        })
+        .collect();
 
 
     println!("proto test -> frac map:  {:?}", frac_map);
@@ -124,3 +128,74 @@ fn pick_n_fairly(embeddings: Vec<NewsEntryEmbeddings>, n_to_pick: usize) -> Vec<
 
 
 }
+
+//
+//   Fake news
+//
+/*
+fn read_json(path: &str) -> JsonValue {
+    let mut lines: Vec<String> = Vec::new();
+
+    let f = File::open(path).unwrap();
+    let mut reader = BufReader::new(f);
+    let mut line = String::new();
+
+    loop {
+        let len = reader.read_line(&mut line).unwrap();
+
+        if line.ends_with("\n") {
+            line = line.strip_suffix("\n").unwrap().parse().unwrap();
+        }
+
+        if line.len() > 0 {
+            lines.push(line.clone());
+            line.clear();
+        } else {
+            break;
+        }
+    }
+    let json_str = lines.join("");
+    let js_obj = json::parse(&*json_str).unwrap();
+    return js_obj;
+}
+
+pub fn read_kaggle_semantic() -> Vec<AntiGen> {
+    let path = format!(
+        "{}/kaggle/semantic_features_kaggle.json",
+        FAKE_NEWS_DATASET_DIR
+    );
+    let mut json_value = read_json(path.as_str());
+
+    json_value.entries().for_each(|(k, v)| println!("{:?}", k));
+
+    let mut news_entries: Vec<AntiGen> = Vec::new();
+
+    loop {
+        let mut val = json_value.pop();
+        if val.is_null() {
+            break;
+        } else {
+            let id = val.remove("id").as_i32().unwrap();
+            let title: String = val.remove("title").to_string();
+            let pub_date: String = val.remove("publishDate").dump();
+            let label: String = val.remove("label").to_string();
+            let mut res_map = val.remove("resultMap");
+
+            let mut feature_values: Vec<f64> = Vec::new();
+            res_map.entries_mut().for_each(|(k, v)| {
+                let f_val = v.remove("featureValue").as_f64().unwrap();
+                feature_values.push(f_val);
+            });
+
+
+
+            let ag = AntiGen::new(id as usize, label.parse().unwrap(), feature_values);
+
+            news_entries.push(ag)
+        }
+    }
+
+    news_entries = normalize_features_ag(news_entries);
+    return news_entries;
+}
+*/

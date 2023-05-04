@@ -71,16 +71,23 @@ impl NewsArticleAntigenTranslator {
     }
 
     pub fn get_show_ag_acc(&self, mut pred_res: Vec<(Option<bool>, &AntiGen)>){
+        if self.id_counter == 0{
+            return;
+        }
         pred_res.sort_by_key(|(_, ag)| ag.id);
 
 
 
+        println!();
+        println!("########### article train cat deciccion table #############");
+        println!("| {:>4} | {:>5} | {:>5} | {:<5} | {:<12} | {:<9} |", "id", "label", "true", "false", "unclassefied", "corr pred");
         let (true_positive, false_positive,true_negative, false_negative, nodetect_positive, nodetect_negative) = self.news_article_keys
             .par_iter()
             .map(|article_key| {
 
             let mut true_sentences =0;
             let mut false_sentences =0;
+                let mut nodetect_sentences =0;
             for n in &article_key.sentence_id_list{
                 let idx = pred_res.binary_search_by_key(&n,|(_, ag)| &ag.id).unwrap();
                 let (pred_class, ag) = pred_res.get(idx).unwrap();
@@ -91,9 +98,13 @@ impl NewsArticleAntigenTranslator {
                     } else {
                         false_sentences += 1;
                     }
+                }else {
+                    nodetect_sentences += 1;
                 }
             }
 
+
+                println!("| {:>4?} | {:>5?} | {:>5?} | {:<5?} | {:<12?} | {:<9?} |", article_key.article_id, article_key.article_label == 1, true_sentences, false_sentences, nodetect_sentences, (true_sentences > false_sentences)&& (article_key.article_label == 0) );
             let mut true_positives = 0;
             let mut false_positives = 0;
                 let mut nodetect_positives = 0;
@@ -124,6 +135,7 @@ impl NewsArticleAntigenTranslator {
             return (true_positives, false_positives,true_negatives, false_negatives , nodetect_positives, nodetect_negatives)
     }).reduce(|| (0,0,0,0,0,0), |a,b| (a.0+b.0, a.1+b.1,a.2+b.2, a.3+b.3, a.4+b.4, a.5+b.5));
 
+        println!("-----------------------------------------------------------");
 
        /* let mut num_cor = 0;
         let mut num_false = 0;

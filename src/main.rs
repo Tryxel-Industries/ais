@@ -19,15 +19,12 @@ use statrs::statistics::Statistics;
 
 use crate::ais::{evaluate_population, ArtificialImmuneSystem};
 use crate::bucket_empire::BucketKing;
-use crate::dataset_readers::{
-    read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_kaggle_semantic,
-    read_pima_diabetes, read_sonar, read_spirals, read_wine,
-};
+
+use crate::datasets::{Datasets, get_dataset};
 use crate::evaluation::MatchCounter;
 use crate::mutations::mutate;
 use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
-use crate::proto_test::{read_fnn_embeddings, read_kaggle_embeddings};
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
@@ -37,7 +34,6 @@ use crate::util::{split_train_test, split_train_test_n_fold};
 
 mod ais;
 mod bucket_empire;
-mod dataset_readers;
 mod evaluation;
 pub mod mutations;
 mod params;
@@ -48,44 +44,45 @@ mod scoring;
 mod selection;
 mod testing;
 mod util;
-mod proto_test;
+mod datasets;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
 }
 
-// fn ais_n_fold_test(
-//     params: Params,
-//     mut antigens: Vec<AntiGen>,
-//     verbosity_params: &VerbosityParams,
-//     n_folds: usize,
-// ) {
-//     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
-//
-//     let folds = split_train_test_n_fold(&antigens, n_folds);
-//
-//     let mut train_acc_vals = Vec::new();
-//     let mut test_acc_vals = Vec::new();
-//     for (n, (train, test)) in folds.iter().enumerate() {
-//         let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params);
-//         train_acc_vals.push(train_acc);
-//         test_acc_vals.push(test_acc);
-//         println!(
-//             "on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}",
-//             n, test_acc, train_acc
-//         );
-//     }
-//
-//     let train_mean: f64 = train_acc_vals.iter().mean();
-//     let train_std: f64 = train_acc_vals.iter().std_dev();
-//
-//     let test_mean: f64 = test_acc_vals.iter().mean();
-//     let test_std: f64 = test_acc_vals.iter().std_dev();
-//
-//     println!("train_acc: {:<5.4?} std {:.4}", train_mean, train_std);
-//     println!("test_acc: {:<5.4?} std {:.4}", test_mean, test_std);
-//     // println!("train size: {:?}, test size {:?}", train.len(), test.len());
-// }
+fn ais_n_fold_test(
+    params: Params,
+    mut antigens: Vec<AntiGen>,
+    verbosity_params: &VerbosityParams,
+    n_folds: usize,
+    translator: NewsArticleAntigenTranslator
+) {
+    // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
+
+    let folds = split_train_test_n_fold(&antigens, n_folds);
+
+    let mut train_acc_vals = Vec::new();
+    let mut test_acc_vals = Vec::new();
+    for (n, (train, test)) in folds.iter().enumerate() {
+        let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params, &translator);
+        train_acc_vals.push(train_acc);
+        test_acc_vals.push(test_acc);
+        println!(
+            "on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}",
+            n, test_acc, train_acc
+        );
+    }
+
+    let train_mean: f64 = train_acc_vals.iter().mean();
+    let train_std: f64 = train_acc_vals.iter().std_dev();
+
+    let test_mean: f64 = test_acc_vals.iter().mean();
+    let test_std: f64 = test_acc_vals.iter().std_dev();
+
+    println!("train_acc: {:<5.4?} std {:.4}", train_mean, train_std);
+    println!("test_acc: {:<5.4?} std {:.4}", test_mean, test_std);
+    // println!("train size: {:?}, test size {:?}", train.len(), test.len());
+}
 
 fn ais_frac_test(
     params: Params,
@@ -400,11 +397,18 @@ fn ais_test(
 }
 
 
-fn main(){
+fn trail_run_from_ab_csv(){
     let ab_file_path = "out/antibodies.csv";
 
+
+    let dataset_used = Datasets::EmbeddingKaggle;
+    // embedding params
+    let use_num_to_fetch = Some(200);
+    let use_whitening = true;
+
+
     let mut translator = NewsArticleAntigenTranslator::new();
-    let mut antigens = read_kaggle_embeddings(None, &mut translator, true);
+    let mut antigens =  get_dataset(dataset_used, use_num_to_fetch, &mut translator, use_whitening);
 
     let antibodies = read_ab_csv(ab_file_path.parse().unwrap());
 
@@ -428,36 +432,21 @@ fn main(){
 
     translator.get_show_ag_acc(translator_formatted);
 }
-fn main_() {
-    // let mut antigens = read_iris();
-    // let mut antigens = read_iris_snipped();
-    // let mut antigens = read_wine();
-    // let mut antigens = read_diabetes();
-    // let mut antigens = read_spirals();
+fn trail_training() {
 
-    // let mut antigens = read_pima_diabetes();
-    // let mut antigens = read_sonar();
-    // let mut antigens = read_glass();
-    // let mut antigens = read_ionosphere();
-
-    // let mut antigens = read_kaggle_semantic();
-    // let _ = antigens.split_off(3000);
-
+    let dataset_used = Datasets::EmbeddingKaggle;
+    // embedding params
+    let use_num_to_fetch = Some(200);
+    let use_whitening = true;
 
     let mut translator = NewsArticleAntigenTranslator::new();
+    let mut antigens =  get_dataset(dataset_used, use_num_to_fetch, &mut translator, use_whitening);
 
-    let mut antigens = read_kaggle_embeddings(None, &mut translator, true);
-    // let mut antigens = read_fnn_embeddings(Some(100), &mut translator, true);
 
-    // antigens.iter().for_each(|x1| {
-    //     if x1.class_label == 1{
-    //         println!("features {:?}", x1.values);
-    //     }
-    // });
-    // let _ = antigens.split_off(1000);
 
     // let mut rng = rand::thread_rng();
     // antigens.shuffle(&mut rng);
+
 
     let class_labels = antigens
         .iter()
@@ -517,8 +506,6 @@ fn main_() {
 
         // -- B-cell from antigen initialization -- //
         antibody_ag_init_multiplier_range: 0.8..=1.2,
-        // antibody_ag_init_value_types: vec![DimValueType::Circle],
-        // antibody_ag_init_value_types: vec![DimValueType::Disabled ,DimValueType::Circle],
         antibody_ag_init_value_types: vec![
             (DimValueType::Circle,1),
             (DimValueType::Disabled,1),
@@ -529,7 +516,6 @@ fn main_() {
         // -- B-cell from random initialization -- //
         antibody_rand_init_offset_range: 0.0..=1.0,
         antibody_rand_init_multiplier_range: 0.8..=1.2,
-        // antibody_rand_init_value_types: vec![DimValueType::Circle, DimValueType::Disabled],
         antibody_rand_init_value_types: vec![
             (DimValueType::Circle,1),
             (DimValueType::Disabled,1),
@@ -554,4 +540,9 @@ fn main_() {
 
     ais_frac_test(params, antigens, &frac_verbosity_params, 0.2, translator);
     // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5)
+}
+
+fn main(){
+    trail_run_from_ab_csv();
+    // trail_training();
 }
