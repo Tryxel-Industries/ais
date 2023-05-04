@@ -6,6 +6,7 @@ use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::{AntiGen, AntiGenPop};
 use crate::BucketKing;
 use crate::params::Params;
+use crate::representation::antibody::DimValueType::Disabled;
 
 pub mod antibody;
 pub mod antibody_factory;
@@ -24,8 +25,12 @@ pub fn expand_antibody_radius_until_hit(
      */
 
     let min_range = if params.gpu_accelerate{
-        let antigens = &antigen_pop.antigens;
-        antigen_pop.get_antibody_required_range(&cell, &Some(cell.class_label)).min()
+        if false { // !cell.dim_values.iter().all(|ab| ab.value_type==Disabled){
+            let antigens = &antigen_pop.antigens;
+            antigen_pop.get_antibody_required_range(&cell, &Some(cell.class_label)).min()
+        }else {
+            cell.radius_constant
+        }
     }else {
 
         if !cell

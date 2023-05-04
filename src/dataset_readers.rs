@@ -81,7 +81,7 @@ pub fn read_iris() -> Vec<AntiGen> {
         })
         .collect();
 
-    // transformed_dat = normalize_features(transformed_dat);
+    transformed_dat = normalize_features(transformed_dat);
 
     let antigens = labels
         .into_iter()

@@ -79,6 +79,9 @@ pub fn evaluate_antibody(
     if true {
         let gpu_start = Instant::now();
         let mask = antigen_pop.get_registered_antigens(&antibody, &None);
+
+        let duration_gpu = gpu_start.elapsed();
+
         let test_a: Vec<_> = antigen_pop
             .antigens
             .iter()
@@ -86,22 +89,27 @@ pub fn evaluate_antibody(
             .filter(|(a, b)| **b)
             .map(|(a, b)| a)
             .collect();
-        let duration_gpu = gpu_start.elapsed();
 
         let cpu_start = Instant::now();
         let test_b: Vec<_> = antigen_pop.antigens
-            .par_iter()
-            // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
+            .iter()
             .filter(|ag| antibody.test_antigen(ag))
             .collect::<Vec<_>>();
         let duration_cpu = cpu_start.elapsed();
-        println!("cpu time {:?}, gpu time {:?}", duration_cpu, duration_gpu);
+        println!("cpu time {:?}, gpu time {:?}, matches {:?}", duration_cpu, duration_gpu, test_a.len());
 
         let is_eq = test_a.iter().zip(&test_b).all(|(a,b)| a.id == b.id);
         println!("is eq: {:?}", is_eq);
 
+        if duration_gpu.as_millis() < 50{
+            // println!("is eq: {:?}", antibody);
+            // println!("gpu: {:?} vs cpu: {:?}", test_a.len(), test_b.len());
+        }
+
         if !is_eq{//test_a.len() != test_b.len() {
             println!("gpu: {:?} vs cpu: {:?}", test_a.len(), test_b.len());
+            if true{
+
             println!();
             println!(
                 "cell vt    {:?}",
@@ -133,6 +141,8 @@ pub fn evaluate_antibody(
             println!("gpu  res: {:?}", test_a);
             println!();
             println!("cpu res: {:?}", test_b);
+            }
+
         }
 
         // println!("a {:?} b {:?}", test_a.len(), test_b.len());

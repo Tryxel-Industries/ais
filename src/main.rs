@@ -434,9 +434,8 @@ fn ag_file_test(){
     translator.get_show_ag_acc(translator_formatted);
 }
 fn ais_run() {
-    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
     // let mut antigens = read_iris();
-    let mut antigens = read_iris_snipped();
+    // let mut antigens = read_iris_snipped();
     // let mut antigens = read_wine();
     // let mut antigens = read_diabetes();
     // let mut antigens = read_spirals();
@@ -451,7 +450,7 @@ fn ais_run() {
 
 
     let mut translator = NewsArticleAntigenTranslator::new();
-    // let mut antigens = read_kaggle_embeddings(Some(200), &mut translator, true);
+    let mut antigens = read_kaggle_embeddings(Some(500), &mut translator, true);
     // let mut antigens = read_fnn_embeddings(Some(100), &mut translator, true);
 
     // antigens.iter().for_each(|x1| {
@@ -469,13 +468,14 @@ fn ais_run() {
         .map(|x| x.class_label)
         .collect::<HashSet<_>>();
 
+    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
     let mut params = Params {
-        gpu_accelerate: true,
+        gpu_accelerate: false,
         boost: 0,
         // -- train params -- //
         // antigen_pop_size: PopSizeType::Fraction(1.0),
         antigen_pop_size: PopSizeType::Number(2000),
-        generations: 200,
+        generations: 50,
 
         mutation_offset_weight: 5,
         mutation_multiplier_weight: 5,
@@ -544,7 +544,7 @@ fn ais_run() {
         // full_pop_acc_interval: Some(10),
         show_class_info: false,
         make_plots: false,
-        display_final_ab_info: true,
+        display_final_ab_info: false,
         display_detailed_error_info: false,
         display_final_acc_info: true,
     };
