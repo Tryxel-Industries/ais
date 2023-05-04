@@ -6,6 +6,7 @@ use strum_macros::Display;
 use crate::representation::antigen::AntiGen;
 
 use strum_macros::EnumString;
+use crate::params::MutationType::ValueType;
 
 #[derive(Clone, Copy, PartialEq, Debug, Display, EnumString)]
 pub enum DimValueType {
@@ -161,12 +162,13 @@ impl Antibody {
         return roll_sum;
     }
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
-        let affinity_dist = self.get_affinity_dist(antigen);
-
-        if affinity_dist == 0.0 {
+        if self.dim_values.iter().all(|ab| ab.value_type==DimValueType::Disabled) {
             // all dims are disabled
             return false;
         }
+
+        let affinity_dist = self.get_affinity_dist(antigen);
+
 
         let v = affinity_dist - self.radius_constant;
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
