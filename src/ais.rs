@@ -96,7 +96,7 @@ fn gen_initial_population(
                 .filter(|ag| ag.class_label == *label)
                 .collect();
 
-            return (0..*pop_size)
+            return (0..replace_count_for_label)
             .par_bridge()
             .map(|_| cell_factory.generate_from_antigen(filtered.choose(&mut rand::thread_rng()).unwrap()))
             .map(|cell| {
