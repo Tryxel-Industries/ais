@@ -10,7 +10,9 @@ use crate::representation::antigen::AntiGen;
 #[derive(Clone, Debug)]
 pub struct Evaluation {
     pub matched_ids: Vec<usize>,
+    pub matched_afin: Vec<f64>,
     pub wrongly_matched: Vec<usize>,
+    pub wrongly_matched_afin: Vec<f64>,
     pub membership_value: (f64, f64),
 }
 
@@ -47,7 +49,9 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
         // .iter()
         .par_iter()
         // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
-        .filter(|ag| antibody.test_antigen(ag))
+        .map(|ag| (ag,antibody.test_antigen_and_get_dist(ag)))
+        .filter(|(_,(b,_))| *b)
+        .map(|(ag, (_, afin))| (ag, afin))
         .collect::<Vec<_>>();
 
     if false {
@@ -101,13 +105,18 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
     }
 
     let mut corr_matched = Vec::with_capacity(registered_antigens.len());
+    let mut corr_matched_afin = Vec::with_capacity(registered_antigens.len());
+    
     let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
+    let mut wrong_matched_afin = Vec::with_capacity(registered_antigens.len());
 
-    for registered_antigen in registered_antigens {
+    for (registered_antigen, afin) in registered_antigens {
         if registered_antigen.class_label == antibody.class_label {
-            corr_matched.push(registered_antigen.id)
+            corr_matched.push(registered_antigen.id);
+            corr_matched_afin.push(afin);
         } else {
-            wrong_matched.push(registered_antigen.id)
+            wrong_matched.push(registered_antigen.id);
+            wrong_matched_afin.push(afin);
         }
     }
 

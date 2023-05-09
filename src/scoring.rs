@@ -9,6 +9,11 @@ use crate::params::Params;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 
+
+
+fn mod_sigmoid(num: f64)-> f64{
+    return 1.0 -(1.0/(1.0+f64::e().powf(num)))
+}
 pub fn score_antibodies(
     params: &Params,
     evaluated_population: Vec<(Evaluation, Antibody)>,
@@ -25,6 +30,12 @@ pub fn score_antibodies(
         // .into_iter()
         .into_par_iter() // TODO: set paralell
         .map(|(eval, cell)| {
+
+            // the lover the deeper in side the zone
+            let mut corr_affinity_heuristic: f64 = 0.0;
+            let mut err_affinity_heuristic: f64 = 0.0;
+
+
             let mut true_positives: f64 = 0.0;
             let mut false_positives: f64 = 0.0;
 
@@ -40,9 +51,14 @@ pub fn score_antibodies(
             let mut pos_relevance = 0.0;
             let mut neg_relevance = 0.0;
 
-            for mid in &eval.matched_ids {
+            for (mid, afin) in eval.matched_ids.iter().zip(eval.matched_afin.iter()) {
                 let relevance = match_counter.boosting_weight_values.get(*mid).unwrap();
                 pos_relevance += relevance;
+
+                corr_affinity_heuristic += (mod_sigmoid(-1.0*afin)*relevance);
+
+
+                // println!("mod sig {:?}", mod_sigmoid(-1.0*afin));
                 true_positives += 1.0;
                 let sharers = merged_mask.get(*mid).unwrap_or(&0);
 
@@ -55,8 +71,12 @@ pub fn score_antibodies(
                 }
             }
 
-            for mid in &eval.wrongly_matched {
-                neg_relevance += match_counter.boosting_weight_values.get(*mid).unwrap();
+            for (mid, afin) in eval.wrongly_matched.iter().zip(eval.wrongly_matched_afin.iter()) {
+                let relevance = match_counter.boosting_weight_values.get(*mid).unwrap();
+                neg_relevance += relevance;
+
+                err_affinity_heuristic += (mod_sigmoid(-1.0*afin)*relevance);
+
                 false_positives += 1.0;
                 let sharers = *error_merged_mask.get(*mid).unwrap_or(&0) as f64;
                 let cor_shares = *merged_mask.get(*mid).unwrap_or(&0) as f64;
@@ -78,6 +98,10 @@ pub fn score_antibodies(
             // println!("true pos {:?} false pos {:?}", true_positives, false_positives);
             pos_relevance /= true_positives.max(1.0);
             neg_relevance /= false_positives.max(1.0);
+
+
+            corr_affinity_heuristic /= true_positives.max(1.0);
+            err_affinity_heuristic /= false_positives.max(1.0);
 
             true_positives *= pos_relevance;
             false_positives *= neg_relevance;
@@ -116,6 +140,7 @@ pub fn score_antibodies(
 
             let penalty = 1.0 - (error_problem_magnitude / false_positives.max(1.0));
 
+
             // positive_predictive_value + pos_coverage * discounted_match_score/true_positives.max(1.0) + penalty;
 
             // add ppv (0-1) indicating the accuracy of the prediction
@@ -135,9 +160,19 @@ pub fn score_antibodies(
 
             let uniqueness = (discounted_match_score / (true_positives).max(1.0));
 
-            let mut score = correctness*params.correctness_weight + coverage * params.coverage_weight + uniqueness * params.uniqueness_weight;
+            let good_affinity = corr_affinity_heuristic;
+            let bad_affinity = -1.0 * err_affinity_heuristic;
+            // let mut score = good_affinity - bad_affinity*0.5+ coverage*0.5;
 
-                 if pred_pos == tot_elements {
+            // println!("score {:?}  good {:?} bad {:?}", score, good_affinity, bad_affinity );
+
+            let mut score = correctness*params.correctness_weight +
+                coverage * params.coverage_weight +
+                uniqueness * params.uniqueness_weight +
+                good_affinity * params.good_afin_weight +
+                bad_affinity*params.bad_afin_weight;
+
+            if pred_pos == tot_elements {
                 score = -5.0;
             }
 

@@ -55,6 +55,8 @@ pub struct Params {
     pub correctness_weight: f64,
     pub coverage_weight: f64,
     pub uniqueness_weight: f64,
+    pub good_afin_weight: f64,
+    pub bad_afin_weight: f64,
 
     // reduction
     pub membership_required: f64,

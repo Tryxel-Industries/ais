@@ -179,4 +179,22 @@ impl Antibody {
             return false;
         }
     }
+
+    pub fn test_antigen_and_get_dist(&self, antigen: &AntiGen) -> (bool, f64) {
+        if self.dim_values.iter().all(|ab| ab.value_type == DimValueType::Disabled) {
+            // all dims are disabled
+            return (false, 10000.0);
+        }
+
+        let affinity_dist = self.get_affinity_dist(antigen);
+
+
+        let v = affinity_dist - self.radius_constant;
+        // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
+        if v <= 0.0 {
+            return (true, v);
+        } else {
+            return (false, v);
+        }
+    }
 }
