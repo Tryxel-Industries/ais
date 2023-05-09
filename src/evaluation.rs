@@ -1,5 +1,6 @@
 use std::cmp::min;
 use std::collections::{HashMap, HashSet};
+use std::ops::Deref;
 
 use rayon::prelude::*;
 
@@ -134,7 +135,9 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
 
     let ret_evaluation = Evaluation {
         matched_ids: corr_matched,
+        matched_afin: corr_matched_afin,
         wrongly_matched: wrong_matched,
+        wrongly_matched_afin: wrong_matched_afin,
         membership_value: (same_label_membership, 1.0 - same_label_membership),
     };
     // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
@@ -201,7 +204,7 @@ impl MatchCounter {
             })
             .collect();
 
-        println!("count map tot counts: {:?}", count_map);
+        // println!("count map tot counts: {:?}", count_map);
 
         return MatchCounter {
             max_id,

@@ -40,8 +40,8 @@ study_name: "study_1"
 engine_params:
   base_command: "./target/release/ais"
   print_level: 2
-  n_trials: 100
-  timeout: 3600
+  n_trials: 500
+  timeout: 3600000
   # example with: score: 34.9 accuracy: 11 iter: 23
   direction: "maximize"
   result_regex: 'test_acc: (\S*)'
@@ -53,12 +53,70 @@ engine_params:
 
 
 search_space:
-  - pick_int:
-      name: "tournament_size"
-      call_param: "--tournament_size="
-      from: 3
-      to: 25
+  # value func values
+  - pick_float:
+      name: "correctness_weight"
+      call_param: "--correctness_weight="
+      from: 0.0
+      to: 1
+      step: 0.1
+  - pick_float:
+      name: "coverage_weight"
+      call_param: "--coverage_weight="
+      from: 0.0
+      to: 1
+      step: 0.1
+  - pick_float:
+      name: "uniqueness_weight"
+      call_param: "--uniqueness_weight="
+      from: 0.0
+      to: 1
+      step: 0.1
 
+  - pick_float:
+      name: "good_afin_weight"
+      call_param: "--good_afin_weight="
+      from: 0.0
+      to: 1
+      step: 0.1
+
+  - pick_float:
+      name: "bad_afin_weight"
+      call_param: "--bad_afin_weight="
+      from: 0.0
+      to: 1
+      step: 0.1
+
+
+
+  # training params
+#  - pick_int:
+#      name: "antigen_pop_size_num"
+#      call_param: "--antigen_pop_size_num="
+#      from: 50
+#      to: 1000
+#      step: 50
+
+  - pick_float:
+      name: "antigen_pop_size_frac"
+      call_param: "--antigen_pop_size_frac="
+      from: 0.05
+      to: 1.0
+      step: 0.05
+#
+#
+  - pick_int:
+      name: "generations"
+      call_param: "--generations="
+      from: 100
+      to: 5000
+      step: 100
+  - pick_float:
+      name: "membership_required"
+      call_param: "--membership_required="
+      from: 0.0
+      to: 1.0
+      step: 0.1
 
   - pick_float:
       name: "leak_fraction"
@@ -66,14 +124,43 @@ search_space:
       from: 0
       to: 0.8
       step: 0.05
+  # ais params
+  - pick_categorical:
+      name: "use_open_dims"
+      call_param: "--use_open_dims="
+      picks: ["True", "False"]
 
-  - pick_float:
-      name: "antigen_pop_fraction"
-      call_param: "--antigen_pop_fraction="
-      from: 0.2
-      to: 2
-      step: 0.1
+  - pick_categorical:
+      name: "local_search_radius"
+      call_param: "--local_search_radius="
+      picks: ["True", "False"]
+  - pick_categorical:
+      name: "local_search_multi"
+      call_param: "--local_search_multi="
+      picks: ["True", "False"]
+  - pick_int:
+      name: "boosting_rounds"
+      call_param: "--boosting_rounds="
+      from: 0
+      to: 5
 
+
+#  - pick_int:
+#      name: "tournament_size"
+#      call_param: "--tournament_size="
+#      from: 3
+#      to: 25
+#
+#
+
+#
+#  - pick_float:
+#      name: "antigen_pop_fraction"
+#      call_param: "--antigen_pop_fraction="
+#      from: 0.2
+#      to: 2
+#      step: 0.1
+#
 #  - pick_categorical:
 #      name: "fp"
 #      call_param: "--fp "

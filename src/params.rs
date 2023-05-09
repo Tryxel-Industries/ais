@@ -198,15 +198,50 @@ pub fn modify_config_by_args(params: &mut Params) {
     let mut will_use_open = None;
     let mut will_use_disabled = None;
 
+    let mut local_search_radius = None;
+    let mut local_search_multi = None;
+
+
 
     for arg in args {
         if arg.starts_with("--") {
             let (key, value) = arg.strip_prefix("--").unwrap().split_once("=").unwrap();
             match key {
+                // Value params
+                "correctness_weight" => params.correctness_weight =value.parse().unwrap(),
+                "coverage_weight" => params.coverage_weight =value.parse().unwrap(),
+                "uniqueness_weight" => params.uniqueness_weight =value.parse().unwrap(),
+
+                "good_afin_weight" => params.good_afin_weight =value.parse().unwrap(),
+                "bad_afin_weight" => params.bad_afin_weight =value.parse().unwrap(),
+
+
+
+                // training params
+                "antigen_pop_size_num" => params.antigen_pop_size = PopSizeType::Number(value.parse().unwrap()),
+                "antigen_pop_size_frac" => params.antigen_pop_size = PopSizeType::Fraction(value.parse().unwrap()),
+                "generations" => params.generations = value.parse().unwrap(),
+                "membership_required" => params.membership_required = value.parse().unwrap(),
+                "membership_required" => params.membership_required = value.parse().unwrap(),
+
+
+                // ais params
+                "use_open_dims" => will_use_open = Some(param_string_to_bool(value.parse().unwrap())),
+                "local_search_radius" => local_search_radius = Some(param_string_to_bool(value.parse().unwrap())),
+                "local_search_multi" => local_search_multi = Some(param_string_to_bool(value.parse().unwrap())),
+                "boosting_rounds" => params.boost = value.parse().unwrap(),
+
+
+                //other
+
+
                 "tournament_size" => params.tournament_size = value.parse().unwrap(),
                 "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
                 // "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
                 "max_replacment_frac" => params.replace_frac_type = ReplaceFractionType::MaxRepFrac(value.parse().unwrap()),
+
+
+
 
                 "mutation_value_type_local_search_dim" => params.mutation_value_type_local_search_dim = param_string_to_bool(value.parse().unwrap()),
                 "antibody_init_expand_radius" => params.antibody_init_expand_radius = param_string_to_bool(value.parse().unwrap()),
@@ -230,6 +265,45 @@ pub fn modify_config_by_args(params: &mut Params) {
             }
         }
     }
+
+    if let Some(use_open) = will_use_open{
+        let probs = if use_open{
+            vec![
+                (DimValueType::Circle,1),
+                (DimValueType::Disabled,1),
+                (DimValueType::Open,1)
+            ]
+        } else {
+            vec![
+                (DimValueType::Circle,1),
+                (DimValueType::Disabled,1),
+                (DimValueType::Open,0)
+            ]
+        };
+        params.antibody_ag_init_value_types = probs.clone();
+        params.antibody_rand_init_value_types = probs;
+    }
+
+    if let Some(local_s_multi) = local_search_multi{
+        if local_s_multi{
+            params.mutation_multiplier_local_search_weight = 1;
+            params.mutation_value_type_local_search_dim = true;
+        } else {
+            params.mutation_multiplier_local_search_weight = 0;
+            params.mutation_value_type_local_search_dim = false;
+        }
+    }
+    if let Some(local_s_radius) = local_search_radius{
+        if local_s_radius{
+            params.antibody_init_expand_radius = true;
+        } else {
+            params.antibody_init_expand_radius = false;
+        }
+
+    }
+
+
+
     // for v in vec![&mut params.value_type_valid_mutations, &mut params.antibody_ag_init_value_types, &mut params.antibody_rand_init_value_types]{
     //     filter_category_list::<DimValueType>(will_use_open, DimValueType::Open, v);
     //     filter_category_list::<DimValueType>(will_use_disabled, DimValueType::Disabled, v);

@@ -114,7 +114,12 @@ impl NewsArticleAntigenTranslator {
             let mut false_sentences =0;
                 let mut nodetect_sentences =0;
             for n in &article_key.sentence_id_list{
-                let idx = pred_res.binary_search_by_key(&n,|(_, ag)| &ag.id).unwrap();
+                let search_res = pred_res.binary_search_by_key(&n,|(_, ag)| &ag.id);
+                let idx = if search_res.is_ok(){
+                    search_res.unwrap()
+                }else {
+                    continue
+                };
                 let (pred_class, ag) = pred_res.get(idx).unwrap();
                 if let Some(c) = pred_class{
                     // if we have a predicted class
@@ -158,7 +163,7 @@ impl NewsArticleAntigenTranslator {
                 } else {
                     false_positives += 1;
                 }
-            } else {
+            } else if nodetect_sentences > 0 {
                 if article_key.article_label == 0{
                     nodetect_positives += 1
                 } else {

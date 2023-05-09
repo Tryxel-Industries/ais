@@ -882,7 +882,7 @@ impl ArtificialImmuneSystem {
                 return (score, evaluation, save_ab);
             })
 
-            .filter(|(score, _, cell)| cell.final_train_label_membership.unwrap().0 > params.membership_required)
+            .filter(|(score, _, cell)| cell.final_train_label_membership.unwrap().0 >= params.membership_required)
             .collect();
 
         return (train_acc_hist, train_score_hist, scored_pop);

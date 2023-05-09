@@ -1,5 +1,6 @@
 use std::cmp::min;
 use std::collections::HashMap;
+use nalgebra::RealField;
 
 use rayon::prelude::*;
 
