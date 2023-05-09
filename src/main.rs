@@ -22,6 +22,7 @@ use crate::bucket_empire::BucketKing;
 
 use crate::datasets::{Datasets, get_dataset, get_dataset_optimal_params};
 use crate::evaluation::MatchCounter;
+use crate::experiment_logger::{ExperimentLogger, ExperimentProperty};
 use crate::mutations::mutate;
 use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
@@ -45,6 +46,7 @@ mod selection;
 mod testing;
 mod util;
 mod datasets;
+mod experiment_logger;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -55,7 +57,8 @@ fn ais_n_fold_test(
     mut shelled_antigens: Vec<AntiGenSplitShell>,
     verbosity_params: &VerbosityParams,
     n_folds: usize,
-    translator: NewsArticleAntigenTranslator
+    translator: NewsArticleAntigenTranslator,
+    logger: &mut ExperimentLogger,
 ) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
@@ -68,7 +71,7 @@ fn ais_n_fold_test(
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
     for (n, (train, test)) in folds.iter().enumerate() {
-        let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params, &translator);
+        let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params, &translator, logger);
 
 
         let estm = fold_score_estimator.get_mut(n).unwrap();
@@ -97,7 +100,8 @@ fn ais_frac_test(
     mut shelled_antigens: Vec<AntiGenSplitShell>,
     verbosity_params: &VerbosityParams,
     test_frac: f64,
-    translator: NewsArticleAntigenTranslator
+    translator: NewsArticleAntigenTranslator,
+    logger: &mut ExperimentLogger,
 ) {
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
@@ -110,7 +114,7 @@ fn ais_frac_test(
     let (train_slice, test) = split_train_test(&shelled_antigens, test_frac);
     let antigens = shelled_antigens.into_iter().flat_map(|ag| ag.upack()).collect();
 
-    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params, &translator);
+    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params, &translator, logger);
 
     println!("train_acc: {:?} test_acc: {:?} ", train_acc, test_acc)
 }
@@ -121,7 +125,8 @@ fn ais_test(
     test: &Vec<AntiGen>,
     verbosity_params: &VerbosityParams,
     params: &Params,
-    translator: &NewsArticleAntigenTranslator
+    translator: &NewsArticleAntigenTranslator,
+    logger: &mut ExperimentLogger,
 ) -> (f64, f64) {
     let class_labels = antigens
         .iter()
@@ -143,9 +148,9 @@ fn ais_test(
 
 
     let (train_acc_hist, train_score_hist, init_scored_pop) =if params.boost > 0{
-        ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test, translator)
+        ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test, translator, logger)
     }else {
-        ais.train(&train, &params, verbosity_params)
+        ais.train(&train, &params, verbosity_params, logger)
     };
 
 
@@ -500,11 +505,20 @@ fn trail_run_from_ab_csv(){
 fn trail_training() {
     // rayon::ThreadPoolBuilder::new().num_threads(29).build_global().unwrap();
 
+
     let dataset_used = Datasets::PrimaDiabetes;
     // embedding params
     let use_num_to_fetch = None;//Some(2000);
     let max_sentences_per_article = Some(100);
     let use_whitening = true;
+
+    let mut logger = ExperimentLogger::new(
+        dataset_used.clone(),
+        vec![
+            ExperimentProperty::BoostAccuracy
+        ]
+    );
+
 
     let mut translator = NewsArticleAntigenTranslator::new();
     let mut antigens =  get_dataset(dataset_used.clone(), use_num_to_fetch, max_sentences_per_article,&mut translator, use_whitening);
@@ -543,6 +557,7 @@ fn trail_training() {
 
             // -- reduction -- //
             membership_required: 0.75,
+            use_membership: false,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -609,8 +624,10 @@ fn trail_training() {
     };
     modify_config_by_args(&mut params);
 
-    // ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator);
-    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator)
+    ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
+    //ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator)
+
+    logger.dump_to_json_file("./bip_bop.json".to_string())
 }
 
 fn main(){

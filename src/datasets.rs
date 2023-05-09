@@ -102,6 +102,7 @@ fn get_diabetes_params(class_labels: HashSet<usize>)-> Params{
 
             // -- reduction -- //
             membership_required: 0.75,
+            use_membership: true,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -150,7 +151,7 @@ fn get_diabetes_params(class_labels: HashSet<usize>)-> Params{
                 (DimValueType::Open, 1),
             ],
             antibody_rand_init_range_range: 0.1..=0.4,
-        };
+    };
 }
 
 fn get_wine_params(class_labels: HashSet<usize>)-> Params{
@@ -173,6 +174,7 @@ fn get_wine_params(class_labels: HashSet<usize>)-> Params{
 
             // -- reduction -- //
             membership_required: 0.75,
+        use_membership: true,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -235,6 +237,7 @@ fn get_sonar_params(class_labels: HashSet<usize>)-> Params{
 
         generations: 1000,
         membership_required: 0.0,
+        use_membership: true,
 
         boost: 3,
         // -- train params -- //

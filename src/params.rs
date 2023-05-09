@@ -60,6 +60,7 @@ pub struct Params {
 
     // reduction
     pub membership_required: f64,
+    pub use_membership: bool,
 
     // selection
     pub replace_frac_type: ReplaceFractionType,

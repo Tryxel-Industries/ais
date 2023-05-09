@@ -12,6 +12,8 @@ use statrs::statistics::Statistics;
 
 use crate::bucket_empire::BucketKing;
 use crate::evaluation::{evaluate_antibody, Evaluation, MatchCounter};
+use crate::experiment_logger::{ExperimentLogger, ExperimentProperty};
+use crate::experiment_logger::LoggedValue::{CorWrongNoReg, SingleValue, TrainTest};
 use crate::mutate;
 use crate::params::{Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::representation::antibody::Antibody;
@@ -110,17 +112,7 @@ fn gen_initial_population(
         }).collect()
 
 
-        // (0..*pop_size)
-        //     .par_bridge()
-        //     .map(|_| cell_factory.generate_from_antigen(antigens.choose(&mut rand::thread_rng()).unwrap()))
-        //     .map(|cell| {
-        //         if params.antibody_init_expand_radius {
-        //             expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
-        //         } else {
-        //             cell
-        //         }
-        //     })
-        //     .collect()
+
     };
 }
 
@@ -223,7 +215,12 @@ pub fn is_class_correct_with_membership(
     }
 }
 
-fn evaluate_print_population(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
+fn evaluate_print_population(
+    antigens: &Vec<AntiGen>,
+    antibodies: &Vec<Antibody>,
+
+    logger: &mut ExperimentLogger,
+) {
     let mut test_n_corr = 0;
     let mut test_n_wrong = 0;
 
@@ -284,6 +281,8 @@ impl ArtificialImmuneSystem {
         antigens: &Vec<AntiGen>,
         params: &Params,
         verbosity_params: &VerbosityParams,
+
+        logger: &mut ExperimentLogger,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
 
         let pop_size = match params.antigen_pop_size {
@@ -308,7 +307,8 @@ impl ArtificialImmuneSystem {
         verbosity_params: &VerbosityParams,
         boosting_rounds: usize,
         highly_dubious_practices: &Vec<AntiGen>,
-        translator: &NewsArticleAntigenTranslator
+        translator: &NewsArticleAntigenTranslator,
+        logger: &mut ExperimentLogger,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         let mut antigens = input_antigens.clone();
 
@@ -357,20 +357,39 @@ impl ArtificialImmuneSystem {
 
             // get predictor error
 
+            let mut n_corr = 0;
+            let mut n_wrong = 0;
+            let mut n_no_reg = 0;
+
+
             let weighted_error_count: f64 = antigens
                 .iter()
                 .map(|antigen| {
-                    if let Some(is_corr) = is_class_correct(&antigen, &antibodies){
+                    let pred = if params.use_membership{
+                       is_class_correct_with_membership(&antigen, &antibodies)
+                    }else {
+                        is_class_correct(&antigen, &antibodies)
+                    };
+                    if let Some(is_corr) = pred{
                         if is_corr {
+                            n_corr += 1;
                             return 0.0;
                         } else {
+                            n_wrong += 1;
                             return 1.0 * antigen.boosting_weight;
                         }
                     }else {
+                        n_no_reg += 1;
                         return 0.5 * antigen.boosting_weight;
                     }
                 })
                 .sum();
+
+
+            if logger.should_run(ExperimentProperty::BoostAccuracy){
+                logger.log_prop(ExperimentProperty::BoostAccuracy, CorWrongNoReg(n_corr, n_wrong, n_no_reg))
+            }
+
 
             let weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
             let error = weighted_error_count / weight_sum;
@@ -378,8 +397,16 @@ impl ArtificialImmuneSystem {
             // calculate alpha weight for model
             let alpha_m = ((1.0 - error) / error).ln();
 
+
+
             // update weights
             for antigen in &mut antigens {
+                let pred = if params.use_membership{
+                       is_class_correct_with_membership(&antigen, &antibodies)
+                    }else {
+                        is_class_correct(&antigen, &antibodies)
+                    };
+
                 let is_corr = is_class_correct(&antigen, &antibodies).unwrap_or(false);
                 let val = if is_corr { 0.0 } else { alpha_m };
 
@@ -398,10 +425,10 @@ impl ArtificialImmuneSystem {
 
 
             println!("train");
-            evaluate_print_population(&antigens, &ab_pool);
+            evaluate_print_population(&antigens, &ab_pool, logger);
 
             println!("test");
-            evaluate_print_population(&highly_dubious_practices, &ab_pool);
+            evaluate_print_population(&highly_dubious_practices, &ab_pool, logger);
 
             println!("articles");
             let translator_formatted = input_antigens.iter().chain(highly_dubious_practices).map(|ag| {
@@ -806,8 +833,12 @@ impl ArtificialImmuneSystem {
                 let mut n_wrong = 0;
                 let mut n_no_detect = 0;
                 for antigen in antigens {
-                    let pred_class = is_class_correct(&antigen, &antibody);
-                    if let Some(v) = pred_class {
+                  let pred = if params.use_membership{
+                       is_class_correct_with_membership(&antigen, &antibody)
+                    }else {
+                        is_class_correct(&antigen, &antibody)
+                    };
+                    if let Some(v) = pred {
                         if v {
                             n_corr += 1
                         } else {
