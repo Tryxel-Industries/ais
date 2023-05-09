@@ -320,10 +320,12 @@ impl ArtificialImmuneSystem {
 
         let train_per_round = ((pop_size as f64) * 1.0 / boosting_rounds as f64) as usize;
 
-        println!(
+        if verbosity_params.print_boost_info{
+            println!(
             "pop size, final num ab {:?} gained throgh {:?} rounds with {:?}",
             pop_size, boosting_rounds, train_per_round
         );
+        }
 
 
 
@@ -390,7 +392,8 @@ impl ArtificialImmuneSystem {
                 .for_each(|ab| ab.boosting_model_alpha = alpha_m.clone());
             ab_pool.extend(antibodies);
 
-            println!("\n#\n# for boost round {:?}:\n#", n);
+            if verbosity_params.print_boost_info{
+                println!("\n#\n# for boost round {:?}:\n#", n);
             println!("current ab pool s {:?}:", ab_pool.len());
 
 
@@ -415,6 +418,9 @@ impl ArtificialImmuneSystem {
             }).collect();
 
             translator.get_show_ag_acc(translator_formatted, false);
+            }
+
+
         }
         self.antibodies = ab_pool.clone();
 

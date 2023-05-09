@@ -134,6 +134,11 @@ pub struct VerbosityParams {
     pub display_final_ab_info: bool,
     pub display_detailed_error_info: bool,
     pub display_final_acc_info: bool,
+
+    pub print_boost_info: bool,
+
+
+
 }
 
 impl VerbosityParams {
@@ -147,6 +152,7 @@ impl VerbosityParams {
             display_final_ab_info: false,
             display_detailed_error_info: false,
             display_final_acc_info: false,
+            print_boost_info: false
         };
     }
 }

@@ -562,7 +562,8 @@ fn trail_training() {
         make_plots: false,
         display_final_ab_info: false,
         display_detailed_error_info: false,
-        display_final_acc_info: true,
+        display_final_acc_info: false,
+        print_boost_info: true,
     };
     modify_config_by_args(&mut params);
 
