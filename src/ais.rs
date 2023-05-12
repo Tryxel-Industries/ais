@@ -11,11 +11,13 @@ use rayon::prelude::*;
 use statrs::statistics::Statistics;
 
 use crate::bucket_empire::BucketKing;
+use crate::display::eval_display;
 use crate::evaluation::{evaluate_antibody, Evaluation, MatchCounter};
 use crate::experiment_logger::{ExperimentLogger, ExperimentProperty};
 use crate::experiment_logger::LoggedValue::{CorWrongNoReg, SingleValue, TrainTest};
 use crate::mutate;
-use crate::params::{Params, PopSizeType, ReplaceFractionType, VerbosityParams};
+use crate::params::{MutationType, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
+use crate::prediction::{EvaluationMethod, is_class_correct, make_prediction, Prediction};
 use crate::representation::antibody::Antibody;
 use crate::representation::antibody_factory::AntibodyFactory;
 use crate::representation::antigen::AntiGen;
@@ -34,18 +36,6 @@ use crate::selection::{
  */
 pub struct ArtificialImmuneSystem {
     pub antibodies: Vec<Antibody>,
-}
-
-pub struct ClassPrediction {
-    pub class: usize,
-    pub reg_count: usize,
-    pub valid_count: usize,
-    pub membership_sum: f64,
-    pub valid_membership_sum: f64,
-}
-pub struct Prediction {
-    pub predicted_class: usize,
-    pub class_predictions: Vec<ClassPrediction>,
 }
 
 //
@@ -116,159 +106,61 @@ fn gen_initial_population(
     };
 }
 
-pub fn is_class_correct(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option<bool> {
-    let matching_cells = antibodies
-        .par_iter()
-        .filter(|antibody| antibody.test_antigen(antigen))
-        .collect::<Vec<_>>();
-
-    if matching_cells.len() == 0 {
-        return None;
-    }
-
-    let class_true = matching_cells
-        .iter()
-        .filter(|x| x.class_label == antigen.class_label)
-        .collect::<Vec<_>>();
-    let class_false = matching_cells
-        .iter()
-        .filter(|x| x.class_label != antigen.class_label)
-        .collect::<Vec<_>>();
-
-    if class_true.len() > class_false.len() {
-        return Some(true);
-    } else {
-        // println!("wrong match id {:?}, cor: {:?}  incor {:?}", antigen.id, class_true.len(), class_false.len());
-        return Some(false);
-    }
-}
-
-pub fn make_prediction(antigen: &AntiGen, antibodies: &Vec<Antibody>) -> Option<Prediction> {
-    let matching_cells = antibodies
-        .par_iter()
-        .filter(|antibody| antibody.test_antigen(antigen))
-        .collect::<Vec<_>>();
-
-    let matching_classes = matching_cells
-        .iter()
-        .map(|ab| ab.class_label)
-        .collect::<HashSet<usize>>();
-
-    let mut label_membership_values = matching_classes
-        .iter()
-        .map(|class| {
-            (
-                class.clone(),
-                ClassPrediction {
-                    class: class.clone(),
-                    reg_count: 0,
-                    membership_sum: 0.0,
-                    valid_count: 0,
-                    valid_membership_sum: 0.0,
-                },
-            )
-        })
-        .collect::<HashMap<usize, ClassPrediction>>();
-
-    for cell in matching_cells {
-        let mut match_class_pred = label_membership_values.get_mut(&cell.class_label).unwrap();
-        match_class_pred.membership_sum += cell.final_train_label_membership.unwrap().0;
-        match_class_pred.reg_count += 1;
-
-        // if cell.final_train_label_membership.unwrap().0 >= 0.95{
-        if cell.final_train_label_membership.unwrap().0 >= 0.0 {
-            match_class_pred.valid_count += 1;
-            // match_class_pred.valid_membership_sum += cell.final_train_label_membership.unwrap().0 * cell.boosting_model_alpha;
-            match_class_pred.valid_membership_sum += 1.0 * cell.boosting_model_alpha;
-        }
-    }
-
-    let mut class_preds = Vec::new();
-
-    let mut best_class = None;
-    let mut best_score = 0.0;
-    for (label, label_membership_value) in label_membership_values {
-        if best_score < label_membership_value.valid_membership_sum {
-            best_class = Some(label);
-            best_score = label_membership_value.valid_membership_sum.clone()
-        }
-        class_preds.push(label_membership_value)
-    }
-
-    return Some(Prediction {
-        predicted_class: best_class?,
-        class_predictions: class_preds,
-    });
-}
-
-pub fn is_class_correct_with_membership(
-    antigen: &AntiGen,
-    antibodies: &Vec<Antibody>,
-) -> Option<bool> {
-    let pred_value = make_prediction(antigen, antibodies)?;
-
-    if pred_value.predicted_class == antigen.class_label {
-        return Some(true);
-    } else {
-        // println!("wrong match id {:?}, cor: {:?}  incor {:?}", antigen.id, class_true.len(), class_false.len());
-        return Some(false);
-    }
-}
-
-fn evaluate_print_population(
-    antigens: &Vec<AntiGen>,
-    antibodies: &Vec<Antibody>,
-
-    logger: &mut ExperimentLogger,
-) {
-    let mut test_n_corr = 0;
-    let mut test_n_wrong = 0;
-
-    let mut membership_test_n_corr = 0;
-    let mut membership_test_n_wrong = 0;
-
-    let mut test_per_class_corr = HashMap::new();
-    let mut test_n_no_detect = 0;
-    for antigen in antigens {
-        let pred_class = is_class_correct_with_membership(&antigen, antibodies);
-
-        if let Some(v) = pred_class {
-            if v {
-                membership_test_n_corr += 1;
-            } else {
-                membership_test_n_wrong += 1
-            }
-        }
-        let pred_class = is_class_correct(&antigen, antibodies);
-        if let Some(v) = pred_class {
-            if v {
-                test_n_corr += 1;
-                let class_count = test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
-                test_per_class_corr.insert(antigen.class_label, *class_count + 1);
-            } else {
-                test_n_wrong += 1
-            }
-        } else {
-            test_n_no_detect += 1
-        }
-    }
-
-    let test_acc = test_n_corr as f64 / (antigens.len() as f64);
-    let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
-    let membership_test_acc = membership_test_n_corr as f64 / (antigens.len() as f64);
-    let membership_test_precession = membership_test_n_corr as f64
-        / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
-
-    println!(
-        "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
-        test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
-    );
-    println!(
-        "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
-        membership_test_n_corr, membership_test_n_wrong, antigens.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
-    );
-
-}
+// fn evaluate_print_population(
+//     antigens: &Vec<AntiGen>,
+//     antibodies: &Vec<Antibody>,
+//     eval_method: &EvaluationMethod,
+//
+//     logger: &mut ExperimentLogger,
+// ) {
+//     let mut test_n_corr = 0;
+//     let mut test_n_wrong = 0;
+//
+//     let mut membership_test_n_corr = 0;
+//     let mut membership_test_n_wrong = 0;
+//
+//     let mut test_per_class_corr = HashMap::new();
+//     let mut test_n_no_detect = 0;
+//     for antigen in antigens {
+//         let pred_class = is_class_correct_with_membership(&antigen, antibodies);
+//
+//         if let Some(v) = pred_class {
+//             if v {
+//                 membership_test_n_corr += 1;
+//             } else {
+//                 membership_test_n_wrong += 1
+//             }
+//         }
+//         let pred_class = is_class_correct(&antigen, antibodies, eval_method);
+//         if let Some(v) = pred_class {
+//             if v {
+//                 test_n_corr += 1;
+//                 let class_count = test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+//                 test_per_class_corr.insert(antigen.class_label, *class_count + 1);
+//             } else {
+//                 test_n_wrong += 1
+//             }
+//         } else {
+//             test_n_no_detect += 1
+//         }
+//     }
+//
+//     let test_acc = test_n_corr as f64 / (antigens.len() as f64);
+//     let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
+//     let membership_test_acc = membership_test_n_corr as f64 / (antigens.len() as f64);
+//     let membership_test_precession = membership_test_n_corr as f64
+//         / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
+//
+//     println!(
+//         "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+//         test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
+//     );
+//     println!(
+//         "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+//         membership_test_n_corr, membership_test_n_wrong, antigens.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
+//     );
+//
+// }
 impl ArtificialImmuneSystem {
     pub fn new() -> ArtificialImmuneSystem {
         return Self {
@@ -291,7 +183,7 @@ impl ArtificialImmuneSystem {
         };
 
         let (train_acc_hist, train_score_hist, scored_pop) =
-            self.train_ab_set(antigens, params, verbosity_params, pop_size);
+            self.train_ab_set(antigens, params, verbosity_params, pop_size, logger);
         let mut save_antibodies = Vec::new();
         scored_pop
             .iter()
@@ -352,43 +244,28 @@ impl ArtificialImmuneSystem {
 
             // train predictor
             let (train_acc_hist, train_score_hist, scored_pop) =
-                self.train_ab_set(&antigens, params, verbosity_params, train_per_round);
+                self.train_ab_set(&antigens, params, verbosity_params, train_per_round, logger);
             let mut antibodies: Vec<_> = scored_pop.into_iter().map(|x| x.2).collect();
 
             // get predictor error
-
-            let mut n_corr = 0;
-            let mut n_wrong = 0;
-            let mut n_no_reg = 0;
 
 
             let weighted_error_count: f64 = antigens
                 .iter()
                 .map(|antigen| {
-                    let pred = if params.use_membership{
-                       is_class_correct_with_membership(&antigen, &antibodies)
-                    }else {
-                        is_class_correct(&antigen, &antibodies)
-                    };
+                    let pred = is_class_correct(&antigen, &antibodies, &params.eval_method);
                     if let Some(is_corr) = pred{
                         if is_corr {
-                            n_corr += 1;
                             return 0.0;
                         } else {
-                            n_wrong += 1;
                             return 1.0 * antigen.boosting_weight;
                         }
                     }else {
-                        n_no_reg += 1;
                         return 0.5 * antigen.boosting_weight;
                     }
                 })
                 .sum();
 
-
-            if logger.should_run(ExperimentProperty::BoostAccuracy){
-                logger.log_prop(ExperimentProperty::BoostAccuracy, CorWrongNoReg(n_corr, n_wrong, n_no_reg))
-            }
 
 
             let weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
@@ -397,38 +274,93 @@ impl ArtificialImmuneSystem {
             // calculate alpha weight for model
             let alpha_m = ((1.0 - error) / error).ln();
 
-
-
-            // update weights
-            for antigen in &mut antigens {
-                let pred = if params.use_membership{
-                       is_class_correct_with_membership(&antigen, &antibodies)
-                    }else {
-                        is_class_correct(&antigen, &antibodies)
-                    };
-
-                let is_corr = is_class_correct(&antigen, &antibodies).unwrap_or(false);
-                let val = if is_corr { 0.0 } else { alpha_m };
-
-                antigen.boosting_weight = antigen.boosting_weight * val.exp();
-            }
-
-            // save the antibodies
             antibodies
                 .iter_mut()
                 .for_each(|ab| ab.boosting_model_alpha = alpha_m.clone());
             ab_pool.extend(antibodies);
 
+
+            let mut n_corr = 0;
+            let mut n_wrong = 0;
+            let mut n_no_reg = 0;
+
+            // update weights
+            for antigen in &mut antigens {
+
+                let pred = is_class_correct(&antigen, &ab_pool, &params.eval_method);
+
+
+                // let is_corr = is_class_correct(&antigen, &ab_pool).unwrap_or(false);
+               let val =  if let Some(is_corr) = pred{
+                if is_corr {
+                    n_corr += 1;
+                    0.0
+                } else {
+                    n_wrong += 1;
+                    alpha_m
+                }
+                } else {
+                   n_no_reg += 1;
+                   0.0
+                };
+
+                antigen.boosting_weight = antigen.boosting_weight * val.exp();
+            }
+
+        /*    if logger.should_run(ExperimentProperty::BoostAccuracy){
+                logger.log_prop(ExperimentProperty::BoostAccuracy, CorWrongNoReg(n_corr, n_wrong, n_no_reg))
+            }
+
+            if logger.should_run(ExperimentProperty::BoostAccuracyTest){
+
+                let mut n_corr = 0;
+                let mut n_wrong = 0;
+                let mut n_no_reg = 0;
+
+                  for antigen in highly_dubious_practices {
+                        let pred = if params.use_membership{
+                       is_class_correct_with_membership(&antigen, &ab_pool)
+                    }else {
+                        is_class_correct(&antigen, &ab_pool, &params.eval_method)
+                    };
+
+                // let is_corr = is_class_correct(&antigen, &ab_pool).unwrap_or(false);
+              if let Some(is_corr) = pred{
+                if is_corr {
+                    n_corr += 1;
+                } else {
+                    n_wrong += 1;
+                }
+                } else {
+                   n_no_reg += 1;
+                };
+            }
+
+                logger.log_prop(ExperimentProperty::BoostAccuracyTest, CorWrongNoReg(n_corr, n_wrong, n_no_reg))
+            }
+
+
+*/
+
+
+            // save the antibodies
+
+
             if verbosity_params.print_boost_info{
                 println!("\n#\n# for boost round {:?}:\n#", n);
             println!("current ab pool s {:?}:", ab_pool.len());
 
+                let mut _ais = ArtificialImmuneSystem::new();
+                _ais.antibodies = ab_pool.clone();
+                eval_display(&antigens, &_ais , &translator, "TRAIN".to_string(), false);
+                eval_display(&highly_dubious_practices, &_ais , &translator, "TEST".to_string(), false);
 
-            println!("train");
-            evaluate_print_population(&antigens, &ab_pool, logger);
+
+        /*    println!("train");
+            evaluate_print_population(&antigens, &ab_pool, &params.eval_method,logger);
 
             println!("test");
-            evaluate_print_population(&highly_dubious_practices, &ab_pool, logger);
+            evaluate_print_population(&highly_dubious_practices, &ab_pool,&params.eval_method, logger);
 
             println!("articles");
             let translator_formatted = input_antigens.iter().chain(highly_dubious_practices).map(|ag| {
@@ -444,7 +376,7 @@ impl ArtificialImmuneSystem {
                 }
             }).collect();
 
-            translator.get_show_ag_acc(translator_formatted, false);
+            translator.get_show_ag_acc(translator_formatted, false);*/
             }
 
 
@@ -477,7 +409,9 @@ impl ArtificialImmuneSystem {
         params: &Params,
         verbosity_params: &VerbosityParams,
         pop_size: usize,
+        logger: &mut ExperimentLogger,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
+        logger.init_train();
         // =======  init misc training params  ======= //
 
         let leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
@@ -833,11 +767,7 @@ impl ArtificialImmuneSystem {
                 let mut n_wrong = 0;
                 let mut n_no_detect = 0;
                 for antigen in antigens {
-                  let pred = if params.use_membership{
-                       is_class_correct_with_membership(&antigen, &antibody)
-                    }else {
-                        is_class_correct(&antigen, &antibody)
-                    };
+                  let pred = is_class_correct(&antigen, &antibody, &params.eval_method);
                     if let Some(v) = pred {
                         if v {
                             n_corr += 1
@@ -910,26 +840,50 @@ impl ArtificialImmuneSystem {
             .map(|(score, evaluation, cell)| {
                 let mut save_ab = cell.clone();
                 save_ab.final_train_label_membership = Some(evaluation.membership_value);
+                save_ab.final_train_label_affinity = Some(evaluation.affinity_weight);
                 return (score, evaluation, save_ab);
             })
 
             .filter(|(score, _, cell)| cell.final_train_label_membership.unwrap().0 >= params.membership_required)
             .collect();
 
+        logger.end_train();
         return (train_acc_hist, train_score_hist, scored_pop);
     }
 
-    pub fn is_class_correct(&self, antigen: &AntiGen) -> Option<bool> {
-        return is_class_correct(antigen, &self.antibodies);
+    pub fn print_ab_mut_info(&self){
+        let mut clone_count = 0;
+        let mut mut_map: HashMap<MutationType,usize> = HashMap::new();
+        self.antibodies.iter().for_each(|ab| {
+            clone_count += ab.clone_count;
+            for (k,v) in &ab.mutation_counter{
+                if let Some(v) =mut_map.get_mut(k){
+                    *v += 1;
+                }else {
+                    mut_map.insert(k.clone(), 1);
+                };
+            }
+        });
+
+        let clone_count_mean =  clone_count as f64 / self.antibodies.len() as f64;
+        println!("avg clone count: {:.4?}", clone_count);
+
+        mut_map.iter().for_each(|(mut_t,cnt)|{
+            println!("mut type {:<5?} count: {:.2?}", mut_t.to_string(), *cnt as f64/self.antibodies.len() as f64 );
+
+        })
+
     }
 
-    pub fn make_prediction(&self, antigen: &AntiGen) -> Option<Prediction> {
-        return make_prediction(antigen, &self.antibodies);
+    pub fn is_class_correct(&self, antigen: &AntiGen,  eval_method: &EvaluationMethod) -> Option<bool> {
+        return is_class_correct(antigen, &self.antibodies, eval_method);
     }
 
-    pub fn is_class_correct_with_membership(&self, antigen: &AntiGen) -> Option<bool> {
-        return is_class_correct_with_membership(antigen, &self.antibodies);
+    pub fn make_prediction(&self, antigen: &AntiGen, eval_method: &EvaluationMethod) -> Prediction {
+        return make_prediction(antigen, &self.antibodies, eval_method);
     }
+
+
     pub fn print_current_ab(&self){
         let mut ab = self.antibodies.clone();
         ab.sort_by(|a, b|  a.dim_values.first().unwrap().multiplier.total_cmp(&b.dim_values.first().unwrap().multiplier));

@@ -131,6 +131,7 @@ impl AntibodyFactory {
             clone_count: 0,
             final_train_label_membership: None,
             boosting_model_alpha: 1.0,
+            final_train_label_affinity: None,
         };
     }
     pub fn generate_random_genome_with_label(&self, label: usize) -> Antibody {
@@ -216,6 +217,7 @@ impl AntibodyFactory {
             clone_count: 0,
             final_train_label_membership: None,
             boosting_model_alpha: 1.0,
+            final_train_label_affinity: None,
         };
     }
 }

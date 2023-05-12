@@ -32,6 +32,7 @@ pub struct Antibody {
     pub class_label: usize,
     pub boosting_model_alpha: f64,
     pub final_train_label_membership: Option<(f64,f64)>,
+    pub final_train_label_affinity: Option<(f64,f64)>,
     //todo: remove when running hyper optimized
     pub mutation_counter: HashMap<MutationType, usize>,
     pub clone_count: usize,

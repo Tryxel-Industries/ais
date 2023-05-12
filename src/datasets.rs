@@ -3,6 +3,7 @@ use strum_macros::{Display, EnumString};
 use crate::datasets::fake_news_datasets::{read_fnn_embeddings, read_kaggle_embeddings};
 use crate::datasets::reference_datasets::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_pima_diabetes, read_sonar, read_spirals, read_wine};
 use crate::params::{Params, PopSizeType, ReplaceFractionType};
+use crate::prediction::EvaluationMethod;
 use crate::representation::antibody::DimValueType;
 use crate::representation::antigen::{AntiGen, AntiGenSplitShell};
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
@@ -84,6 +85,7 @@ pub fn get_dataset_optimal_params(dataset: Datasets, class_labels: HashSet<usize
 
 fn get_diabetes_params(class_labels: HashSet<usize>)-> Params{
     return Params {
+        eval_method: EvaluationMethod::Count,
             boost: 5,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(0.7),
@@ -102,7 +104,6 @@ fn get_diabetes_params(class_labels: HashSet<usize>)-> Params{
 
             // -- reduction -- //
             membership_required: 0.75,
-            use_membership: true,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -156,6 +157,7 @@ fn get_diabetes_params(class_labels: HashSet<usize>)-> Params{
 
 fn get_wine_params(class_labels: HashSet<usize>)-> Params{
     return Params {
+        eval_method: EvaluationMethod::Count,
             boost: 0,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(0.6),
@@ -174,7 +176,6 @@ fn get_wine_params(class_labels: HashSet<usize>)-> Params{
 
             // -- reduction -- //
             membership_required: 0.75,
-        use_membership: true,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -228,6 +229,7 @@ fn get_wine_params(class_labels: HashSet<usize>)-> Params{
 fn get_sonar_params(class_labels: HashSet<usize>)-> Params{
     return Params{
 
+        eval_method: EvaluationMethod::Count,
         correctness_weight: 0.2,
         coverage_weight: 0.5,
         uniqueness_weight: 0.8,
@@ -237,7 +239,6 @@ fn get_sonar_params(class_labels: HashSet<usize>)-> Params{
 
         generations: 1000,
         membership_required: 0.0,
-        use_membership: true,
 
         boost: 3,
         // -- train params -- //

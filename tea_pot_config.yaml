@@ -117,6 +117,11 @@ search_space:
       from: 0.0
       to: 1.0
       step: 0.1
+  - pick_categorical:
+      name: "use_membership"
+      call_param: "--use_membership="
+      picks: ["True", "False"]
+
 
   - pick_float:
       name: "leak_fraction"

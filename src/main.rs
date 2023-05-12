@@ -21,11 +21,14 @@ use crate::ais::{evaluate_population, ArtificialImmuneSystem};
 use crate::bucket_empire::BucketKing;
 
 use crate::datasets::{Datasets, get_dataset, get_dataset_optimal_params};
+use crate::display::{eval_display, show_ab_dim_multipliers, show_ab_dim_offsets, show_ab_dim_value_types};
 use crate::evaluation::MatchCounter;
 use crate::experiment_logger::{ExperimentLogger, ExperimentProperty};
+use crate::experiment_logger::ExperimentProperty::BoostAccuracyTest;
 use crate::mutations::mutate;
 use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
+use crate::prediction::EvaluationMethod;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::{AntiGen, AntiGenSplitShell};
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
@@ -47,6 +50,8 @@ mod testing;
 mod util;
 mod datasets;
 mod experiment_logger;
+mod prediction;
+mod display;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -161,7 +166,12 @@ fn ais_test(
     }
     let duration = start.elapsed();
 
-    let mut zero_reg_cells = 0;
+
+    let train_acc = eval_display(&train, &ais , &translator, "TRAIN".to_string(), true);
+    let test_acc = eval_display(&test, &ais, &translator, "TEST".to_string(), true);
+    // eval_display(&train, &ais, &params, &translator, "Train".to_string())
+
+ /*   let mut zero_reg_cells = 0;
     // display final
 
     let n_dims = antigens.get(0).unwrap().values.len();
@@ -211,30 +221,12 @@ fn ais_test(
 
         if verbosity_params.display_final_ab_info {
             //registered_antigens.len() > 0 {
-            println!(
-                "genome dim values    {:?}",
-                antibody
-                    .dim_values
-                    .iter()
-                    .map(|v| v.multiplier)
-                    .collect::<Vec<_>>()
-            );
-            println!(
-                "genome offset values {:?}",
-                antibody
-                    .dim_values
-                    .iter()
-                    .map(|v| v.offset)
-                    .collect::<Vec<_>>()
-            );
-            println!(
-                "genome value type    {:?}",
-                antibody
-                    .dim_values
-                    .iter()
-                    .map(|v| &v.value_type)
-                    .collect::<Vec<_>>()
-            );
+            show_ab_dim_multipliers(antibody);
+            show_ab_dim_offsets(antibody);
+            show_ab_dim_value_types(antibody);
+
+
+
             println!("genome matches    {:?}", eval.matched_ids);
             println!("genome errors     {:?}", eval.wrongly_matched);
 
@@ -254,177 +246,183 @@ fn ais_test(
         } else {
             zero_reg_cells += 1;
         }
-    });
+    })*/;
+    //
+    // if verbosity_params.display_detailed_error_info {
+    //     println!("zero reg cells {}", zero_reg_cells);
+    //     println!(
+    //         "########## error mask \n{:?}",
+    //         match_counter.incorrect_match_counter
+    //     );
+    //     println!(
+    //         "########## match mask \n{:?}",
+    //         match_counter.correct_match_counter
+    //     );
+    //
+    //     for n in (0..match_counter.correct_match_counter.len()) {
+    //         let wrong = match_counter.incorrect_match_counter.get(n).unwrap();
+    //         let right = match_counter.correct_match_counter.get(n).unwrap();
+    //
+    //         if wrong > right {
+    //             println!("idx: {:>4?}  cor: {:>3?} - wrong {:>3?}", n, right, wrong);
+    //             // println!("ag dat: {:?}", antigens.iter().filter(|ag| ag.id == n).last().unwrap());
+    //         }
+    //     }
+    // }
 
-    if verbosity_params.display_detailed_error_info {
-        println!("zero reg cells {}", zero_reg_cells);
-        println!(
-            "########## error mask \n{:?}",
-            match_counter.incorrect_match_counter
-        );
-        println!(
-            "########## match mask \n{:?}",
-            match_counter.correct_match_counter
-        );
-
-        for n in (0..match_counter.correct_match_counter.len()) {
-            let wrong = match_counter.incorrect_match_counter.get(n).unwrap();
-            let right = match_counter.correct_match_counter.get(n).unwrap();
-
-            if wrong > right {
-                println!("idx: {:>4?}  cor: {:>3?} - wrong {:>3?}", n, right, wrong);
-                // println!("ag dat: {:?}", antigens.iter().filter(|ag| ag.id == n).last().unwrap());
-            }
-        }
-    }
-
-    //train
-    let mut n_corr = 0;
-    let mut per_class_corr: HashMap<usize, usize> = HashMap::new();
-    let mut n_wrong = 0;
-    let mut n_no_detect = 0;
-    for antigen in train_slice {
-        let pred_class = ais.is_class_correct_with_membership(&antigen);
-        if let Some(v) = pred_class {
-            if v {
-                n_corr += 1;
-                let class_count = per_class_corr.get(&antigen.class_label).unwrap_or(&0);
-                per_class_corr.insert(antigen.class_label, *class_count + 1);
-            } else {
-                n_wrong += 1;
-            }
-        } else {
-            n_no_detect += 1
-        }
-    }
-    let train_acc = n_corr as f64 / (train_slice.len() as f64);
-
-    //test
-
-    let mut test_n_corr = 0;
-    let mut test_n_wrong = 0;
-
-    let mut membership_test_n_corr = 0;
-    let mut membership_test_n_wrong = 0;
-
-
-    let mut membership_test_per_class_corr = HashMap::new();
-    let mut test_n_no_detect = 0;
-    for antigen in test {
-        let pred_class = ais.is_class_correct_with_membership(&antigen);
-
-        if let Some(v) = pred_class {
-            if v {
-                membership_test_n_corr += 1;
-                let class_count = membership_test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
-                membership_test_per_class_corr.insert(antigen.class_label, *class_count + 1);
-            } else {
-                membership_test_n_wrong += 1
-            }
-        }
-        let pred_class = ais.is_class_correct(&antigen);
-        if let Some(v) = pred_class {
-            if v {
-                test_n_corr += 1;
-            } else {
-                test_n_wrong += 1
-            }
-        } else {
-            test_n_no_detect += 1
-        }
-    }
-
-    let translator_formatted: Vec<_> = test.iter().chain(train.iter()).map(|ag| {
-        let pred_class = ais.is_class_correct_with_membership(&ag);
-         if let Some(v) = pred_class {
-            if v {
-                return (Some(true), ag)
-            } else {
-                return (Some(false), ag)
-            }
-        }else {
-             return (None, ag)
-         }
-    }).collect();
-
-    let train_translator_formatted = train.iter().map(|ag| {
-        let pred_class = ais.is_class_correct_with_membership(&ag);
-        if let Some(v) = pred_class {
-            if v {
-                return (Some(true), ag)
-            } else {
-                return (Some(false), ag)
-            }
-        }else {
-            return (None, ag)
-        }
-    }).collect();
-
-    let test_translator_formatted = test.iter().map(|ag| {
-        let pred_class = ais.is_class_correct_with_membership(&ag);
-        if let Some(v) = pred_class {
-            if v {
-                return (Some(true), ag)
-            } else {
-                return (Some(false), ag)
-            }
-        }else {
-            return (None, ag)
-        }
-    }).collect();
-
-    // println!("ag acc full");
-    // translator.get_show_ag_acc(translator_formatted, true);
-
-    let test_acc = test_n_corr as f64 / (test.len() as f64);
-    let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
-    let membership_test_acc = membership_test_n_corr as f64 / (test.len() as f64);
-    let membership_test_precession = membership_test_n_corr as f64 / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
-
-    if verbosity_params.display_final_acc_info {
-        println!("=============================================================================");
-        println!("      TRAIN");
-        println!("=============================================================================");
-        translator.get_show_ag_acc(train_translator_formatted, false);
-        println!();
-        println!("dataset size {:?}", train.len());
-        println!(
-            "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
-            n_corr, n_wrong, n_no_detect, train_acc,
-        );
-        println!("per class cor {:?}", per_class_corr);
-
-
-        println!("=============================================================================");
-        println!("      TEST");
-        println!("=============================================================================");
-        translator.get_show_ag_acc(test_translator_formatted, false);
-
-        println!();
-        println!("dataset size {:?}", test.len());
-
-        println!(
-            "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
-            test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
-        );
-        println!(
-            "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
-            membership_test_n_corr, membership_test_n_wrong, test.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
-        );
-        println!("per class cor {:?}", membership_test_per_class_corr);
-
-        println!(
-            "Total runtime: {:?}, \nPer iteration: {:?}",
-            duration,
-            duration.as_nanos() / params.generations as u128
-        );
-    }
+    // //train
+    // let mut n_corr = 0;
+    // let mut per_class_corr: HashMap<usize, usize> = HashMap::new();
+    // let mut n_wrong = 0;
+    // let mut n_no_detect = 0;
+    // for antigen in train_slice {
+    //     let pred_class = ais.is_class_correct_with_membership(&antigen);
+    //     if let Some(v) = pred_class {
+    //         if v {
+    //             n_corr += 1;
+    //             let class_count = per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+    //             per_class_corr.insert(antigen.class_label, *class_count + 1);
+    //         } else {
+    //             n_wrong += 1;
+    //         }
+    //     } else {
+    //         n_no_detect += 1
+    //     }
+    // }
+    // let train_acc = n_corr as f64 / (train_slice.len() as f64);
+    //
+    // //test
+    //
+    // let mut test_n_corr = 0;
+    // let mut test_n_wrong = 0;
+    //
+    // let mut membership_test_n_corr = 0;
+    // let mut membership_test_n_wrong = 0;
+    //
+    //
+    // let mut membership_test_per_class_corr = HashMap::new();
+    // let mut test_n_no_detect = 0;
+    // for antigen in test {
+    //     let pred_class = ais.is_class_correct_with_membership(&antigen);
+    //
+    //     if let Some(v) = pred_class {
+    //         if v {
+    //             membership_test_n_corr += 1;
+    //             let class_count = membership_test_per_class_corr.get(&antigen.class_label).unwrap_or(&0);
+    //             membership_test_per_class_corr.insert(antigen.class_label, *class_count + 1);
+    //         } else {
+    //             membership_test_n_wrong += 1
+    //         }
+    //     }
+    //     let pred_class = ais.is_class_correct(&antigen);
+    //     if let Some(v) = pred_class {
+    //         if v {
+    //             test_n_corr += 1;
+    //         } else {
+    //             test_n_wrong += 1
+    //         }
+    //     } else {
+    //         test_n_no_detect += 1
+    //     }
+    // }
+    //
+    // let translator_formatted: Vec<_> = test.iter().chain(train.iter()).map(|ag| {
+    //     let pred_class = ais.is_class_correct_with_membership(&ag);
+    //      if let Some(v) = pred_class {
+    //         if v {
+    //             return (Some(true), ag)
+    //         } else {
+    //             return (Some(false), ag)
+    //         }
+    //     }else {
+    //          return (None, ag)
+    //      }
+    // }).collect();
+    //
+    // let train_translator_formatted = train.iter().map(|ag| {
+    //     let pred_class = ais.is_class_correct_with_membership(&ag);
+    //     if let Some(v) = pred_class {
+    //         if v {
+    //             return (Some(true), ag)
+    //         } else {
+    //             return (Some(false), ag)
+    //         }
+    //     }else {
+    //         return (None, ag)
+    //     }
+    // }).collect();
+    //
+    // let test_translator_formatted = test.iter().map(|ag| {
+    //     let pred_class = ais.is_class_correct_with_membership(&ag);
+    //     if let Some(v) = pred_class {
+    //         if v {
+    //             return (Some(true), ag)
+    //         } else {
+    //             return (Some(false), ag)
+    //         }
+    //     }else {
+    //         return (None, ag)
+    //     }
+    // }).collect();
+    //
+    // // println!("ag acc full");
+    // // translator.get_show_ag_acc(translator_formatted, true);
+    //
+    // let test_acc = test_n_corr as f64 / (test.len() as f64);
+    // let test_precession = test_n_corr as f64 / (test_n_wrong as f64 + test_n_corr as f64).max(1.0);
+    // let membership_test_acc = membership_test_n_corr as f64 / (test.len() as f64);
+    // let membership_test_precession = membership_test_n_corr as f64 / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
+    //
+    // if verbosity_params.display_final_acc_info {
+    //
+    //
+    //     println!("==========================");
+    //     println!("      MUT info");
+    //     println!("==========================");
+    //     ais.print_ab_mut_info();
+    //     println!("=============================================================================");
+    //     println!("      TRAIN");
+    //     println!("=============================================================================");
+    //     translator.get_show_ag_acc(train_translator_formatted, false);
+    //     println!();
+    //     println!("dataset size {:?}", train.len());
+    //     println!(
+    //         "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
+    //         n_corr, n_wrong, n_no_detect, train_acc,
+    //     );
+    //     println!("per class cor {:?}", per_class_corr);
+    //
+    //
+    //     println!("=============================================================================");
+    //     println!("      TEST");
+    //     println!("=============================================================================");
+    //     translator.get_show_ag_acc(test_translator_formatted, false);
+    //
+    //     println!();
+    //     println!("dataset size {:?}", test.len());
+    //
+    //     println!(
+    //         "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+    //         test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
+    //     );
+    //     println!(
+    //         "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+    //         membership_test_n_corr, membership_test_n_wrong, test.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
+    //     );
+    //     println!("per class cor {:?}", membership_test_per_class_corr);
+    //
+    //     println!(
+    //         "Total runtime: {:?}, \nPer iteration: {:?}",
+    //         duration,
+    //         duration.as_nanos() / params.generations as u128
+    //     );
+    // }
 
 
     dump_to_csv(antigens, &ais.antibodies);
 
 
-    return (train_acc, membership_test_acc);
+    return (train_acc, test_acc);
     // ais.pred_class(test.get(0).unwrap());
 }
 
@@ -450,63 +448,19 @@ fn trail_run_from_ab_csv(){
     ais.antibodies = antibodies;
 
 
-   let translator_formatted = antigens.iter().map(|ag| {
-        let pred_class = ais.is_class_correct_with_membership(&ag);
-         if let Some(v) = pred_class {
-            if v {
-                return (Some(true), ag)
-            } else {
-                return (Some(false), ag)
-            }
-        }else {
-             return (None, ag)
-         }
-    }).collect();
-
-    translator.get_show_ag_acc(translator_formatted, true);
-
-      //train
-    let mut n_corr = 0;
-    let mut per_class_corr: HashMap<usize, usize> = HashMap::new();
-    let mut n_wrong = 0;
-    let mut n_no_detect = 0;
-    for antigen in antigens.clone() {
-        let pred_class = ais.is_class_correct_with_membership(&antigen);
-        if let Some(v) = pred_class {
-            if v {
-                n_corr += 1;
-                let class_count = per_class_corr.get(&antigen.class_label).unwrap_or(&0);
-                per_class_corr.insert(antigen.class_label, *class_count + 1);
-            } else {
-                n_wrong += 1;
-            }
-        } else {
-            n_no_detect += 1
-        }
-    }
-    let train_acc = n_corr as f64 / (antigens.len() as f64);
 
 
-        println!("=============================================================================");
-        println!("      TRAIN");
-        println!("=============================================================================");
-        println!();
-        println!("dataset size {:?}", antigens.len());
-        println!(
-            "corr {:?}, false {:?}, no_detect {:?}, frac: {:?}",
-            n_corr, n_wrong, n_no_detect, train_acc,
-        );
-        println!("per class cor {:?}", per_class_corr);
+    let train_acc = eval_display(&antigens, &ais, &translator, "Full SET".to_string(),true);
 
 
 
 
 }
 fn trail_training() {
-    // rayon::ThreadPoolBuilder::new().num_threads(29).build_global().unwrap();
+    // rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
 
 
-    let dataset_used = Datasets::PrimaDiabetes;
+    let dataset_used = Datasets::Diabetes;
     // embedding params
     let use_num_to_fetch = None;//Some(2000);
     let max_sentences_per_article = Some(100);
@@ -515,7 +469,8 @@ fn trail_training() {
     let mut logger = ExperimentLogger::new(
         dataset_used.clone(),
         vec![
-            ExperimentProperty::BoostAccuracy
+            // ExperimentProperty::BoostAccuracy,
+            // ExperimentProperty::BoostAccuracyTest
         ]
     );
 
@@ -539,17 +494,18 @@ fn trail_training() {
         get_dataset_optimal_params(dataset_used, class_labels)
     } else {
         Params {
+            eval_method: EvaluationMethod::Fraction,
             boost: 5,
             // -- train params -- //
-            // antigen_pop_size: PopSizeType::Fraction(0.7),
-            antigen_pop_size: PopSizeType::Number(400),
+            // antigen_pop_size: PopSizeType::Fraction(1.0),
+            antigen_pop_size: PopSizeType::Number(200),
             generations: 500,
 
-            mutation_offset_weight: 5,
-            mutation_multiplier_weight: 5,
+            mutation_offset_weight: 1,
+            mutation_multiplier_weight: 1,
             mutation_multiplier_local_search_weight: 1,
-            mutation_radius_weight: 5,
-            mutation_value_type_weight: 3,
+            mutation_radius_weight: 1,
+            mutation_value_type_weight: 1,
 
             mutation_label_weight: 0,
 
@@ -557,7 +513,6 @@ fn trail_training() {
 
             // -- reduction -- //
             membership_required: 0.75,
-            use_membership: false,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -575,7 +530,7 @@ fn trail_training() {
             coverage_weight: 1.0,
             uniqueness_weight: 0.5,
             good_afin_weight: 0.0,
-            bad_afin_weight: 2.0,
+            bad_afin_weight: 1.0,
 
             //selection
             leak_fraction: 0.5,
@@ -610,7 +565,7 @@ fn trail_training() {
     };
 
     let frac_verbosity_params = VerbosityParams {
-        show_initial_pop_info: false,
+        show_initial_pop_info: true,
         iter_info_interval: None,
         full_pop_acc_interval: None,
         // iter_info_interval: Some(10),
@@ -619,13 +574,13 @@ fn trail_training() {
         make_plots: false,
         display_final_ab_info: false,
         display_detailed_error_info: false,
-        display_final_acc_info: false,
+        display_final_acc_info: true,
         print_boost_info: true,
     };
     modify_config_by_args(&mut params);
 
     ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-    //ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator)
+    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
 
     logger.dump_to_json_file("./bip_bop.json".to_string())
 }

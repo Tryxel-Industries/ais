@@ -43,6 +43,7 @@ pub fn dump_to_csv(antigens: &Vec<AntiGen>, antibodies: &Vec<Antibody>) {
                 cell.radius_constant.to_string(),
                 cell.boosting_model_alpha.to_string(),
                 cell.final_train_label_membership.unwrap().0.to_string(),
+                cell.final_train_label_affinity.unwrap().0.to_string(),
             ];
             ret_vec.extend(cell.dim_values.clone().iter().flat_map(|d| {
                 vec![
@@ -76,6 +77,7 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
             let radius_constant: f64 = row.remove(0).parse().unwrap();
             let boosting_model_alpha: f64 = row.remove(0).parse().unwrap();
             let final_train_membership: f64 = row.remove(0).parse().unwrap();
+            let final_train_affinity: f64 = row.remove(0).parse().unwrap();
 
             let mut row_values = Vec::new();
             for n in 0..num_dims{
@@ -99,6 +101,7 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
                 class_label,
                 boosting_model_alpha,
                 final_train_label_membership: Some((final_train_membership, 1.0-final_train_membership)),
+                final_train_label_affinity: Some((final_train_affinity, 1.0-final_train_affinity)),
                 mutation_counter: Default::default(),
                 clone_count: 0,
             }

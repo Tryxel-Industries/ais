@@ -2,10 +2,12 @@ use std::{env, slice};
 use std::ops::{Range, RangeInclusive};
 
 use rand::prelude::SliceRandom;
+use strum_macros::{Display, EnumString};
+use crate::prediction::EvaluationMethod;
 
 use crate::representation::antibody::DimValueType;
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, EnumString, Display)]
 pub enum MutationType {
     Offset,
     Multiplier,
@@ -29,6 +31,7 @@ pub enum PopSizeType{
 
 #[derive(Clone)]
 pub struct Params {
+    pub eval_method: EvaluationMethod,
     // -- train params -- //
     pub boost: usize,
     pub antigen_pop_size: PopSizeType,
@@ -60,7 +63,6 @@ pub struct Params {
 
     // reduction
     pub membership_required: f64,
-    pub use_membership: bool,
 
     // selection
     pub replace_frac_type: ReplaceFractionType,
@@ -222,7 +224,6 @@ pub fn modify_config_by_args(params: &mut Params) {
                 "antigen_pop_size_num" => params.antigen_pop_size = PopSizeType::Number(value.parse().unwrap()),
                 "antigen_pop_size_frac" => params.antigen_pop_size = PopSizeType::Fraction(value.parse().unwrap()),
                 "generations" => params.generations = value.parse().unwrap(),
-                "membership_required" => params.membership_required = value.parse().unwrap(),
                 "membership_required" => params.membership_required = value.parse().unwrap(),
 
 

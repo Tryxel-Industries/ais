@@ -26,6 +26,7 @@ pub enum ExperimentProperty{
     PopLabelMemberships,
 
     BoostAccuracy,
+    BoostAccuracyTest,
     Runtime,
 
 }
@@ -163,8 +164,11 @@ impl  ExperimentLogger {
 
     pub fn end_train(&mut self){
         if let Some(old_map) = &self.step_properties_map{
-            self.map_hist.push(old_map.clone())
+            if old_map.len() > 0{
+                self.map_hist.push(old_map.clone())
+            }
         }
+        self.step_properties_map = None;
 
     }
 

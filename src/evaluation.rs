@@ -15,6 +15,7 @@ pub struct Evaluation {
     pub wrongly_matched: Vec<usize>,
     pub wrongly_matched_afin: Vec<f64>,
     pub membership_value: (f64, f64),
+    pub affinity_weight: (f64, f64),
 }
 
 pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
@@ -107,7 +108,7 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
 
     let mut corr_matched = Vec::with_capacity(registered_antigens.len());
     let mut corr_matched_afin = Vec::with_capacity(registered_antigens.len());
-    
+
     let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
     let mut wrong_matched_afin = Vec::with_capacity(registered_antigens.len());
 
@@ -133,12 +134,23 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
     // -- membership value -- //
     let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
 
+
+    let corr_match_afin_sum:f64 = corr_matched_afin.iter().sum::<f64>() * -1.0;
+    let wrong_match_afin_sum:f64 = wrong_matched_afin.iter().sum::<f64>() * -1.0;
+
+    let balance = corr_match_afin_sum/ (corr_match_afin_sum+wrong_match_afin_sum).max(1.0);
+    // println!();
+    // println!("balance {:?}", balance);
+    // println!("cor {:?}", corr_matched_afin);
+    // println!("wrong {:?}", wrong_matched_afin);
+
     let ret_evaluation = Evaluation {
         matched_ids: corr_matched,
         matched_afin: corr_matched_afin,
         wrongly_matched: wrong_matched,
         wrongly_matched_afin: wrong_matched_afin,
         membership_value: (same_label_membership, 1.0 - same_label_membership),
+        affinity_weight: (balance, 1.0 - balance),
     };
     // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
     return ret_evaluation;
@@ -190,6 +202,8 @@ impl MatchCounter {
                 )
             })
             .collect();
+
+
         let count_map: HashMap<usize, usize> = class_labels
             .iter()
             .map(|x| {
