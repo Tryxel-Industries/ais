@@ -167,8 +167,8 @@ fn ais_test(
     let duration = start.elapsed();
 
 
-    let train_acc = eval_display(&train, &ais , &translator, "TRAIN".to_string(), true);
-    let test_acc = eval_display(&test, &ais, &translator, "TEST".to_string(), true);
+    let train_acc = eval_display(&train, &ais , &translator, "TRAIN".to_string(), true, Some(&params.eval_method));
+    let test_acc = eval_display(&test, &ais, &translator, "TEST".to_string(), true, Some(&params.eval_method));
     // eval_display(&train, &ais, &params, &translator, "Train".to_string())
 
  /*   let mut zero_reg_cells = 0;
@@ -450,7 +450,7 @@ fn trail_run_from_ab_csv(){
 
 
 
-    let train_acc = eval_display(&antigens, &ais, &translator, "Full SET".to_string(),true);
+    let train_acc = eval_display(&antigens, &ais, &translator, "Full SET".to_string(),true, None);
 
 
 
@@ -494,8 +494,8 @@ fn trail_training() {
         get_dataset_optimal_params(dataset_used, class_labels)
     } else {
         Params {
-            eval_method: EvaluationMethod::Fraction,
-            boost: 5,
+            eval_method: EvaluationMethod::AffinitySum,
+            boost: 40,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(1.0),
             antigen_pop_size: PopSizeType::Number(200),
@@ -568,10 +568,10 @@ fn trail_training() {
         show_initial_pop_info: true,
         iter_info_interval: None,
         full_pop_acc_interval: None,
-        // iter_info_interval: Some(10),
+        // iter_info_interval: Some(1),
         // full_pop_acc_interval: Some(10),
         show_class_info: false,
-        make_plots: false,
+        make_plots: true,
         display_final_ab_info: false,
         display_detailed_error_info: false,
         display_final_acc_info: true,

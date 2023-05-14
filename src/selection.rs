@@ -78,10 +78,10 @@ pub fn remove_strictly_worse(
         let errors_a = eval_a.wrongly_matched.len();
         let errors_b = eval_b.wrongly_matched.len();
 
-        if errors_a != errors_b {
-            return eval_b.matched_ids.len().cmp(&eval_a.matched_ids.len());
+        return if errors_a != errors_b {
+            eval_b.matched_ids.len().cmp(&eval_a.matched_ids.len())
         } else {
-            return errors_b.cmp(&errors_a);
+            errors_b.cmp(&errors_a)
         }
     });
 
@@ -111,7 +111,7 @@ pub fn remove_strictly_worse(
 
             // println!("is sw {:?}", strictly_worse);
 
-            if strictly_worse {
+            return if strictly_worse {
                 a.matched_ids
                     .iter()
                     .for_each(|v| *match_mask.get_mut(*v).unwrap() -= 1);
@@ -119,9 +119,9 @@ pub fn remove_strictly_worse(
                     .iter()
                     .for_each(|v| *error_match_mask.get_mut(*v).unwrap() -= 1);
                 removed_tracker.insert(b.class_label, removed_count + 1);
-                return None;
+                None
             } else {
-                return Some((s, a, b));
+                Some((s, a, b))
             }
         })
         .collect();

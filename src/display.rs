@@ -66,7 +66,8 @@ pub fn eval_display(
     ais: &ArtificialImmuneSystem,
     translator: &NewsArticleAntigenTranslator,
     display_headline: String,
-    verbose: bool
+    verbose: bool,
+    return_eval_type: Option<&EvaluationMethod>,
 ) -> f64 {
     let eval_types = vec![
         EvaluationMethod::Count,
@@ -114,20 +115,26 @@ pub fn eval_display(
         println!("## {:}", display_headline);
     }
 
-    let mut best_acc = 0.0;
+    let mut return_eval = 0.0;
 
     for ((eval_method, evals), eval_counts) in eval_types.iter().zip(translator_vals).zip(eval_vals)
     {
-
-        let translator_formatted = evals.into_iter().zip(eval_ag_pop).collect();
+          let translator_formatted = evals.into_iter().zip(eval_ag_pop).collect();
 
         let acc = eval_counts.true_count as f64 / (eval_ag_pop.len() as f64);
         let precession = eval_counts.true_count as f64
             / (eval_counts.false_count as f64 + eval_counts.true_count as f64).max(1.0);
 
-        if acc > best_acc{
-            best_acc = acc;
-        }
+          if let Some(eval_type) = return_eval_type{
+            if eval_type == eval_method{
+                return_eval = acc;
+            }
+        }else {
+              if acc > return_eval{
+                  return_eval = acc;
+              }
+          }
+
 
         println!(
             "{:<11}: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
@@ -140,7 +147,7 @@ pub fn eval_display(
     }
 
     println!();
-    return best_acc;
+    return return_eval;
 
     /*           println!(
                "Total runtime: {:?}, \nPer iteration: {:?}",

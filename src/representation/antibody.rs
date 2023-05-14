@@ -115,16 +115,16 @@ impl Antibody {
                 let res_is_pos = res_match_multi > 0.0;
                 let cur_is_pos = cd_multiplier > 0.0;
 
-                if res_is_pos != cur_is_pos {
+                return if res_is_pos != cur_is_pos {
                     // if the solved value is on the other side of 0 return as unsolvable
-                    return None;
+                    None
                 } else {
                     if affinity_with_zero_multi <= 0.0 {
                         // By testing what ag's the system matches when the multi is set to 0 we
                         // can quicly figure out if the treshold will leave or enter the ag
-                        return Some(LocalSearchBorder::LeavesAt(res_match_multi));
+                        Some(LocalSearchBorder::LeavesAt(res_match_multi))
                     } else {
-                        return Some(LocalSearchBorder::EntersAt(res_match_multi));
+                        Some(LocalSearchBorder::EntersAt(res_match_multi))
                     }
                 }
             }
@@ -134,12 +134,12 @@ impl Antibody {
                 // solve for check dim multi
                 let rest_sub_radius_sum = self.radius_constant - roll_sum;
 
-                if rest_sub_radius_sum < 0.0 {
+                return if rest_sub_radius_sum < 0.0 {
                     // if the rest sub radius is negative it is not solvable
-                    return None;
+                    None
                 } else {
                     let res_match_multi = (rest_sub_radius_sum / cd_base).sqrt();
-                    return Some(LocalSearchBorder::EntersAt(res_match_multi));
+                    Some(LocalSearchBorder::EntersAt(res_match_multi))
                 }
             }
         };
@@ -174,10 +174,10 @@ impl Antibody {
 
         let v = affinity_dist - self.radius_constant;
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if v <= 0.0 {
-            return true;
+        return if v <= 0.0 {
+            true
         } else {
-            return false;
+            false
         }
     }
 
@@ -192,10 +192,10 @@ impl Antibody {
 
         let v = affinity_dist - self.radius_constant;
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if v <= 0.0 {
-            return (true, v);
+        return if v <= 0.0 {
+            (true, v)
         } else {
-            return (false, v);
+            (false, v)
         }
     }
 }

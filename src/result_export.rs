@@ -111,6 +111,5 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
 
     return antibodies;
 
-    return Vec::new();
 
 }

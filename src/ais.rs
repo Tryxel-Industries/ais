@@ -4,6 +4,7 @@ use std::iter::Map;
 use std::ops::{Range, RangeInclusive};
 use std::io;
 use std::io::Write;
+use std::time::Instant;
 
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
@@ -48,7 +49,7 @@ pub fn evaluate_population(
     antigens: &Vec<AntiGen>,
 ) -> Vec<(Evaluation, Antibody)> {
     return population
-        .into_par_iter() // TODO: set paralell
+        .into_par_iter() // TODO: set parallel
         // .into_iter()
         .map(|antibody| {
             // evaluate antibodies
@@ -67,7 +68,7 @@ fn gen_initial_population(
     match_counter: &MatchCounter,
 ) -> Vec<Antibody> {
     let mut rng = rand::thread_rng();
-    return if (*pop_size == antigens.len()) {
+    return if *pop_size == antigens.len() {
         antigens
             .par_iter()
             .map(|ag| cell_factory.generate_from_antigen(ag))
@@ -152,11 +153,11 @@ fn gen_initial_population(
 //         / (membership_test_n_wrong as f64 + membership_test_n_corr as f64).max(1.0);
 //
 //     println!(
-//         "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+//         "without membership: corr {:>2?}, false {:>3?}, no_detect {:>3?}, precession: {:>2.3?}, frac: {:2.3?}",
 //         test_n_corr, test_n_wrong, test_n_no_detect,test_precession, test_acc
 //     );
 //     println!(
-//         "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
+//         "with membership:    corr {:>2?}, false {:>3?}, no_detect {:>3?}, precession: {:>2.3?}, frac: {:2.3?}",
 //         membership_test_n_corr, membership_test_n_wrong, antigens.len()-(membership_test_n_corr+membership_test_n_wrong), membership_test_precession, membership_test_acc
 //     );
 //
@@ -214,16 +215,21 @@ impl ArtificialImmuneSystem {
 
         if verbosity_params.print_boost_info{
             println!(
-            "pop size, final num ab {:?} gained throgh {:?} rounds with {:?}",
+            "pop size, final num ab {:?} gained through {:?} rounds with {:?}",
             pop_size, boosting_rounds, train_per_round
         );
         }
 
 
+        let mut train_boost_hist = Vec::new();
+        let mut test_boost_hist = Vec::new();
 
         let mut ab_pool: Vec<Antibody> = Vec::new();
 
         for n in 0..boosting_rounds {
+
+            let start = Instant::now();
+
             // using https://towardsdatascience.com/boosting-algorithms-explained-d38f56ef3f30
 
             // norm weights
@@ -254,14 +260,16 @@ impl ArtificialImmuneSystem {
                 .iter()
                 .map(|antigen| {
                     let pred = is_class_correct(&antigen, &antibodies, &params.eval_method);
-                    if let Some(is_corr) = pred{
+                    return if let Some(is_corr) = pred {
                         if is_corr {
-                            return 0.0;
+                            0.0
                         } else {
-                            return 1.0 * antigen.boosting_weight;
+                            1.0 * antigen.boosting_weight
                         }
-                    }else {
-                        return 0.5 * antigen.boosting_weight;
+                    } else {
+                        1.0 * antigen.boosting_weight
+                        // 0.5 * antigen.boosting_weight
+                        // 0.0
                     }
                 })
                 .sum();
@@ -271,8 +279,14 @@ impl ArtificialImmuneSystem {
             let weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
             let error = weighted_error_count / weight_sum;
 
+
             // calculate alpha weight for model
             let alpha_m = ((1.0 - error) / error).ln();
+
+            if alpha_m <= 0.0{
+                println!("Alpha is negative ({:.2?}) error: {:.2?} discarding round", alpha_m, error);
+                continue;
+            }
 
             antibodies
                 .iter_mut()
@@ -301,11 +315,13 @@ impl ArtificialImmuneSystem {
                 }
                 } else {
                    n_no_reg += 1;
-                   0.0
+                   // 0.0
+                   alpha_m
                 };
 
                 antigen.boosting_weight = antigen.boosting_weight * val.exp();
             }
+
 
         /*    if logger.should_run(ExperimentProperty::BoostAccuracy){
                 logger.log_prop(ExperimentProperty::BoostAccuracy, CorWrongNoReg(n_corr, n_wrong, n_no_reg))
@@ -350,11 +366,22 @@ impl ArtificialImmuneSystem {
                 println!("\n#\n# for boost round {:?}:\n#", n);
             println!("current ab pool s {:?}:", ab_pool.len());
 
+                println!("last model error: {:<3.3?} alpha {:?}:", error, alpha_m);
+
+
                 let mut _ais = ArtificialImmuneSystem::new();
                 _ais.antibodies = ab_pool.clone();
-                eval_display(&antigens, &_ais , &translator, "TRAIN".to_string(), false);
-                eval_display(&highly_dubious_practices, &_ais , &translator, "TEST".to_string(), false);
+                let train_acc = eval_display(&antigens, &_ais , &translator, "TRAIN".to_string(), false, Some(&params.eval_method));
+                let test_acc = eval_display(&highly_dubious_practices, &_ais , &translator, "TEST".to_string(), false, Some(&params.eval_method));
 
+                train_boost_hist.push(train_acc);
+                test_boost_hist.push(test_acc);
+                let duration = start.elapsed();
+                    // println!(
+                    //     "Total runtime: {:?}, \nPer iteration: {:?}",
+                    //     duration,
+                    //     duration.as_nanos() / params.generations as u128
+                    // );
 
         /*    println!("train");
             evaluate_print_population(&antigens, &ab_pool, &params.eval_method,logger);
@@ -400,7 +427,7 @@ impl ArtificialImmuneSystem {
         //     "########## boost mask \n{:?}",
         //     match_counter.boosting_weight_values
         // );
-        return (Vec::new(), Vec::new(), scored_pop);
+        return (train_boost_hist, test_boost_hist, scored_pop);
     }
 
     fn train_ab_set(
@@ -473,7 +500,7 @@ impl ArtificialImmuneSystem {
                     .collect();
                 print!("num with {:?} is {:?} ", cl, filtered.len())
             });
-            println!("\ninital end");
+            println!("\ninitial end");
         }
 
         for i in 0..params.generations {
@@ -553,19 +580,19 @@ impl ArtificialImmuneSystem {
                     Vec<Option<(Evaluation, Evaluation)>>,
                 ) = parents
                     // .clone()
-                    .into_par_iter() // TODO: set paralell
+                    .into_par_iter() // TODO: set parallel
                     // .into_iter()
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
                     .map(|(parent_score, parent_eval, parent_antibody)| {
                         // find the fraction of max score of the current ab, this is used for the cloning and mutation rates
-                        let frac_of_max = (parent_score / max_score).max(0.2);
+                        let frac_of_max = (parent_score / max_score).max(0.2).min(1.0);
                         let n_clones =
                             ((params.n_parents_mutations as f64 * frac_of_max) as usize).max(1);
 
                         // generate the calculated amount of clones evaluate them
                         let children = (0..n_clones)
                             // .into_iter()
-                            .into_par_iter() // TODO: set paralell
+                            .into_par_iter() // TODO: set parallel
                             .map(|_| {
                                 let mut mutated = mutate(
                                     params,
@@ -605,16 +632,16 @@ impl ArtificialImmuneSystem {
                             .into_iter()
                             .max_by(|(a, _, _), (b, _, _)| a.total_cmp(b))
                             .unwrap();
-                        // println!("best s {:?} parent s {:?}, dady s: {:?}", best_s, parent_score,daddy_score);
+                        // println!("best s {:?} parent s {:?}, daddy s: {:?}", best_s, parent_score,daddy_score);
 
                         // if the best child score beats the parent use the childs score
-                        if (best_s > daddy_score) {
-                            return (
+                        return if best_s > daddy_score {
+                            (
                                 (best_eval.clone(), best_cell),
                                 Some((daddy_eval, best_eval)),
-                            );
+                            )
                         } else {
-                            return ((daddy_eval, daddy_antibody), None);
+                            ((daddy_eval, daddy_antibody), None)
                         }
                     })
                     .collect::<Vec<_>>()

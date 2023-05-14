@@ -21,6 +21,38 @@ pub fn expand_antibody_radius_until_hit(
     iterer deretter gjennom de som er feil og for hver som er innenfor reduser rangen til den er lavere en den
      */
 
+    if cell
+        .dim_values
+        .iter()
+        .map(|v| v.value_type)
+        .all(|v| v == DimValueType::Disabled)
+    {
+        // abort if all dims are disabled
+        return cell;
+    }
+
+    let min_range = antigens
+        .par_iter()
+        .map(|ag| cell.get_affinity_dist(ag))
+        .min_by(|a, b| a.partial_cmp(b).unwrap())
+        .unwrap();
+
+
+    cell.radius_constant = min_range * 0.99;
+    return cell;
+}
+
+pub fn expand_antibody_radius_until_hit__(
+    mut cell: Antibody,
+    bk: &BucketKing<AntiGen>,
+    antigens: &Vec<AntiGen>,
+) -> Antibody {
+    /*
+    ha en middels høy range
+    finn om ikke hit på feil øk til du får det
+    iterer deretter gjennom de som er feil og for hver som er innenfor reduser rangen til den er lavere en den
+     */
+
     if !cell
         .dim_values
         .iter()

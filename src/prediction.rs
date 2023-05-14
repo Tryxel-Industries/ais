@@ -12,7 +12,7 @@ use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
 use rayon::prelude::*;
 use statrs::statistics::Statistics;
-use strum_macros::{Display, EnumString, ToString};
+use strum_macros::{Display, EnumString};
 
 // pub struct ClassPrediction {
 //     pub class: usize,
@@ -95,6 +95,9 @@ fn fraction_prediction(antigen: &AntiGen, registered_antibodies: Vec<&Antibody>)
     return Prediction::ClassPredict(max_sum_label);
 }
 
+
+
+
 fn affinity_prediction(antigen: &AntiGen, registered_antibodies: Vec<&Antibody>) -> Prediction {
     if registered_antibodies.len() == 0 {
         return Prediction::NoPredict;
@@ -123,6 +126,43 @@ fn affinity_prediction(antigen: &AntiGen, registered_antibodies: Vec<&Antibody>)
     return Prediction::ClassPredict(max_sum_label);
 }
 
+
+fn weighted_prediction(antigen: &AntiGen, registered_antibodies: Vec<&Antibody>, eval_method: &EvaluationMethod) -> Prediction {
+    if registered_antibodies.len() == 0 {
+        return Prediction::NoPredict;
+    }
+
+    let labels: HashSet<usize> = registered_antibodies
+        .iter()
+        .map(|ab| ab.class_label)
+        .collect();
+
+    let mut max_sum = 0.0;
+    let mut max_sum_label = 0;
+
+
+    let mut predicate = match eval_method {
+        EvaluationMethod::Count => {|ab: &Antibody|-> f64 {1.0}}
+        EvaluationMethod::Fraction => {|ab: &Antibody|-> f64 {ab.final_train_label_membership.unwrap().0}}
+        EvaluationMethod::AffinitySum => {|ab: &Antibody|-> f64 {ab.final_train_label_affinity.unwrap().0}}
+    };
+
+    for label in labels {
+        let label_sum = registered_antibodies
+            .iter()
+            .filter(|ab| ab.class_label == label)
+            .map(|ab| predicate(ab) * ab.boosting_model_alpha)
+            .sum();
+
+        if label_sum >= max_sum {
+            max_sum_label = label.clone();
+            max_sum = label_sum;
+        }
+    }
+
+    return Prediction::ClassPredict(max_sum_label);
+}
+
 pub fn make_prediction(
     antigen: &AntiGen,
     antibodies: &Vec<Antibody>,
@@ -135,11 +175,12 @@ pub fn make_prediction(
         .collect::<Vec<_>>();
 
 
-    return match eval_method {
-        EvaluationMethod::Count => count_prediction(antigen, registered_antibodies),
-        EvaluationMethod::Fraction => fraction_prediction(antigen, registered_antibodies),
-        EvaluationMethod::AffinitySum => affinity_prediction(antigen, registered_antibodies),
-    };
+    return weighted_prediction(antigen,registered_antibodies,eval_method)
+    // return match eval_method {
+    //     EvaluationMethod::Count => count_prediction(antigen, registered_antibodies),
+    //     EvaluationMethod::Fraction => fraction_prediction(antigen, registered_antibodies),
+    //     EvaluationMethod::AffinitySum => affinity_prediction(antigen, registered_antibodies),
+    // };
 }
 pub fn is_class_correct(
     antigen: &AntiGen,
