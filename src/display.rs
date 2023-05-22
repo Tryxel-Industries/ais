@@ -3,8 +3,8 @@ use crate::params::Params;
 use crate::prediction::EvaluationMethod;
 use crate::representation::antibody::Antibody;
 use crate::representation::antigen::AntiGen;
-use std::collections::HashMap;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
+use std::collections::HashMap;
 
 //
 //  Antibody info
@@ -99,13 +99,12 @@ pub fn eval_display(
         eval_vals.push(eval_count);
     }
 
-    if verbose{
+    if verbose {
         println!();
         println!("==========================");
         println!("      MUT info");
         println!("==========================");
         ais.print_ab_mut_info();
-
 
         println!("=============================================================================");
         println!("      {:}", display_headline);
@@ -119,29 +118,28 @@ pub fn eval_display(
 
     for ((eval_method, evals), eval_counts) in eval_types.iter().zip(translator_vals).zip(eval_vals)
     {
-          let translator_formatted = evals.into_iter().zip(eval_ag_pop).collect();
+        let translator_formatted = evals.into_iter().zip(eval_ag_pop).collect();
 
         let acc = eval_counts.true_count as f64 / (eval_ag_pop.len() as f64);
         let precession = eval_counts.true_count as f64
             / (eval_counts.false_count as f64 + eval_counts.true_count as f64).max(1.0);
 
-          if let Some(eval_type) = return_eval_type{
-            if eval_type == eval_method{
+        if let Some(eval_type) = return_eval_type {
+            if eval_type == eval_method {
                 return_eval = acc;
             }
-        }else {
-              if acc > return_eval{
-                  return_eval = acc;
-              }
-          }
-
+        } else {
+            if acc > return_eval {
+                return_eval = acc;
+            }
+        }
 
         println!(
             "{:<11}: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
             eval_method.to_string(),eval_counts.true_count, eval_counts.false_count, eval_counts.no_reg_count,precession, acc
         );
-        translator.get_show_ag_acc(translator_formatted, false);
-        if verbose{
+        translator.get_show_ag_acc(translator_formatted, true);
+        if verbose {
             println!()
         }
     }

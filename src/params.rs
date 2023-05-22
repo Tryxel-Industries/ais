@@ -27,6 +27,7 @@ pub enum ReplaceFractionType{
 pub enum PopSizeType{
     Fraction(f64),
     Number(usize),
+    BoostingFixed(usize)
 }
 
 #[derive(Clone)]

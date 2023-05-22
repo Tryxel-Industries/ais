@@ -108,17 +108,25 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
 
     let mut corr_matched = Vec::with_capacity(registered_antigens.len());
     let mut corr_matched_afin = Vec::with_capacity(registered_antigens.len());
+    // let mut corr_matched_weighted_count = Vec::with_capacity(registered_antigens.len());
 
     let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
     let mut wrong_matched_afin = Vec::with_capacity(registered_antigens.len());
+    // let mut wrong_matched_weighted_count = Vec::with_capacity(registered_antigens.len());
 
     for (registered_antigen, afin) in registered_antigens {
         if registered_antigen.class_label == antibody.class_label {
             corr_matched.push(registered_antigen.id);
             corr_matched_afin.push(afin);
+
+            // corr_matched_afin.push(afin * registered_antigen.boosting_weight);
+            // corr_matched_weighted_count.push(1.0 * registered_antigen.boosting_weight);
         } else {
             wrong_matched.push(registered_antigen.id);
             wrong_matched_afin.push(afin);
+
+            // wrong_matched_afin.push(afin * registered_antigen.boosting_weight);
+            // wrong_matched_weighted_count.push(1.0 * registered_antigen.boosting_weight);
         }
     }
 
@@ -132,8 +140,11 @@ pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evalua
 
 
     // -- membership value -- //
-    let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
+    // let corr_w_sum: f64 = corr_matched_weighted_count.iter().sum();
+    // let wrong_w_sum: f64 = wrong_matched_weighted_count.iter().sum();
+    // let same_label_membership = corr_w_sum / (corr_w_sum + wrong_w_sum).max(1.0);
 
+    let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
 
     let corr_match_afin_sum:f64 = corr_matched_afin.iter().sum::<f64>() * -1.0;
     let wrong_match_afin_sum:f64 = wrong_matched_afin.iter().sum::<f64>() * -1.0;
