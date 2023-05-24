@@ -211,10 +211,10 @@ fn trail_run_from_ab_csv(){
 
 }
 fn trail_training() {
-    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
+    rayon::ThreadPoolBuilder::new().num_threads(29).build_global().unwrap();
 
 
-    let dataset_used = Datasets::Wine;
+    let dataset_used = Datasets::PrimaDiabetes;
     // embedding params
     let use_num_to_fetch = Some(200);
     let max_sentences_per_article = Some(20);
@@ -248,11 +248,11 @@ fn trail_training() {
         get_dataset_optimal_params(dataset_used, class_labels)
     } else {
         Params {
-            eval_method: EvaluationMethod::AffinitySum,
-            boost: 0,
+            eval_method: EvaluationMethod::Fraction,
+            boost: 10,
             // -- train params -- //
-            antigen_pop_size: PopSizeType::Fraction(1.0),
-            // antigen_pop_size: PopSizeType::BoostingFixed(10),
+            // antigen_pop_size: PopSizeType::Fraction(1.0),
+            antigen_pop_size: PopSizeType::BoostingFixed(50),
             generations: 1000,
 
             mutation_offset_weight: 1,
@@ -266,7 +266,7 @@ fn trail_training() {
             mutation_value_type_local_search_dim: true,
 
             // -- reduction -- //
-            membership_required: 0.5,
+            membership_required: 0.75,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -280,10 +280,10 @@ fn trail_training() {
 
             label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
 
-            correctness_weight: 0.5,
-            coverage_weight: 0.5,
-            uniqueness_weight: 0.0,
-            good_afin_weight: 0.5,
+            correctness_weight: 1.0,
+            coverage_weight: 1.0,
+            uniqueness_weight: 0.5,
+            good_afin_weight: 0.0,
             bad_afin_weight: 1.0,
 
             //selection
@@ -320,13 +320,13 @@ fn trail_training() {
     };
 
     let frac_verbosity_params = VerbosityParams {
-        show_initial_pop_info: true,
-        // iter_info_interval: None,
+        show_initial_pop_info: false,
+        iter_info_interval: None,
         full_pop_acc_interval: None,
-        iter_info_interval: Some(1),
+        // iter_info_interval: Some(1),
         // full_pop_acc_interval: Some(50),
-        show_class_info: true,
-        make_plots: true,
+        show_class_info: false,
+        make_plots: false,
         display_final_ab_info: true,
         display_detailed_error_info: true,
         display_final_acc_info: true,
@@ -334,7 +334,7 @@ fn trail_training() {
     };
     modify_config_by_args(&mut params);
 
-    ais_frac_test(params, antigens, &frac_verbosity_params, 0.2, translator, &mut logger);
+    ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
     // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
 
     logger.dump_to_json_file("./bip_bop.json".to_string())
