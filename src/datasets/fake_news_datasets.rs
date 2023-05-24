@@ -25,6 +25,11 @@ pub fn read_kaggle_embeddings(num_to_read: Option<usize>, sentence_limit: Option
 pub fn read_fnn_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
     read_embeddings("fnn", num_to_read, sentence_limit,translator, use_whitened)
 }
+
+pub fn read_buzfeed_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
+    read_embeddings("buzfeed", num_to_read, sentence_limit,translator, use_whitened)
+}
+
 fn read_embeddings(dir: &str, num_to_read: Option<usize>,sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
 
     let path = if use_whitened{

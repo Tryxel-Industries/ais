@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use strum_macros::{Display, EnumString};
-use crate::datasets::fake_news_datasets::{read_fnn_embeddings, read_kaggle_embeddings};
+use crate::datasets::fake_news_datasets::{read_buzfeed_embeddings, read_fnn_embeddings, read_kaggle_embeddings};
 use crate::datasets::reference_datasets::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_pima_diabetes, read_sonar, read_spirals, read_wine};
 use crate::params::{Params, PopSizeType, ReplaceFractionType};
 use crate::prediction::EvaluationMethod;
@@ -29,6 +29,7 @@ pub enum Datasets{
     Ionosphere,
 
     EmbeddingKaggle,
+    EmbeddingBuzfeed,
     EmbeddingFnn
 }
 
@@ -58,6 +59,7 @@ pub fn get_dataset(dataset: Datasets, num_to_read: Option<usize>, sentence_limit
 
         // embedding sets
         Datasets::EmbeddingKaggle => {read_kaggle_embeddings(num_to_read, sentence_limit, translator,use_whitened)},
+        Datasets::EmbeddingBuzfeed => {read_buzfeed_embeddings(num_to_read, sentence_limit, translator,use_whitened)},
         Datasets::EmbeddingFnn => {read_fnn_embeddings(num_to_read, sentence_limit, translator,use_whitened)},
     }
 

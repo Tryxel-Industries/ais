@@ -62,7 +62,7 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
 
     let mut data_vec = read_csv(filepath.as_str());
 
-    let dim_feature_cols = (data_vec.get(0).unwrap().len()-4);
+    let dim_feature_cols = (data_vec.get(0).unwrap().len()-5);
     let num_dims = if dim_feature_cols % 3 == 0{
         dim_feature_cols/3
     }else {

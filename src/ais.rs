@@ -23,7 +23,8 @@ use crate::prediction::{EvaluationMethod, is_class_correct, make_prediction, Pre
 use crate::representation::antibody::Antibody;
 use crate::representation::antibody_factory::AntibodyFactory;
 use crate::representation::antigen::AntiGen;
-use crate::representation::expand_antibody_radius_until_hit;
+use crate::representation::{evaluate_population, expand_antibody_radius_until_hit};
+use crate::representation::evaluated_antibody::EvaluatedAntibody;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use crate::scoring::score_antibodies;
 use crate::selection::{
@@ -31,6 +32,7 @@ use crate::selection::{
     remove_strictly_worse, replace_if_better_per_cat, replace_worst_n_per_cat, snip_worst_n,
     tournament_pick,
 };
+use crate::stupid_mutations::mutate_clone_transform;
 
 /*
 1. select n parents
@@ -44,24 +46,7 @@ pub struct ArtificialImmuneSystem {
 //  AIS
 //
 
-pub fn evaluate_population(
-    params: &Params,
-    population: Vec<Antibody>,
-    antigens: &Vec<AntiGen>,
-) -> Vec<(Evaluation, Antibody)> {
-    return population
-        .into_par_iter() // TODO: set parallel
-        // .into_iter()
-        .map(|antibody| {
-            // evaluate antibodies
-            let score = evaluate_antibody(antigens, &antibody);
-            return (score, antibody);
-        })
-        .collect();
-}
-
 fn gen_initial_population(
-    bucket_king: &BucketKing<AntiGen>,
     antigens: &Vec<AntiGen>,
     params: &Params,
     cell_factory: &AntibodyFactory,
@@ -75,7 +60,7 @@ fn gen_initial_population(
             .map(|ag| cell_factory.generate_from_antigen(ag))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
-                    expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+                    expand_antibody_radius_until_hit(cell, &antigens)
                 } else {
                     cell
                 }
@@ -95,7 +80,7 @@ fn gen_initial_population(
             .map(|_| cell_factory.generate_from_antigen(filtered.choose(&mut rand::thread_rng()).unwrap()))
             .map(|cell| {
                 if params.antibody_init_expand_radius {
-                    expand_antibody_radius_until_hit(cell, &bucket_king, &antigens)
+                    expand_antibody_radius_until_hit(cell, &antigens)
                 } else {
                     cell
                 }
@@ -163,6 +148,7 @@ fn gen_initial_population(
 //     );
 //
 // }
+
 impl ArtificialImmuneSystem {
     pub fn new() -> ArtificialImmuneSystem {
         return Self {
@@ -556,10 +542,7 @@ impl ArtificialImmuneSystem {
         let mut match_counter = MatchCounter::new(&antigens);
         let evaluated_pop = evaluate_population(params, ab_pool, &antigens);
         match_counter.add_evaluations(
-            evaluated_pop
-                .iter()
-                .map(|(evaluation, _)| evaluation)
-                .collect::<Vec<_>>(),
+            &evaluated_pop
         );
 
 
@@ -570,7 +553,9 @@ impl ArtificialImmuneSystem {
         //     "########## boost mask \n{:?}",
         //     match_counter.boosting_weight_values
         // );
-        return (train_boost_hist, test_boost_hist, scored_pop);
+
+        let out_pop = scored_pop.into_iter().map(|(a,b)|(a,b.evaluation,b.antibody)).collect();
+        return (train_boost_hist, test_boost_hist, out_pop);
     }
 
 
@@ -588,13 +573,9 @@ impl ArtificialImmuneSystem {
         let leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
 
         let mut rng = rand::thread_rng();
+
         // check dims and classes
         let n_dims = antigens.get(0).unwrap().values.len();
-
-        // build ag index
-        let mut bucket_king: BucketKing<AntiGen> =
-            BucketKing::new(n_dims, (0.0, 1.0), 10, |ag| ag.id, |ag| &ag.values);
-        bucket_king.add_values_to_index(antigens);
 
         // keeps track of the matches
         let max_ag_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
@@ -615,21 +596,16 @@ impl ArtificialImmuneSystem {
 
         // =======  set up population  ======= //
         let initial_population: Vec<Antibody> =
-            gen_initial_population(&bucket_king, antigens, params, &cell_factory, &pop_size, &match_counter);
+            gen_initial_population(antigens, params, &cell_factory, &pop_size, &match_counter);
 
         // the evaluated pop is the population where the ab -> ag matches has been calculated but not scored
-        let mut evaluated_pop: Vec<(Evaluation, Antibody)> = Vec::with_capacity(pop_size);
+        let mut evaluated_pop: Vec<EvaluatedAntibody> = Vec::with_capacity(pop_size);
 
         // the scored pop is the population where the ab -> ag matches and score has been calculated
-        let mut scored_pop: Vec<(f64, Evaluation, Antibody)> = Vec::with_capacity(pop_size);
+        let mut scored_pop: Vec<(f64, EvaluatedAntibody)> = Vec::with_capacity(pop_size);
 
         evaluated_pop = evaluate_population(params, initial_population, antigens);
-        match_counter.add_evaluations(
-            evaluated_pop
-                .iter()
-                .map(|(evaluation, _)| evaluation)
-                .collect::<Vec<_>>(),
-        );
+        match_counter.add_evaluations(&evaluated_pop);
 
         scored_pop = score_antibodies(params,evaluated_pop,  &match_counter);
 
@@ -639,7 +615,7 @@ impl ArtificialImmuneSystem {
             match_counter.class_labels.clone().into_iter().for_each(|cl| {
                 let filtered: Vec<usize> = scored_pop
                     .iter()
-                    .filter(|(_, _, c)| c.class_label == cl)
+                    .filter(|(_, c)| c.antibody.class_label == cl)
                     .map(|_| 1usize)
                     .collect();
                 print!("num with {:?} is {:?} ", cl, filtered.len())
@@ -651,12 +627,12 @@ impl ArtificialImmuneSystem {
             // =======  tracking and logging   ======= //
             let max_score = scored_pop
                 .iter()
-                .map(|(score, _, _)| score)
+                .map(|(score, _)| score)
                 .max_by(|a, b| a.total_cmp(b))
                 .unwrap();
 
             let avg_score =
-                scored_pop.iter().map(|(score, _, _)| score).sum::<f64>() / scored_pop.len() as f64;
+                scored_pop.iter().map(|(score, _)| score).sum::<f64>() / scored_pop.len() as f64;
 
             if let Some(n) = verbosity_params.iter_info_interval {
                 if i % n == 0 {
@@ -698,7 +674,7 @@ impl ArtificialImmuneSystem {
             // params.max_replacment_frac * (2.0 / pop_size as f64).powf(replace_exponent) + 0.05;
 
             // =======  clone -> mut -> eval  ======= //
-            let mut new_gen: Vec<(Evaluation, Antibody)> = Vec::new();
+            let mut new_gen: Vec<EvaluatedAntibody> = Vec::new();
 
             let mut parent_idx_vec: Vec<usize> = Vec::new();
 
@@ -718,8 +694,30 @@ impl ArtificialImmuneSystem {
 
                 parent_idx_vec.extend(parents.clone());
 
+                parents.iter().for_each(|idx|{
+                    let (score, eval_ab) = scored_pop.get(*idx).unwrap();
+                    match_counter.remove_evaluation(eval_ab)
+                });
+
+                let label_gen: Vec<_> = parents.clone()
+                    .into_par_iter() // TODO: set parallel
+                    .map(|idx|{
+                        let (score, mut eval_ab) = scored_pop.get(idx).unwrap().clone();
+
+                        let frac_of_max = (score / max_score).max(0.2).min(1.0);
+                        let n_clones =
+                            ((params.n_parents_mutations as f64 * frac_of_max) as usize).max(1);
+                        let fitness_scaler = 1.0-frac_of_max;
+
+                        mutate_clone_transform(&mut eval_ab, score, params, fitness_scaler, antigens, &match_counter, n_clones);
+                        return eval_ab;
+
+                    }).collect();
+
+                match_counter.add_evaluations(&label_gen);
+
                 // let (label_gen, match_updates): (Vec<(Evaluation, Antibody)>, Option<(Evaluation,Evaluation)>) = parents
-                let (label_gen, match_updates): (
+            /*    let (label_gen, match_updates): (
                     Vec<(Evaluation, Antibody)>,
                     Vec<Option<(Evaluation, Evaluation)>>,
                 ) = parents
@@ -727,7 +725,7 @@ impl ArtificialImmuneSystem {
                     .into_par_iter() // TODO: set parallel
                     // .into_iter()
                     .map(|idx| scored_pop.get(idx).unwrap().clone())
-                    .map(|(parent_score, parent_eval, parent_antibody)| {
+                    .map(|(parent_score, parent_eab)| {
                         // find the fraction of max score of the current ab, this is used for the cloning and mutation rates
                         let frac_of_max = (parent_score / max_score).max(0.2).min(1.0);
                         let n_clones =
@@ -796,7 +794,7 @@ impl ArtificialImmuneSystem {
                     match_updates.into_iter().filter_map(|a| a).unzip();
 
                 match_counter.remove_evaluations(removed_evals.iter().collect());
-                match_counter.add_evaluations(added_evals.iter().collect());
+                match_counter.add_evaluations(added_evals.iter().collect());*/
                 new_gen.extend(label_gen)
             }
 
@@ -810,19 +808,18 @@ impl ArtificialImmuneSystem {
 
             for idx in parent_idx_vec {
                 // let mut parent_value = scored_pop.get_mut(idx).unwrap();
-                let (p_score, p_eval, p_cell) = scored_pop.get_mut(idx).unwrap();
-                let (c_score, c_eval, c_cell) = to_add.pop().unwrap();
+                let (p_score, p_eab) = scored_pop.get_mut(idx).unwrap();
+                let (c_score, c_eab) = to_add.pop().unwrap();
                 std::mem::replace(p_score, c_score);
-                std::mem::replace(p_eval, c_eval);
-                std::mem::replace(p_cell, c_cell);
+                std::mem::replace(p_eab, c_eab);
             }
-
+            //
             // =======  leak new  ======= //
             // let is_strip_round = i % 100 == 0;
             let is_strip_round = false;
 
             let n_to_leak = ((n_to_replace as f64 * params.leak_fraction) as usize);
-            let mut new_leaked: Vec<(f64, Evaluation, Antibody)> = Vec::new();
+            let mut new_leaked: Vec<(f64, EvaluatedAntibody)> = Vec::new();
 
             let n_to_gen_map = {
                 let mut replace_map = HashMap::new();
@@ -868,22 +865,26 @@ impl ArtificialImmuneSystem {
                             if params.antibody_init_expand_radius {
                                 new_antibody = expand_antibody_radius_until_hit(
                                     new_antibody,
-                                    &bucket_king,
                                     &antigens,
                                 )
                             }
                             let eval = evaluate_antibody(antigens, &new_antibody);
-                            return (eval, new_antibody);
+                            return EvaluatedAntibody{
+                                evaluation: eval,
+                                antibody: new_antibody,
+                            };
                         })
                         .collect();
 
-                    let new_evals: Vec<_> = new_pop_pop.iter().map(|(e, _)| e).collect();
-                    local_match_counter.add_evaluations(new_evals);
+                    local_match_counter.add_evaluations(&new_pop_pop);
                     let leaked_to_add =
                         score_antibodies(params,new_pop_pop,  &local_match_counter);
 
-                    let cleanup_evals: Vec<_> = leaked_to_add.iter().map(|(_, e, _)| e).collect();
-                    local_match_counter.remove_evaluations(cleanup_evals);
+                    // shit but works
+                    leaked_to_add.iter().for_each(|(a,b)|{
+                        local_match_counter.remove_evaluation(b);
+                    });
+
 
                     new_leaked.extend(leaked_to_add);
                 }
@@ -905,8 +906,8 @@ impl ArtificialImmuneSystem {
 
             // =======  next gen cleanup  ======= //
 
-            let evaluated_pop: Vec<(Evaluation, Antibody)> =
-                scored_pop.into_iter().map(|(a, b, c)| (b, c)).collect();
+            let evaluated_pop: Vec<EvaluatedAntibody> =
+                scored_pop.into_iter().map(|(a, b)| b).collect();
 
             // let mut match_counter_2 = MatchCounter::new(max_ag_id);
             // match_counter_2.add_evaluations(
@@ -929,7 +930,7 @@ impl ArtificialImmuneSystem {
 
             scored_pop = score_antibodies(params,evaluated_pop,  &match_counter);
 
-            if let Some(n) = verbosity_params.full_pop_acc_interval {
+  /*          if let Some(n) = verbosity_params.full_pop_acc_interval {
                 scored_pop = scored_pop
             .into_iter()
             // .filter(|(score, _, _)| *score >= 2.0)
@@ -991,7 +992,10 @@ impl ArtificialImmuneSystem {
                 });
                 println!();
             }
+
+   */
         }
+
         // println!("########## error mask \n{:?}", error_match_mask);
         // println!("########## match mask \n{:?}", match_mask);
         // scored_pop = best_run;
@@ -1014,22 +1018,22 @@ impl ArtificialImmuneSystem {
             );
         }
 
-        scored_pop = scored_pop
+        let splitted = scored_pop
             .into_iter()
             // .filter(|(score, _, _)| *score >= 2.0)
             // .filter(|(score, _, _)| *score > 0.0)
-            .map(|(score, evaluation, cell)| {
-                let mut save_ab = cell.clone();
-                save_ab.final_train_label_membership = Some(evaluation.membership_value);
-                save_ab.final_train_label_affinity = Some(evaluation.affinity_weight);
-                return (score, evaluation, save_ab);
+            .map(|(score, evaluated_ab)| {
+                let mut save_ab = evaluated_ab.antibody.clone();
+                save_ab.final_train_label_membership = Some(evaluated_ab.evaluation.membership_value);
+                save_ab.final_train_label_affinity = Some(evaluated_ab.evaluation.affinity_weight);
+                return (score, evaluated_ab.evaluation.clone(), save_ab);
             })
 
             .filter(|(score, _, cell)| cell.final_train_label_membership.unwrap().0 >= params.membership_required)
             .collect();
 
         logger.end_train();
-        return (train_acc_hist, train_score_hist, scored_pop);
+        return (train_acc_hist, train_score_hist, splitted);
     }
 
     pub fn print_ab_mut_info(&self){

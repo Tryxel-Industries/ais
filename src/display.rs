@@ -138,7 +138,7 @@ pub fn eval_display(
             "{:<11}: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
             eval_method.to_string(),eval_counts.true_count, eval_counts.false_count, eval_counts.no_reg_count,precession, acc
         );
-        translator.get_show_ag_acc(translator_formatted, true);
+        translator.get_show_ag_acc(translator_formatted, false);
         if verbose {
             println!()
         }

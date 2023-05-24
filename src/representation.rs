@@ -4,15 +4,17 @@ use crate::evaluation::evaluate_antibody;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::BucketKing;
+use crate::params::Params;
+use crate::representation::evaluated_antibody::EvaluatedAntibody;
 
 pub mod antibody;
 pub mod antibody_factory;
 pub mod antigen;
 pub mod news_article_mapper;
+pub mod evaluated_antibody;
 
 pub fn expand_antibody_radius_until_hit(
     mut cell: Antibody,
-    bk: &BucketKing<AntiGen>,
     antigens: &Vec<AntiGen>,
 ) -> Antibody {
     /*
@@ -97,3 +99,25 @@ pub fn expand_antibody_radius_until_hit__(
 
     return cell;
 }
+
+
+
+pub fn evaluate_population(
+    params: &Params,
+    population: Vec<Antibody>,
+    antigens: &Vec<AntiGen>,
+) -> Vec<EvaluatedAntibody> {
+    return population
+        .into_par_iter() // TODO: set parallel
+        // .into_iter()
+        .map(|antibody| {
+            // evaluate antibodies
+            let eval  = evaluate_antibody(antigens, &antibody);
+            return EvaluatedAntibody{
+                evaluation: eval,
+                antibody,
+            };
+        })
+        .collect();
+}
+

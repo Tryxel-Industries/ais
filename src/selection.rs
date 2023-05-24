@@ -6,6 +6,7 @@ use rand::{distributions::Distribution, thread_rng, Rng};
 use crate::evaluation::{Evaluation, MatchCounter};
 use crate::params::Params;
 use crate::representation::antibody::Antibody;
+use crate::representation::evaluated_antibody::EvaluatedAntibody;
 use crate::util::pick_n_random;
 
 pub fn kill_by_mask_yo(
@@ -185,14 +186,14 @@ pub fn replace_worst_n_per_cat(
 }
 
 pub fn replace_if_better_per_cat(
-    mut population: Vec<(f64, Evaluation, Antibody)>,
-    mut replacements: Vec<(f64, Evaluation, Antibody)>,
+    mut population: Vec<(f64, EvaluatedAntibody)>,
+    mut replacements: Vec<(f64, EvaluatedAntibody)>,
     mut snip_list: HashMap<usize, usize>,
     match_counter: &mut MatchCounter,
-) -> Vec<(f64, Evaluation, Antibody)> {
-    population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
+) -> Vec<(f64, EvaluatedAntibody)> {
+    population.sort_by(|(score_a, _), (score_b, _)| score_a.total_cmp(score_b));
 
-    replacements.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.total_cmp(score_b));
+    replacements.sort_by(|(score_a, _), (score_b, _)| score_a.total_cmp(score_b));
 
     let mut rep_map: Vec<(usize, usize)> = Vec::new();
 
@@ -200,12 +201,12 @@ pub fn replace_if_better_per_cat(
         let label_pop: Vec<_> = population
             .iter()
             .enumerate()
-            .filter(|(_, (_, _, c))| c.class_label == label)
+            .filter(|(_, (_, c))| c.antibody.class_label == label)
             .collect();
         let label_rep: Vec<_> = replacements
             .iter()
             .enumerate()
-            .filter(|(_, (_, _, c))| c.class_label == label)
+            .filter(|(_, (_,  c))| c.antibody.class_label == label)
             .collect();
 
         let mut pop_cur_idx = 0;
@@ -218,8 +219,8 @@ pub fn replace_if_better_per_cat(
                 break;
             }
 
-            let (pop_idx, (pop_score, _, pop_cell)) = pop_option.unwrap();
-            let (rep_idx, (rep_score, _, rep_cell)) = rep_option.unwrap();
+            let (pop_idx, (pop_score,  pop_cell)) = pop_option.unwrap();
+            let (rep_idx, (rep_score,  rep_cell)) = rep_option.unwrap();
 
             if rep_score > pop_score {
                 rep_map.push((pop_idx.clone(), rep_idx.clone()));
@@ -233,17 +234,17 @@ pub fn replace_if_better_per_cat(
 
     for (pop_idx, rep_idx) in rep_map {
         // let mut parent_value = scored_pop.get_mut(idx).unwrap();
-        let (p_score, p_eval, p_cell) = population.get_mut(pop_idx).unwrap();
-        let (c_score, c_eval, c_cell) = replacements.get(rep_idx).unwrap();
+        let (p_score, p_eab) = population.get_mut(pop_idx).unwrap();
+        let (c_score, c_eab) = replacements.get(rep_idx).unwrap();
 
-        match_counter.remove_evaluations(vec![&p_eval]);
-        match_counter.add_evaluations(vec![&c_eval]);
+        match_counter.remove_evaluation(p_eab);
+        match_counter.add_evaluation(c_eab);
+
         // std::mem::replace(p_score, c_score);
         // std::mem::replace(p_eval, c_eval);
         // std::mem::replace(p_cell, c_cell);
         *p_score = c_score.clone();
-        *p_eval = c_eval.clone();
-        *p_cell = c_cell.clone();
+        *p_eab = c_eab.clone();
     }
 
     return population;
@@ -319,7 +320,7 @@ pub fn elitism_selection(
 }
 
 pub fn labeled_tournament_pick(
-    population: &Vec<(f64, Evaluation, Antibody)>,
+    population: &Vec<(f64, EvaluatedAntibody)>,
     num_to_pick: &usize,
     tournament_size: &usize,
     label_to_filter: Option<&usize>,
@@ -334,12 +335,12 @@ pub fn labeled_tournament_pick(
         let filtered: Vec<_> = population
             .iter()
             .enumerate()
-            .filter(|(_idx, (_score, _eval, antibody))| antibody.class_label == *v)
+            .filter(|(_, (_, eab))| eab.antibody.class_label == *v)
             .collect();
 
         let _index_vali: Vec<_> = filtered
             .iter()
-            .map(|(_, (_a, _b, c))| c.class_label)
+            .map(|(_, (_, eab))| eab.antibody.class_label)
             .collect();
 
         // println!("for label {:?}", v);
@@ -348,13 +349,13 @@ pub fn labeled_tournament_pick(
         pop_s = filtered.len();
         idx_list = filtered
             .iter()
-            .map(|(idx, (score, _, _))| (idx.clone(), score.clone()))
+            .map(|(idx, (score, _))| (idx.clone(), score.clone()))
             .collect();
     } else {
         idx_list = population
             .iter()
             .enumerate()
-            .map(|(idx, (score, _, _))| (idx, score.clone()))
+            .map(|(idx, (score, _))| (idx, score.clone()))
             .collect();
         pop_s = population.len();
     }
@@ -382,22 +383,13 @@ pub fn labeled_tournament_pick(
             }
         }
     }
-    /*
-        let index_vali: Vec<_> = parents.iter()
-            .map(|idx| scored_pop.get(*idx).unwrap())
-            .map(|(a,b,c)|c.class_label)
-            .collect();
 
-        println!("{:?}", parents);
-        println!("{:?}", index_vali);
-        println!();
-    */
 
     return picks;
 }
 
 pub fn tournament_pick(
-    population: &Vec<(f64, Evaluation, Antibody)>,
+    population: &Vec<(f64, EvaluatedAntibody)>,
     num_to_pick: &usize,
     tournament_size: &usize,
 ) -> Vec<usize> {

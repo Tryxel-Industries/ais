@@ -140,11 +140,11 @@ impl NewsArticleAntigenTranslator {
             println!("{}", tbl_header);
         }
 
-        print!("ag id list: ");
+       /* print!("ag id list: ");
         pred_res.iter().for_each(|(a,b)|{
             print!("{:?}, ", b.id);
         });
-        println!();
+        println!();*/
         let (
             true_positive,
             false_positive,
@@ -220,7 +220,7 @@ impl NewsArticleAntigenTranslator {
                     } else {
                         true_negatives += 1;
                     }
-                } else if false_sentences >= true_sentences {
+                } else if (false_sentences >= true_sentences) & (false_sentences+true_sentences > 0) {
                     if article_key.article_label == 0 {
                         false_negatives += 1;
                     } else {

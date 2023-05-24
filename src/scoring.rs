@@ -9,29 +9,28 @@ use crate::evaluation::{Evaluation, MatchCounter};
 use crate::params::Params;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
-
+use crate::representation::evaluated_antibody::EvaluatedAntibody;
 
 
 fn mod_sigmoid(num: f64)-> f64{
     return 1.0 -(1.0/(1.0+f64::e().powf(num)))
 }
-pub fn score_antibodies(
+
+
+pub fn score_antibody(
+    eval_ab: &EvaluatedAntibody,
     params: &Params,
-    evaluated_population: Vec<(Evaluation, Antibody)>,
     match_counter: &MatchCounter,
-) -> Vec<(f64, Evaluation, Antibody)> {
+) -> f64{
+    
+    let eval = &eval_ab.evaluation;
+            let cell = &eval_ab.antibody;
+
+
     let count_map = &match_counter.count_map;
     let merged_mask: &Vec<usize> = match_counter.correct_match_counter.as_ref();
     let error_merged_mask: &Vec<usize> = match_counter.incorrect_match_counter.as_ref();
-    // println!("{:?}", merged_mask);
-    // println!("len {:?}", merged_mask.len());
-    // println!("sum {:?}", merged_mask.iter().sum::<usize>());
-    // println!("match -s: ");
-    let scored = evaluated_population
-        // .into_iter()
-        .into_par_iter() // TODO: set paralell
-        .map(|(eval, cell)| {
-
+    
             // the lover the deeper in side the zone
             let mut corr_affinity_heuristic: f64 = 0.0;
             let mut err_affinity_heuristic: f64 = 0.0;
@@ -176,8 +175,26 @@ pub fn score_antibodies(
             if pred_pos == tot_elements {
                 score = -5.0;
             }
+    return score;
+}
 
-            return (score, eval, cell);
+pub fn score_antibodies(
+    params: &Params,
+    evaluated_population: Vec<EvaluatedAntibody>,
+    match_counter: &MatchCounter,
+) -> Vec<(f64, EvaluatedAntibody)> {
+
+    // println!("{:?}", merged_mask);
+    // println!("len {:?}", merged_mask.len());
+    // println!("sum {:?}", merged_mask.iter().sum::<usize>());
+    // println!("match -s: ");
+    let scored = evaluated_population
+        // .into_iter()
+        .into_par_iter() // TODO: set paralell
+        .map(|eab| {
+            let score = score_antibody(&eab, params,match_counter);
+
+            return (score, eab);
         })
         .collect();
 

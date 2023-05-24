@@ -17,7 +17,7 @@ use rand::prelude::SliceRandom;
 use rand::Rng;
 use statrs::statistics::Statistics;
 
-use crate::ais::{evaluate_population, ArtificialImmuneSystem};
+use crate::ais::{ ArtificialImmuneSystem};
 use crate::bucket_empire::BucketKing;
 
 use crate::datasets::{Datasets, get_dataset, get_dataset_optimal_params};
@@ -52,6 +52,7 @@ mod datasets;
 mod experiment_logger;
 mod prediction;
 mod display;
+mod stupid_mutations;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -215,7 +216,7 @@ fn trail_training() {
 
     let dataset_used = Datasets::EmbeddingKaggle;
     // embedding params
-    let use_num_to_fetch = Some(500);
+    let use_num_to_fetch = Some(4000);
     let max_sentences_per_article = Some(20);
     let use_whitening = true;
 
@@ -248,17 +249,17 @@ fn trail_training() {
     } else {
         Params {
             eval_method: EvaluationMethod::Fraction,
-            boost: 0,
+            boost: 10,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(1.0),
-            antigen_pop_size: PopSizeType::Number(2000),
-            generations: 1000,
+            antigen_pop_size: PopSizeType::BoostingFixed(500),
+            generations: 200,
 
             mutation_offset_weight: 1,
-            mutation_multiplier_weight: 1,
-            mutation_multiplier_local_search_weight: 1,
-            mutation_radius_weight: 1,
-            mutation_value_type_weight: 1,
+            mutation_multiplier_weight: 0,
+            mutation_multiplier_local_search_weight: 0,
+            mutation_radius_weight: 0,
+            mutation_value_type_weight: 0,
 
             mutation_label_weight: 0,
 
@@ -320,10 +321,10 @@ fn trail_training() {
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: true,
-        // iter_info_interval: None,
-        // full_pop_acc_interval: None,
-        iter_info_interval: Some(1),
-        full_pop_acc_interval: Some(50),
+        iter_info_interval: None,
+        full_pop_acc_interval: None,
+        // iter_info_interval: Some(1),
+        // full_pop_acc_interval: Some(50),
         show_class_info: false,
         make_plots: true,
         display_final_ab_info: false,

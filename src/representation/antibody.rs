@@ -1,5 +1,6 @@
 use crate::params::MutationType;
 use std::collections::HashMap;
+use std::ops::Range;
 use nalgebra::{DVector, DMatrix};
 use strum_macros::Display;
 
@@ -24,6 +25,7 @@ pub struct AntibodyDim {
     // the exponent
     pub value_type: DimValueType,
 }
+
 
 #[derive(Clone, Debug)]
 pub struct Antibody {
@@ -66,7 +68,12 @@ impl LocalSearchBorder {
     }
 }
 
+
+
+
 impl Antibody {
+
+
     //
     // initializers
     //
@@ -160,7 +167,9 @@ impl Antibody {
                 }
             };
         }
+
         return roll_sum;
+
     }
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
 
