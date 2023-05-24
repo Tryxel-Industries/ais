@@ -49,7 +49,7 @@ pub fn mutate_clone_transform(
     antigens: &Vec<AntiGen>,
     match_counter: &MatchCounter,
     n_clones: usize,
-){
+) -> f64{
     let mut best_op: Option<MutationOp> = None;
     let mut best_score = ab_score;
 
@@ -72,6 +72,8 @@ pub fn mutate_clone_transform(
     } else {
         eval_ab.evaluation.update_eval();
     }
+
+    return best_score;
 }
 
 pub fn get_mut_op(
@@ -95,14 +97,14 @@ pub fn get_mut_op(
 
     let mut mutation_op = match chosen_mutation {
         MutationType::Offset => mutate_offset_op(&params, antibody, fitness_scaler),
-        _ =>  panic!("alalal"),
-        // MutationType::Multiplier => mutate_multiplier(&params, antibody, fitness_scaler),
-        // MutationType::MultiplierLocalSearch => {
-        //     mutate_multiplier_local_search(&params, antibody, antigens, None)
-        // }
-        // MutationType::ValueType => mutate_value_type(&params, antibody, antigens),
+        MutationType::Multiplier => mutate_multi_op(&params, antibody, fitness_scaler),
+        MutationType::MultiplierLocalSearch => {
+            mutate_multiplier_local_search_op(&params, antibody, antigens, None)
+        }
+        MutationType::ValueType => mutate_value_type_op(&params, antibody, antigens, fitness_scaler),
         // MutationType::Radius => mutate_radius(&params, antibody, fitness_scaler),
         // MutationType::Label => mutate_label(&params, antibody),
+        _ =>  panic!("alalal"),
     };
 
     if let Some(mut_op) = mutation_op{
@@ -121,7 +123,9 @@ pub fn get_mut_op(
 
 pub enum MutationDelta{
     Value(f64),
-    DimType((DimValueType, DimValueType))
+    DimAndOffset(f64,f64),
+    // from dim type, to dim type, local s multi op, flip multi
+    DimType((DimValueType, DimValueType, Option<Box<MutationOp>>, bool))
 }
 
 pub struct MutationOp{
@@ -148,6 +152,7 @@ impl MutationOp {
 //
 //      OFFSETT
 //
+
 pub fn mutate_offset(mut genome: &mut Antibody, mut_delta: &MutationDelta, dim: &usize, inverse: bool) {
     if let MutationDelta::Value(delta) = mut_delta{
         let change_dim = genome.dim_values.get_mut(*dim).unwrap();
@@ -299,12 +304,29 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>) -> (f64, f64)
     return (multi, offset_dela);
 }
 
-pub fn mutate_multiplier_local_search(
+pub fn mutate_multi_w_offset(genome: &mut Antibody, mut_delta: &MutationDelta, dim: &usize, inverse: bool) {
+    if let MutationDelta::DimAndOffset(delta, offset) = mut_delta{
+        let change_dim = genome.dim_values.get_mut(*dim).unwrap();
+
+        let (applied_delta, applied_offset) = if inverse{
+            (delta *-1.0, offset*-1.0)
+        }else {
+            (*delta, *offset)
+        };
+        change_dim.offset += applied_offset;
+        change_dim.multiplier += applied_delta;
+    }else {
+        panic!("invalid mutation delta type")
+    }
+}
+
+
+pub fn mutate_multiplier_local_search_op(
     params: &Params,
-    mut genome: Antibody,
+    genome: &Antibody,
     antigens: &Vec<AntiGen>,
     dim_to_search: Option<usize>,
-) -> Antibody {
+) -> Option<MutationOp> {
     let mut rng = rand::thread_rng();
 
     let candidates_dims: Vec<usize> = genome
@@ -317,7 +339,7 @@ pub fn mutate_multiplier_local_search(
         .collect();
 
     if candidates_dims.len() == 0 {
-        return genome;
+        return None;
     }
 
     let dim_to_mutate =
@@ -341,7 +363,7 @@ pub fn mutate_multiplier_local_search(
 
     if mapped_ags.len() == 0 {
         // no possible matches for the genome to reach with this dim
-        return genome;
+        return None;
     }
 
     let (new_multi, new_offsett) = if dim_type == DimValueType::Circle {
@@ -369,114 +391,65 @@ pub fn mutate_multiplier_local_search(
         panic!("error in local s mutate")
     };
 
-    let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
-
-    if dim_type == DimValueType::Open {
-        change_dim.offset += new_offsett
-    }
-    change_dim.multiplier = new_multi;
-
-
-    let mut rng = rand::thread_rng();
-
-    let candidates_dims: Vec<usize> = genome
-        .dim_values
-        .iter()
-        .enumerate()
-        .filter(|(_n, x)| !(x.value_type == DimValueType::Disabled))
-        .map(|(n, _x)| n)
-        .collect();
-
-    if candidates_dims.len() == 0 {
-        return None;
-    }
-
-
-    let dim_to_mutate = candidates_dims.choose(&mut rng).unwrap().to_owned();
-
     let change_dim = genome.dim_values.get(dim_to_mutate).unwrap();
 
-    let val_delta = rng.gen_range(params.multiplier_mutation_multiplier_range.clone());
-    let scaled_delta = val_delta * fitness_scaler;
+    let offset = if dim_type == DimValueType::Open {
+        new_offsett
+    }else {
+        0.0
+    };
+
+
+    let scaled_delta =  change_dim.multiplier - new_multi;
 
     return Some(MutationOp{
-        transformation_fn: mutate_multi,
-        mut_type: MutationType::Multiplier,
+        transformation_fn: mutate_multi_w_offset,
+        mut_type: MutationType::MultiplierLocalSearch,
         dim: dim_to_mutate,
-        delta: MutationDelta::Value(scaled_delta),
+        delta: MutationDelta::DimAndOffset(scaled_delta, offset),
     });
-
 }
 
+//
+//      value type
+//
 
-pub fn mutate_multi_op(params: &Params, genome: &Antibody, fitness_scaler: f64) -> Option<MutationOp> {
-    let mut rng = rand::thread_rng();
 
-    let candidates_dims: Vec<usize> = genome
-        .dim_values
-        .iter()
-        .enumerate()
-        .filter(|(_n, x)| !(x.value_type == DimValueType::Disabled))
-        .map(|(n, _x)| n)
-        .collect();
 
-    if candidates_dims.len() == 0 {
-        return None;
+pub fn mutate_value_type(genome: &mut Antibody, mut_delta: &MutationDelta, dim: &usize, inverse: bool) {
+    if let MutationDelta::DimType((from_type, to_type, ajust_op_option, invert_multi)) = mut_delta{
+
+
+        if let Some(ajust_op) = ajust_op_option{
+            if inverse{
+                ajust_op.inverse_transform(genome)
+            }else {
+                ajust_op.transform(genome)
+            };
+        };
+
+        let change_dim = genome.dim_values.get_mut(*dim).unwrap();
+
+        if *invert_multi{
+            change_dim.multiplier *= -1.0;
+        }
+
+        if inverse{
+            change_dim.value_type = from_type.clone();
+        }else {
+            change_dim.value_type = to_type.clone();
+        }
+    }else {
+        panic!("invalid mutation delta type")
     }
-
-
-    let dim_to_mutate = candidates_dims.choose(&mut rng).unwrap().to_owned();
-
-    let change_dim = genome.dim_values.get(dim_to_mutate).unwrap();
-
-    let val_delta = rng.gen_range(params.multiplier_mutation_multiplier_range.clone());
-    let scaled_delta = val_delta * fitness_scaler;
-
-    return Some(MutationOp{
-        transformation_fn: mutate_multi,
-        mut_type: MutationType::Multiplier,
-        dim: dim_to_mutate,
-        delta: MutationDelta::Value(scaled_delta),
-    });
-
 }
 
-pub fn mutate_multiplier(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
-    let mut rng = rand::thread_rng();
-
-    let candidates_dims: Vec<usize> = genome
-        .dim_values
-        .iter()
-        .enumerate()
-        .filter(|(_n, x)| !(x.value_type == DimValueType::Disabled))
-        .map(|(n, _x)| n)
-        .collect();
-
-    if candidates_dims.len() == 0 {
-        return genome;
-    }
-
-    let dim_to_mutate = candidates_dims.choose(&mut rng).unwrap().to_owned();
-
-    let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
-
-    let val_delta = rng.gen_range(params.multiplier_mutation_multiplier_range.clone());
-    let scaled_delta = val_delta * fitness_scaler;
-    change_dim.multiplier += scaled_delta;
-
-    return genome;
-}
-
-pub fn mutate_value_type(
-    params: &Params,
-    mut genome: Antibody,
-    antigens: &Vec<AntiGen>,
-) -> Antibody {
-    let mut rng = rand::thread_rng();
+pub fn mutate_value_type_op(params: &Params, genome: &Antibody, antigens: &Vec<AntiGen>,fitness_scaler: f64) -> Option<MutationOp> {
+     let mut rng = rand::thread_rng();
 
     let dim_to_mutate = rng.gen_range(0..genome.dim_values.len());
 
-    let change_dim = genome.dim_values.get_mut(dim_to_mutate).unwrap();
+    let change_dim = genome.dim_values.get(dim_to_mutate).unwrap();
 
     let dim_type = params
         .value_type_valid_mutations
@@ -484,25 +457,45 @@ pub fn mutate_value_type(
         .unwrap()
         .clone();
 
+    let mut inverse_multi = false;
+    let mut local_s_op = None;
+
+
     if (change_dim.value_type == DimValueType::Open) & (dim_type != DimValueType::Open) {
         // from open to something else
         if change_dim.multiplier < 0.0 {
-            change_dim.multiplier *= -1.0;
+            inverse_multi = true;
         }
         // genome.radius_constant =  genome.radius_constant.sqrt();
     } else if (change_dim.value_type != DimValueType::Open) & (dim_type == DimValueType::Open) {
         // from something to open
         if rng.gen::<bool>() {
-            change_dim.multiplier *= -1.0;
+            inverse_multi = true;
         }
         // genome.radius_constant =  genome.radius_constant.powi(2);
     }
 
-    change_dim.value_type = dim_type;
 
     if params.mutation_value_type_local_search_dim && dim_type != DimValueType::Disabled {
-        genome = mutate_multiplier_local_search(&params, genome, antigens, Some(dim_to_mutate));
+        let search_op = mutate_multiplier_local_search_op(params,genome,antigens, Some(dim_to_mutate));
+        local_s_op = search_op.map(|op| Box::new(op));
     }
+
+    return Some(MutationOp{
+        transformation_fn: mutate_value_type,
+        mut_type: MutationType::ValueType,
+        dim: dim_to_mutate,
+        delta: MutationDelta::DimType((change_dim.value_type, dim_type, local_s_op, inverse_multi)),
+    });
+
+}
+
+pub fn mutate_radius(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
+    let mut rng = rand::thread_rng();
+
+    let val_delta = rng.gen_range(params.radius_mutation_multiplier_range.clone());
+    let scaled_delta = val_delta * fitness_scaler;
+    genome.radius_constant += scaled_delta;
 
     return genome;
 }
@@ -521,12 +514,3 @@ pub fn mutate_label(params: &Params, mut genome: Antibody) -> Antibody {
     return genome;
 }
 
-pub fn mutate_radius(params: &Params, mut genome: Antibody, fitness_scaler: f64) -> Antibody {
-    let mut rng = rand::thread_rng();
-
-    let val_delta = rng.gen_range(params.radius_mutation_multiplier_range.clone());
-    let scaled_delta = val_delta * fitness_scaler;
-    genome.radius_constant += scaled_delta;
-
-    return genome;
-}

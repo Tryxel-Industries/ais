@@ -31,7 +31,7 @@ impl Evaluation {
     let affinity_ag_map: HashMap<_, (_,_)> =   antigens
             // .iter()
             .par_iter()
-            .map(|ag| (ag.id,(calculate_affinity_dist(antibody,ag), ag.id)))
+            .map(|ag| (ag.id,(calculate_affinity_dist(antibody,ag), ag.class_label)))
             .collect::<HashMap<usize,(f64,usize)>>();
 
         return Evaluation{
@@ -53,6 +53,7 @@ impl Evaluation {
             .filter(| (id,(afin,label))| is_afinity_registering(*afin))
             .map(|(id, (afin,label))| (id, afin, label))
             .collect::<Vec<_>>();
+        // println!("registered {:?}", registered_antigens.len());
 
 
 

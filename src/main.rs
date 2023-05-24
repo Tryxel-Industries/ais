@@ -211,12 +211,12 @@ fn trail_run_from_ab_csv(){
 
 }
 fn trail_training() {
-    rayon::ThreadPoolBuilder::new().num_threads(29).build_global().unwrap();
+    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
 
 
-    let dataset_used = Datasets::EmbeddingKaggle;
+    let dataset_used = Datasets::Wine;
     // embedding params
-    let use_num_to_fetch = Some(4000);
+    let use_num_to_fetch = Some(200);
     let max_sentences_per_article = Some(20);
     let use_whitening = true;
 
@@ -248,25 +248,25 @@ fn trail_training() {
         get_dataset_optimal_params(dataset_used, class_labels)
     } else {
         Params {
-            eval_method: EvaluationMethod::Fraction,
-            boost: 10,
+            eval_method: EvaluationMethod::AffinitySum,
+            boost: 0,
             // -- train params -- //
-            // antigen_pop_size: PopSizeType::Fraction(1.0),
-            antigen_pop_size: PopSizeType::BoostingFixed(500),
-            generations: 200,
+            antigen_pop_size: PopSizeType::Fraction(1.0),
+            // antigen_pop_size: PopSizeType::BoostingFixed(10),
+            generations: 1000,
 
             mutation_offset_weight: 1,
-            mutation_multiplier_weight: 0,
-            mutation_multiplier_local_search_weight: 0,
+            mutation_multiplier_weight: 1,
+            mutation_multiplier_local_search_weight: 1,
             mutation_radius_weight: 0,
-            mutation_value_type_weight: 0,
+            mutation_value_type_weight: 1,
 
             mutation_label_weight: 0,
 
             mutation_value_type_local_search_dim: true,
 
             // -- reduction -- //
-            membership_required: 0.70,
+            membership_required: 0.5,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -280,11 +280,11 @@ fn trail_training() {
 
             label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
 
-            correctness_weight: 1.0,
-            coverage_weight: 1.0,
-            uniqueness_weight: 0.5,
-            good_afin_weight: 0.0,
-            bad_afin_weight: 0.5,
+            correctness_weight: 0.5,
+            coverage_weight: 0.5,
+            uniqueness_weight: 0.0,
+            good_afin_weight: 0.5,
+            bad_afin_weight: 1.0,
 
             //selection
             leak_fraction: 0.5,
@@ -321,14 +321,14 @@ fn trail_training() {
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: true,
-        iter_info_interval: None,
+        // iter_info_interval: None,
         full_pop_acc_interval: None,
-        // iter_info_interval: Some(1),
+        iter_info_interval: Some(1),
         // full_pop_acc_interval: Some(50),
-        show_class_info: false,
+        show_class_info: true,
         make_plots: true,
-        display_final_ab_info: false,
-        display_detailed_error_info: false,
+        display_final_ab_info: true,
+        display_detailed_error_info: true,
         display_final_acc_info: true,
         print_boost_info: true,
     };

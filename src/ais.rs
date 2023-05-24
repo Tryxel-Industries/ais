@@ -26,7 +26,7 @@ use crate::representation::antigen::AntiGen;
 use crate::representation::{evaluate_population, expand_antibody_radius_until_hit};
 use crate::representation::evaluated_antibody::EvaluatedAntibody;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
-use crate::scoring::score_antibodies;
+use crate::scoring::{score_antibodies, score_antibody};
 use crate::selection::{
     elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n,
     remove_strictly_worse, replace_if_better_per_cat, replace_worst_n_per_cat, snip_worst_n,
@@ -709,7 +709,12 @@ impl ArtificialImmuneSystem {
                             ((params.n_parents_mutations as f64 * frac_of_max) as usize).max(1);
                         let fitness_scaler = 1.0-frac_of_max;
 
-                        mutate_clone_transform(&mut eval_ab, score, params, fitness_scaler, antigens, &match_counter, n_clones);
+                        // println!();
+                        // println!("score pre {:}", score);
+
+                        let best_score = mutate_clone_transform(&mut eval_ab, score, params, fitness_scaler, antigens, &match_counter, n_clones);
+
+                        // println!("score post {:}", best_score);
                         return eval_ab;
 
                     }).collect();
