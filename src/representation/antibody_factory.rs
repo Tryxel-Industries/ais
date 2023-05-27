@@ -8,7 +8,7 @@ use rand::{Rng, random};
 use rayon::prelude::*;
 use crate::params::Params;
 
-use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType};
+use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType, InitType};
 use crate::representation::antigen::AntiGen;
 
 pub struct AntibodyFactory {
@@ -132,6 +132,7 @@ impl AntibodyFactory {
             final_train_label_membership: None,
             boosting_model_alpha: 1.0,
             final_train_label_affinity: None,
+            init_type: InitType::Random,
         };
     }
     pub fn generate_random_genome_with_label(&self, label: usize) -> Antibody {
@@ -218,6 +219,7 @@ impl AntibodyFactory {
             final_train_label_membership: None,
             boosting_model_alpha: 1.0,
             final_train_label_affinity: None,
+            init_type: InitType::Antibody,
         };
     }
 }

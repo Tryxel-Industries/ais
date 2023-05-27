@@ -237,8 +237,8 @@ pub fn replace_if_better_per_cat(
         let (p_score, p_eab) = population.get_mut(pop_idx).unwrap();
         let (c_score, c_eab) = replacements.get(rep_idx).unwrap();
 
-        match_counter.remove_evaluation(p_eab);
-        match_counter.add_evaluation(c_eab);
+        match_counter.remove_evaluation(&p_eab.evaluation);
+        match_counter.add_evaluation(&c_eab.evaluation);
 
         // std::mem::replace(p_score, c_score);
         // std::mem::replace(p_eval, c_eval);

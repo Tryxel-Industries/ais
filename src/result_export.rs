@@ -3,7 +3,7 @@ use std::io::{BufWriter, Write};
 
 use rayon::prelude::*;
 
-use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType};
+use crate::representation::antibody::{Antibody, AntibodyDim, DimValueType, InitType};
 use crate::representation::antigen::AntiGen;
 use crate::util::read_csv;
 use std::str::FromStr;
@@ -102,6 +102,7 @@ pub fn read_ab_csv(filepath: String) -> Vec<Antibody>{
                 boosting_model_alpha,
                 final_train_label_membership: Some((final_train_membership, 1.0-final_train_membership)),
                 final_train_label_affinity: Some((final_train_affinity, 1.0-final_train_affinity)),
+                init_type: InitType::NA,
                 mutation_counter: Default::default(),
                 clone_count: 0,
             }

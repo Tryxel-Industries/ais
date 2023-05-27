@@ -39,7 +39,7 @@ study_name: "study_1"
 
 engine_params:
   base_command: "./target/release/ais"
-  print_level: 2
+  print_level: 1
   n_trials: 500
   timeout: 3600000
   # example with: score: 34.9 accuracy: 11 iter: 23
@@ -96,58 +96,58 @@ search_space:
 #      from: 50
 #      to: 1000
 #      step: 50
-
-  - pick_float:
-      name: "antigen_pop_size_frac"
-      call_param: "--antigen_pop_size_frac="
-      from: 0.05
-      to: 1.0
-      step: 0.05
+#
+#  - pick_float:
+#      name: "antigen_pop_size_frac"
+#      call_param: "--antigen_pop_size_frac="
+#      from: 0.05
+#      to: 1.0
+#      step: 0.05
 #
 #
-  - pick_int:
-      name: "generations"
-      call_param: "--generations="
-      from: 100
-      to: 5000
-      step: 100
+#  - pick_int:
+#      name: "generations"
+#      call_param: "--generations="
+#      from: 100
+#      to: 5000
+#      step: 100
   - pick_float:
       name: "membership_required"
       call_param: "--membership_required="
       from: 0.0
       to: 1.0
       step: 0.1
-  - pick_categorical:
-      name: "use_membership"
-      call_param: "--use_membership="
-      picks: ["True", "False"]
-
-
-  - pick_float:
-      name: "leak_fraction"
-      call_param: "--leak_fraction="
-      from: 0
-      to: 0.8
-      step: 0.05
-  # ais params
-  - pick_categorical:
-      name: "use_open_dims"
-      call_param: "--use_open_dims="
-      picks: ["True", "False"]
-
-  - pick_categorical:
-      name: "local_search_radius"
-      call_param: "--local_search_radius="
-      picks: ["True", "False"]
-  - pick_categorical:
-      name: "local_search_multi"
-      call_param: "--local_search_multi="
-      picks: ["True", "False"]
-  - pick_int:
-      name: "boosting_rounds"
-      call_param: "--boosting_rounds="
-      from: 0
-      to: 5
+#  - pick_categorical:
+#      name: "use_membership"
+#      call_param: "--use_membership="
+#      picks: ["True", "False"]
+#
+#
+#  - pick_float:
+#      name: "leak_fraction"
+#      call_param: "--leak_fraction="
+#      from: 0
+#      to: 0.8
+#      step: 0.05
+#  # ais params
+#  - pick_categorical:
+#      name: "use_open_dims"
+#      call_param: "--use_open_dims="
+#      picks: ["True", "False"]
+#
+#  - pick_categorical:
+#      name: "local_search_radius"
+#      call_param: "--local_search_radius="
+#      picks: ["True", "False"]
+#  - pick_categorical:
+#      name: "local_search_multi"
+#      call_param: "--local_search_multi="
+#      picks: ["True", "False"]
+#  - pick_int:
+#      name: "boosting_rounds"
+#      call_param: "--boosting_rounds="
+#      from: 0
+#      to: 5
 
 
 #  - pick_int:

@@ -221,8 +221,8 @@ impl MatchCounter {
         return inverse;
     }
 
-    pub fn add_evaluation(&mut self, evaluated_ab: &EvaluatedAntibody) {
-        for correct_match_id in &evaluated_ab.evaluation.matched_ids {
+    pub fn add_evaluation(&mut self, evaluation: &Evaluation) {
+        for correct_match_id in &evaluation.matched_ids {
             if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
                 *elem += 1;
             } else {
@@ -235,7 +235,7 @@ impl MatchCounter {
             }
         }
 
-        for correct_match_id in &evaluated_ab.evaluation.wrongly_matched {
+        for correct_match_id in &evaluation.wrongly_matched {
             if let Some(elem) = self.incorrect_match_counter.get_mut(*correct_match_id) {
                 *elem += 1;
             } else {
@@ -243,14 +243,16 @@ impl MatchCounter {
             }
         }
     }
+
+
     pub fn add_evaluations(&mut self, evaluations: &Vec<EvaluatedAntibody>) {
         for evaluated_ab in evaluations {
-            self.add_evaluation(evaluated_ab);
+            self.add_evaluation(&evaluated_ab.evaluation);
         }
     }
 
-    pub fn remove_evaluation(&mut self, evaluated_ab: &EvaluatedAntibody) {
-             for correct_match_id in &evaluated_ab.evaluation.matched_ids {
+    pub fn remove_evaluation(&mut self, evaluation: &Evaluation) {
+             for correct_match_id in &evaluation.matched_ids {
                 if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
                     *elem -= 1;
                 } else {
@@ -258,7 +260,7 @@ impl MatchCounter {
                 }
             }
 
-            for correct_match_id in &evaluated_ab.evaluation.wrongly_matched {
+            for correct_match_id in &evaluation.wrongly_matched {
                 if let Some(elem) = self.incorrect_match_counter.get_mut(*correct_match_id) {
                     *elem -= 1;
                 } else {
@@ -268,7 +270,7 @@ impl MatchCounter {
     }
     pub fn remove_evaluations(&mut self, evaluations: &Vec<EvaluatedAntibody>) {
         for evaluated_ab in evaluations {
-            self.remove_evaluation(evaluated_ab);
+            self.remove_evaluation(&evaluated_ab.evaluation);
         }
     }
 }

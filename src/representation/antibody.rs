@@ -17,6 +17,13 @@ pub enum DimValueType {
 }
 
 #[derive(Clone, Debug)]
+pub enum InitType{
+    Random,
+    Antibody,
+    NA,
+
+}
+#[derive(Clone, Debug)]
 pub struct AntibodyDim {
     // the multiplier for the dim value
     pub multiplier: f64,
@@ -35,6 +42,7 @@ pub struct Antibody {
     pub boosting_model_alpha: f64,
     pub final_train_label_membership: Option<(f64,f64)>,
     pub final_train_label_affinity: Option<(f64,f64)>,
+    pub init_type: InitType,
     //todo: remove when running hyper optimized
     pub mutation_counter: HashMap<MutationType, usize>,
     pub clone_count: usize,
@@ -42,27 +50,35 @@ pub struct Antibody {
 
 #[derive(Debug)]
 pub enum LocalSearchBorder {
-    EntersAt(f64),
-    LeavesAt(f64),
+    EntersAt(f64, bool),
+    LeavesAt(f64, bool),
 }
 
 impl LocalSearchBorder {
     pub fn get_value(&self) -> &f64 {
         match self {
-            LocalSearchBorder::EntersAt(v) => v,
-            LocalSearchBorder::LeavesAt(v) => v,
+            LocalSearchBorder::EntersAt(v,_) => v,
+            LocalSearchBorder::LeavesAt(v,_) => v,
+        }
+    }
+
+
+    pub fn is_corr(&self) -> &bool {
+        match self {
+            LocalSearchBorder::EntersAt(_, c) => c,
+            LocalSearchBorder::LeavesAt(_, c) => c,
         }
     }
 
     pub fn is_same_type(&self, other: &LocalSearchBorder) -> bool {
         return match self {
-            LocalSearchBorder::EntersAt(_) => match other {
-                LocalSearchBorder::EntersAt(_) => true,
-                LocalSearchBorder::LeavesAt(_) => false,
+            LocalSearchBorder::EntersAt(_,_) => match other {
+                LocalSearchBorder::EntersAt(_,_) => true,
+                LocalSearchBorder::LeavesAt(_,_) => false,
             },
-            LocalSearchBorder::LeavesAt(_) => match other {
-                LocalSearchBorder::EntersAt(_) => false,
-                LocalSearchBorder::LeavesAt(_) => true,
+            LocalSearchBorder::LeavesAt(_,_) => match other {
+                LocalSearchBorder::EntersAt(_,_) => false,
+                LocalSearchBorder::LeavesAt(_,_) => true,
             },
         };
     }
@@ -129,9 +145,9 @@ impl Antibody {
                     if affinity_with_zero_multi <= 0.0 {
                         // By testing what ag's the system matches when the multi is set to 0 we
                         // can quicly figure out if the treshold will leave or enter the ag
-                        Some(LocalSearchBorder::LeavesAt(res_match_multi))
+                        Some(LocalSearchBorder::LeavesAt(res_match_multi, self.class_label == antigen.class_label))
                     } else {
-                        Some(LocalSearchBorder::EntersAt(res_match_multi))
+                        Some(LocalSearchBorder::EntersAt(res_match_multi, self.class_label == antigen.class_label))
                     }
                 }
             }
@@ -139,14 +155,14 @@ impl Antibody {
                 let cd_base = (ag_check_dim_val - cd_offset).powi(2);
 
                 // solve for check dim multi
-                let rest_sub_radius_sum = self.radius_constant - roll_sum;
+                let rest_sub_radius_sum = roll_sum - self.radius_constant;
 
                 return if rest_sub_radius_sum < 0.0 {
                     // if the rest sub radius is negative it is not solvable
                     None
                 } else {
                     let res_match_multi = (rest_sub_radius_sum / cd_base).sqrt();
-                    Some(LocalSearchBorder::EntersAt(res_match_multi))
+                    Some(LocalSearchBorder::EntersAt(res_match_multi, self.class_label == antigen.class_label))
                 }
             }
         };

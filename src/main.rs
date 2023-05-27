@@ -25,7 +25,6 @@ use crate::display::{eval_display, show_ab_dim_multipliers, show_ab_dim_offsets,
 use crate::evaluation::MatchCounter;
 use crate::experiment_logger::{ExperimentLogger, ExperimentProperty};
 use crate::experiment_logger::ExperimentProperty::BoostAccuracyTest;
-use crate::mutations::mutate;
 use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
 use crate::prediction::EvaluationMethod;
@@ -216,7 +215,7 @@ fn trail_training() {
 
     let dataset_used = Datasets::PrimaDiabetes;
     // embedding params
-    let use_num_to_fetch = Some(200);
+    let use_num_to_fetch = Some(10);
     let max_sentences_per_article = Some(20);
     let use_whitening = true;
 
@@ -249,24 +248,24 @@ fn trail_training() {
     } else {
         Params {
             eval_method: EvaluationMethod::Fraction,
-            boost: 10,
+            boost: 0,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(1.0),
-            antigen_pop_size: PopSizeType::BoostingFixed(50),
-            generations: 1000,
+            antigen_pop_size: PopSizeType::BoostingFixed(500),
+            generations: 500,
 
-            mutation_offset_weight: 1,
-            mutation_multiplier_weight: 1,
+            mutation_offset_weight: 0,
+            mutation_multiplier_weight: 0,
             mutation_multiplier_local_search_weight: 1,
             mutation_radius_weight: 0,
-            mutation_value_type_weight: 1,
+            mutation_value_type_weight: 0,
 
             mutation_label_weight: 0,
 
             mutation_value_type_local_search_dim: true,
 
             // -- reduction -- //
-            membership_required: 0.75,
+            membership_required: 0.0,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
             multiplier_mutation_multiplier_range: -0.5..=0.5,
@@ -282,9 +281,9 @@ fn trail_training() {
 
             correctness_weight: 1.0,
             coverage_weight: 1.0,
-            uniqueness_weight: 0.5,
+            uniqueness_weight: 1.0,
             good_afin_weight: 0.0,
-            bad_afin_weight: 1.0,
+            bad_afin_weight: 0.0,
 
             //selection
             leak_fraction: 0.5,
@@ -296,7 +295,7 @@ fn trail_training() {
             tournament_size: 1,
             n_parents_mutations: 40,
 
-            antibody_init_expand_radius: true,
+            antibody_init_expand_radius: false,
 
             // -- B-cell from antigen initialization -- //
             antibody_ag_init_multiplier_range: 0.8..=1.2,
@@ -320,14 +319,14 @@ fn trail_training() {
     };
 
     let frac_verbosity_params = VerbosityParams {
-        show_initial_pop_info: false,
-        iter_info_interval: None,
-        full_pop_acc_interval: None,
-        // iter_info_interval: Some(1),
-        // full_pop_acc_interval: Some(50),
+        show_initial_pop_info: true,
+        // iter_info_interval: None,
+        // full_pop_acc_interval: None,
+        iter_info_interval: Some(20),
+        full_pop_acc_interval: Some(100),
         show_class_info: false,
-        make_plots: false,
-        display_final_ab_info: true,
+        make_plots: true,
+        display_final_ab_info: false,
         display_detailed_error_info: true,
         display_final_acc_info: true,
         print_boost_info: true,

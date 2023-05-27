@@ -171,7 +171,12 @@ pub fn score_antibody(
     if pred_pos == tot_elements {
         score = -5.0;
     }
-    return score;
+
+    if !score.is_finite(){
+        return 0.0;
+    }else {
+        return score;
+    }
 }
 
 pub fn score_antibodies(
