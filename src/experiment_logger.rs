@@ -20,10 +20,13 @@ enum FillMode{
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Hash, Serialize, EnumString, Display)]
 pub enum ExperimentProperty{
-    Accuracy,
+    // per iter logging
+    TestAccuracy,
     TrainAccuracy,
-    TrainLabel,
+    TrainScore,
     PopLabelMemberships,
+
+    TrainLabel,
 
     BoostAccuracy,
     BoostAccuracyTest,
@@ -37,7 +40,7 @@ pub enum ExperimentProperty{
 
 impl ExperimentProperty {
     const STEP_PROPS: [ExperimentProperty; 2] = [
-        ExperimentProperty::Accuracy,
+        ExperimentProperty::TestAccuracy,
         ExperimentProperty::PopLabelMemberships
     ];
     pub fn is_step_prop(&self) -> bool{
@@ -48,11 +51,12 @@ impl ExperimentProperty {
 
 
 
-#[derive(Clone, Copy, PartialEq, Debug, Serialize, EnumString, Display)]
+#[derive(Clone, PartialEq, Debug, Serialize, EnumString, Display)]
 pub enum LoggedValue{
     TrainTest(f64,f64),
     CorWrongNoReg(usize,usize,usize),
     SingleValue(f64),
+    LabelMembership(HashMap<usize,usize>),
     NoValue
 }
 

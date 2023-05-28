@@ -155,7 +155,7 @@ fn ais_test(
     let (train_acc_hist, train_score_hist, init_scored_pop) =if params.boost > 0{
         ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test, translator, logger)
     }else {
-        ais.train(&train, &params, verbosity_params, logger)
+        ais.train(&train, &params, verbosity_params, logger, &test)
     };
 
 
@@ -184,7 +184,7 @@ fn trail_run_from_ab_csv(){
     let ab_file_path = "out/antibodies.csv";
 
 
-    let dataset_used = Datasets::EmbeddingKaggle;
+    let dataset_used = Datasets::Iris;
     // embedding params
     // let use_num_to_fetch = Some(1000);
     let use_num_to_fetch = None;
@@ -213,7 +213,7 @@ fn trail_training() {
     rayon::ThreadPoolBuilder::new().num_threads(29).build_global().unwrap();
 
 
-    let dataset_used = Datasets::PrimaDiabetes;
+    let dataset_used = Datasets::Wine;
     // embedding params
     let use_num_to_fetch = Some(10);
     let max_sentences_per_article = Some(20);
@@ -248,17 +248,17 @@ fn trail_training() {
     } else {
         Params {
             eval_method: EvaluationMethod::Fraction,
-            boost: 0,
+            boost: 00,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(1.0),
-            antigen_pop_size: PopSizeType::BoostingFixed(500),
-            generations: 500,
+            antigen_pop_size: PopSizeType::BoostingFixed(20),
+            generations: 1000,
 
-            mutation_offset_weight: 0,
-            mutation_multiplier_weight: 0,
+            mutation_offset_weight: 1,
+            mutation_multiplier_weight: 1,
             mutation_multiplier_local_search_weight: 1,
-            mutation_radius_weight: 0,
-            mutation_value_type_weight: 0,
+            mutation_radius_weight: 1,
+            mutation_value_type_weight: 1,
 
             mutation_label_weight: 0,
 
@@ -281,9 +281,9 @@ fn trail_training() {
 
             correctness_weight: 1.0,
             coverage_weight: 1.0,
-            uniqueness_weight: 1.0,
-            good_afin_weight: 0.0,
-            bad_afin_weight: 0.0,
+            uniqueness_weight: 0.5,
+            good_afin_weight: 0.2,
+            bad_afin_weight: 1.0,
 
             //selection
             leak_fraction: 0.5,
@@ -293,7 +293,7 @@ fn trail_training() {
             // replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
             // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
             tournament_size: 1,
-            n_parents_mutations: 40,
+            n_parents_mutations: 20,
 
             antibody_init_expand_radius: false,
 
@@ -322,7 +322,7 @@ fn trail_training() {
         show_initial_pop_info: true,
         // iter_info_interval: None,
         // full_pop_acc_interval: None,
-        iter_info_interval: Some(20),
+        iter_info_interval: Some(100),
         full_pop_acc_interval: Some(100),
         show_class_info: false,
         make_plots: true,
@@ -333,8 +333,8 @@ fn trail_training() {
     };
     modify_config_by_args(&mut params);
 
-    ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-    // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
+    // ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
+    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
 
     logger.dump_to_json_file("./bip_bop.json".to_string())
 }

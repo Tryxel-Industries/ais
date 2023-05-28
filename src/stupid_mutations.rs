@@ -59,7 +59,13 @@ pub fn mutate_clone_transform(
     let parent_cor_matches = eval_ab.evaluation.matched_ids.len();
     let parent_errors_matches = eval_ab.evaluation.wrongly_matched.len();
 
+    // println!("\n\n#####  mut ab:");
+
+    // println!("init struct {:?}", eval_ab.antibody.dim_values);
+
     for n  in 0..n_clones {
+        // println!("mut round:");
+
         let mut_op = get_mut_op(params, fitness_scaler, &eval_ab, antigens);
         let old_multi = eval_ab.antibody.dim_values.get(mut_op.dim).unwrap().multiplier;
 
@@ -74,10 +80,13 @@ pub fn mutate_clone_transform(
         // println!();
         // println!("parent multi {:>4.4?}, child multi {:>4.4?}, child score: {:>4.4?}, parent score: {:>4.4?}", old_multi, new_multi, new_score, parent_score);
         // println!("parent matches {:>3?}/{:>3?}, child matches {:>3?}/{:>3?}", parent_cor_matches, parent_errors_matches, child_cor_matches, child_errors_matches);
+        // println!("ab struct for dim {:?} is:\n{:?}", mut_op.dim,eval_ab.antibody.dim_values.get(mut_op.dim).unwrap());
 
         eval_ab.transform(antigens, &mut_op, true);
         if new_score > best_score{
             best_score = new_score.clone();
+
+            // println!("\nnew best\nlabel {:?}, num cor {:?}  num err {:?} score {:?}\n", eval_ab.antibody.class_label, eval_ab.evaluation.matched_ids.len(), eval_ab.evaluation.wrongly_matched.len(), best_score);
             best_op = Some(mut_op);
         }
     }
@@ -94,6 +103,9 @@ pub fn mutate_clone_transform(
     } else {
         eval_ab.evaluation.update_eval();
     }
+
+
+    // println!("best struct {:?}", eval_ab.antibody.dim_values);
 
     return best_score;
 }
@@ -632,26 +644,28 @@ pub fn mutate_multiplier_local_search_op(
 pub fn mutate_value_type(genome: &mut Antibody, mut_delta: &MutationDelta, dim: &usize, inverse: bool) {
     if let MutationDelta::DimType((from_type, to_type, ajust_op_option, invert_multi)) = mut_delta{
 
-
-        if let Some(ajust_op) = ajust_op_option{
-            if inverse{
-                ajust_op.inverse_transform(genome)
-            }else {
-                ajust_op.transform(genome)
-            };
-        };
-
         let change_dim = genome.dim_values.get_mut(*dim).unwrap();
 
-        if *invert_multi{
-            change_dim.multiplier *= -1.0;
-        }
-
         if inverse{
+
             change_dim.value_type = from_type.clone();
+            if let Some(ajust_op) = ajust_op_option{
+                ajust_op.inverse_transform(genome)
+            }
+
         }else {
             change_dim.value_type = to_type.clone();
+            if let Some(ajust_op) = ajust_op_option{
+                ajust_op.transform(genome)
+            }
         }
+
+ /*       let change_dim = genome.dim_values.get_mut(*dim).unwrap();
+        if *invert_multi{
+            change_dim.multiplier *= -1.0;
+        }*/
+
+
     }else {
         panic!("invalid mutation delta type")
     }
@@ -674,20 +688,20 @@ pub fn mutate_value_type_op(params: &Params, genome: &EvaluatedAntibody, antigen
     let mut local_s_op = None;
 
 
-    if (change_dim.value_type == DimValueType::Open) & (dim_type != DimValueType::Open) {
-        // from open to something else
-        if change_dim.multiplier < 0.0 {
-            inverse_multi = true;
-        }
-        // genome.radius_constant =  genome.radius_constant.sqrt();
-    } else if (change_dim.value_type != DimValueType::Open) & (dim_type == DimValueType::Open) {
-        // from something to open
-        if rng.gen::<bool>() {
-            inverse_multi = true;
-        }
-        // genome.radius_constant =  genome.radius_constant.powi(2);
-    }
-
+    // if (change_dim.value_type == DimValueType::Open) & (dim_type != DimValueType::Open) {
+    //     // from open to something else
+    //     if change_dim.multiplier < 0.0 {
+    //         inverse_multi = true;
+    //     }
+    //     // genome.radius_constant =  genome.radius_constant.sqrt();
+    // } else if (change_dim.value_type != DimValueType::Open) & (dim_type == DimValueType::Open) {
+    //     // from something to open
+    //     if rng.gen::<bool>() {
+    //         inverse_multi = true;
+    //     }
+    //     // genome.radius_constant =  genome.radius_constant.powi(2);
+    // }
+    //
 
     if params.mutation_value_type_local_search_dim && dim_type != DimValueType::Disabled {
         let search_op = mutate_multiplier_local_search_op(params,genome,antigens, Some(dim_to_mutate));
