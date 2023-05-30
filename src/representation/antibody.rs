@@ -1,17 +1,29 @@
 use crate::params::MutationType;
 use std::collections::HashMap;
+use std::ops::Range;
 use nalgebra::{DVector, DMatrix};
 use strum_macros::Display;
 
+use serde::Serialize;
 use crate::representation::antigen::AntiGen;
 
-#[derive(Clone, Copy, PartialEq, Debug, Display)]
+use strum_macros::EnumString;
+use crate::params::MutationType::ValueType;
+
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash, Serialize, Display, EnumString)]
 pub enum DimValueType {
     Disabled,
     Open,
     Circle,
 }
 
+#[derive(Clone, Debug)]
+pub enum InitType{
+    Random,
+    Antibody,
+    NA,
+
+}
 #[derive(Clone, Debug)]
 pub struct AntibodyDim {
     // the multiplier for the dim value
@@ -22,16 +34,16 @@ pub struct AntibodyDim {
     pub value_type: DimValueType,
 }
 
+
 #[derive(Clone, Debug)]
 pub struct Antibody {
     pub dim_values: Vec<AntibodyDim>,
     pub radius_constant: f64,
     pub class_label: usize,
-    pub orientation_matrix: DMatrix<f64>,
-    pub length_matrix: DMatrix<f64>,
-    pub offset: DVector<f64>,
     pub boosting_model_alpha: f64,
     pub final_train_label_membership: Option<(f64,f64)>,
+    pub final_train_label_affinity: Option<(f64,f64)>,
+    pub init_type: InitType,
     //todo: remove when running hyper optimized
     pub mutation_counter: HashMap<MutationType, usize>,
     pub clone_count: usize,
@@ -39,33 +51,46 @@ pub struct Antibody {
 
 #[derive(Debug)]
 pub enum LocalSearchBorder {
-    EntersAt(f64),
-    LeavesAt(f64),
+    EntersAt(f64, bool),
+    LeavesAt(f64, bool),
 }
 
 impl LocalSearchBorder {
     pub fn get_value(&self) -> &f64 {
         match self {
-            LocalSearchBorder::EntersAt(v) => v,
-            LocalSearchBorder::LeavesAt(v) => v,
+            LocalSearchBorder::EntersAt(v,_) => v,
+            LocalSearchBorder::LeavesAt(v,_) => v,
+        }
+    }
+
+
+    pub fn is_corr(&self) -> &bool {
+        match self {
+            LocalSearchBorder::EntersAt(_, c) => c,
+            LocalSearchBorder::LeavesAt(_, c) => c,
         }
     }
 
     pub fn is_same_type(&self, other: &LocalSearchBorder) -> bool {
         return match self {
-            LocalSearchBorder::EntersAt(_) => match other {
-                LocalSearchBorder::EntersAt(_) => true,
-                LocalSearchBorder::LeavesAt(_) => false,
+            LocalSearchBorder::EntersAt(_,_) => match other {
+                LocalSearchBorder::EntersAt(_,_) => true,
+                LocalSearchBorder::LeavesAt(_,_) => false,
             },
-            LocalSearchBorder::LeavesAt(_) => match other {
-                LocalSearchBorder::EntersAt(_) => false,
-                LocalSearchBorder::LeavesAt(_) => true,
+            LocalSearchBorder::LeavesAt(_,_) => match other {
+                LocalSearchBorder::EntersAt(_,_) => false,
+                LocalSearchBorder::LeavesAt(_,_) => true,
             },
         };
     }
 }
 
+
+
+
 impl Antibody {
+
+
     //
     // initializers
     //
@@ -114,16 +139,16 @@ impl Antibody {
                 let res_is_pos = res_match_multi > 0.0;
                 let cur_is_pos = cd_multiplier > 0.0;
 
-                if res_is_pos != cur_is_pos {
+                return if res_is_pos != cur_is_pos {
                     // if the solved value is on the other side of 0 return as unsolvable
-                    return None;
+                    None
                 } else {
                     if affinity_with_zero_multi <= 0.0 {
                         // By testing what ag's the system matches when the multi is set to 0 we
                         // can quicly figure out if the treshold will leave or enter the ag
-                        return Some(LocalSearchBorder::LeavesAt(res_match_multi));
+                        Some(LocalSearchBorder::LeavesAt(res_match_multi, self.class_label == antigen.class_label))
                     } else {
-                        return Some(LocalSearchBorder::EntersAt(res_match_multi));
+                        Some(LocalSearchBorder::EntersAt(res_match_multi, self.class_label == antigen.class_label))
                     }
                 }
             }
@@ -131,14 +156,14 @@ impl Antibody {
                 let cd_base = (ag_check_dim_val - cd_offset).powi(2);
 
                 // solve for check dim multi
-                let rest_sub_radius_sum = self.radius_constant - roll_sum;
+                let rest_sub_radius_sum = roll_sum - self.radius_constant;
 
-                if rest_sub_radius_sum < 0.0 {
+                return if rest_sub_radius_sum < 0.0 {
                     // if the rest sub radius is negative it is not solvable
-                    return None;
+                    None
                 } else {
                     let res_match_multi = (rest_sub_radius_sum / cd_base).sqrt();
-                    return Some(LocalSearchBorder::EntersAt(res_match_multi));
+                    Some(LocalSearchBorder::EntersAt(res_match_multi, self.class_label == antigen.class_label))
                 }
             }
         };
@@ -159,36 +184,44 @@ impl Antibody {
                 }
             };
         }
+
         return roll_sum;
+
     }
     pub fn test_antigen(&self, antigen: &AntiGen) -> bool {
-        let affinity_dist = self.get_affinity_dist(antigen);
 
-        if affinity_dist == 0.0 {
+        if self.dim_values.iter().all(|ab| ab.value_type==DimValueType::Disabled) {
             // all dims are disabled
             return false;
         }
 
+        let affinity_dist = self.get_affinity_dist(antigen);
+
+
         let v = affinity_dist - self.radius_constant;
         // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
-        if v <= 0.0 {
-            return true;
+        return if v <= 0.0 {
+            true
         } else {
-            return false;
+            false
         }
     }
 
-
-    pub fn test_antigen_w_orientation(&self, antigen: &AntiGen) -> bool {
-        let ag_dims: DVector<f64> = DVector::from_vec(antigen.values.clone());
-        let it = (&ag_dims - &self.offset).transpose() * 
-        &self.orientation_matrix * 
-        &self.length_matrix * 
-        &self.orientation_matrix.transpose() *
-        (&ag_dims - &self.offset);
-        if (it[0] <= 1.0f64) {
-            return true
+    pub fn test_antigen_and_get_dist(&self, antigen: &AntiGen) -> (bool, f64) {
+        if self.dim_values.iter().all(|ab| ab.value_type == DimValueType::Disabled) {
+            // all dims are disabled
+            return (false, 10000.0);
         }
-        false
+
+        let affinity_dist = self.get_affinity_dist(antigen);
+
+
+        let v = affinity_dist - self.radius_constant;
+        // println!("roll_s {:?}, radius: {:?}", roll_sum, self.radius_constant);
+        return if v <= 0.0 {
+            (true, v)
+        } else {
+            (false, v)
+        }
     }
 }

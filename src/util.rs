@@ -1,13 +1,18 @@
-use std::io;
-use std::{collections::HashSet, f64::consts::PI, vec, convert::identity};
-use nalgebra::{DVector, Matrix2};
-use nalgebra::givens::GivensRotation;
-use rand::rngs::ThreadRng;
-use rand::{Rng, random, seq::IteratorRandom};
-use rand_distr::{Normal, Distribution};
-use crate::representation::{antigen::AntiGen, antibody::Antibody, antibody::AntibodyDim};
+use std::{collections::HashSet, f64::consts::PI, vec};
+
+use crate::representation::{antibody::Antibody, antibody::AntibodyDim, antigen::AntiGen};
 use core::{self, num};
-use nalgebra::{DMatrix, Matrix, OMatrix, base::U8, VecStorage, ArrayStorage, debug::RandomOrthogonal};
+use rand::{random, seq::IteratorRandom, Rng};
+use rand_distr::{Distribution, Normal};
+
+use crate::params::Params;
+use crate::prediction::is_class_correct;
+use crate::representation::antigen::AntiGenSplitShell;
+use nalgebra::DMatrix;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::{BufReader, BufWriter, Write};
+
 /// Given a vector `vec` and a positive integer `n`, returns a new vector that contains `n`
 /// randomly chosen elements from `vec`. The elements in the resulting vector are in the same
 /// order as they appear in `vec`.
@@ -35,24 +40,50 @@ use nalgebra::{DMatrix, Matrix, OMatrix, base::U8, VecStorage, ArrayStorage, deb
 /// assert_eq!(picks.len(), 3);
 /// ```
 
+// pub fn construct_orthonormal_vecs(population: &Vec<Antibody>) -> nalgebra::base::Matrix1<f64> {
+pub fn construct_orthonormal_vecs(population: &[Antibody]) -> nalgebra::base::Matrix1<f64> {
+    let nf: usize = 8;
 
-pub fn random_orthonormal(dim: usize) -> DMatrix<f64> {
-    let mut ret = DMatrix::<f64>::identity(dim, dim);
+    let t: Vec<f64> = population
+        .iter()
+        .map(|ab| &ab.dim_values)
+        .map(|f| f.iter().map(|m| m.offset).collect::<Vec<f64>>())
+        .flatten()
+        .collect();
+    let mut dm1 = DMatrix::from_vec(nf, population.len(), t.clone()).transpose();
+    println!("{:?}", t.clone());
+    println!("{}", dm1);
+    println!("skadoosh");
+    mutate_orientation(&mut dm1);
+    todo!()
+}
+
+pub fn mutate_orientation(mut m: &mut DMatrix<f64>) {
+    let q = m.shape().1;
     let mut rng = rand::thread_rng();
+    let distr = Normal::new(0.0, PI / 2.0).unwrap();
+    let theta = distr.sample(&mut rng);
+    let column_idxs: Vec<usize> = m
+        .column_iter()
+        .enumerate()
+        .choose_multiple(&mut rng, 2)
+        .iter()
+        .map(|f| f.0)
+        .collect();
 
-    for i in 0..dim-1 {
-        let rot = GivensRotation::new(rng.gen(), rng.gen()).0;
-        rot.rotate(&mut ret.fixed_rows_mut::<2>(i) )
-    }
+    let c1 = m.column(column_idxs[0]);
+    let c2 = m.column(column_idxs[1]);
+    let tmp = c1 * theta.cos() + c2 * theta.sin();
+    let tmp2 = c1 * -theta.sin() + c2 * theta.cos();
 
-    ret
+    m.column_mut(column_idxs[0]).copy_from(&tmp);
+    m.column_mut(column_idxs[1]).copy_from(&tmp2);
+
+    println!("{:?}", theta);
+    println!("{}", m);
+    // println!("{:?}", q.clone());
+    todo!()
 }
-
-
-pub fn gen_random_lengths(dim: usize) -> DVector<f64> {
-    DVector::<f64>::new_random(dim)
-}
-
 
 pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
     let mut rng = rand::thread_rng();
@@ -91,11 +122,15 @@ pub fn pick_n_random<T>(vec: Vec<T>, n: usize) -> Vec<T> {
 /// let antigens = vec![...];
 /// let (train, test) = split_train_test(&antigens, 0.2);
 /// ```
-pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen>, Vec<AntiGen>) {
+pub fn split_train_test(
+    antigens: &Vec<AntiGenSplitShell>,
+    test_frac: f64,
+) -> (Vec<AntiGen>, Vec<AntiGen>) {
     let classes: HashSet<usize> = antigens.iter().map(|ag| ag.class_label).collect();
 
-    let mut train: Vec<AntiGen> = Vec::new();
-    let mut test: Vec<AntiGen> = Vec::new();
+    println!("clasess: {:?}", classes);
+    let mut train: Vec<_> = Vec::new();
+    let mut test: Vec<_> = Vec::new();
 
     for class in classes {
         let mut of_class: Vec<_> = antigens
@@ -104,13 +139,21 @@ pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen
             .cloned()
             .collect();
         let num_test = (of_class.len() as f64 * test_frac) as usize;
+        println!(
+            "in class {:?} -> train: {:?} - test: {:?}",
+            of_class.len(),
+            of_class.len() - num_test,
+            num_test
+        );
         let class_train = of_class.split_off(num_test);
 
         train.extend(class_train);
         test.extend(of_class);
     }
 
-    return (train, test);
+    let train_unpacked = train.into_iter().flat_map(|ag| ag.upack()).collect();
+    let test_unpacked = test.into_iter().flat_map(|ag| ag.upack()).collect();
+    return (train_unpacked, test_unpacked);
 }
 
 /// Splits a collection of AntiGen instances into train and test sets using a "n-fold" cross-validation
@@ -132,13 +175,13 @@ pub fn split_train_test(antigens: &Vec<AntiGen>, test_frac: f64) -> (Vec<AntiGen
 /// }
 /// ```
 pub fn split_train_test_n_fold(
-    antigens: &Vec<AntiGen>,
+    antigens: &Vec<AntiGenSplitShell>,
     n_folds: usize,
 ) -> Vec<(Vec<AntiGen>, Vec<AntiGen>)> {
     let classes: HashSet<usize> = antigens.iter().map(|ag| ag.class_label).collect();
     let fold_frac = 1.0 / n_folds as f64;
 
-    let mut folds: Vec<Vec<AntiGen>> = Vec::new();
+    let mut folds: Vec<Vec<AntiGenSplitShell>> = Vec::new();
     for _ in 0..n_folds {
         folds.push(Vec::new());
     }
@@ -173,9 +216,64 @@ pub fn split_train_test_n_fold(
                 train_fold.extend(folds.get(join_fold).unwrap().clone());
             }
         }
-        ret_folds.push((train_fold, test_fold))
+        let train_fold_unpacked = train_fold.into_iter().flat_map(|ag| ag.upack()).collect();
+        let test_fold_unpacked = test_fold.into_iter().flat_map(|ag| ag.upack()).collect();
+        ret_folds.push((train_fold_unpacked, test_fold_unpacked))
     }
 
     // println!("folds {:?}", folds);
     return ret_folds;
+}
+
+pub fn read_csv(path: &str) -> Vec<Vec<String>> {
+    let mut ret_vec: Vec<Vec<String>> = Vec::new();
+
+    let f = File::open(path).unwrap();
+    let mut reader = BufReader::new(f);
+    let mut line = String::new();
+
+    loop {
+        let len = reader.read_line(&mut line).unwrap();
+
+        if line.ends_with("\n") {
+            line = line.strip_suffix("\n").unwrap().parse().unwrap();
+        }
+        if line.ends_with("\r") {
+            line = line.strip_suffix("\r").unwrap().parse().unwrap();
+        }
+
+        if line.len() > 0 {
+            let cols = line.split(",");
+            ret_vec.push(cols.into_iter().map(|s| String::from(s)).collect());
+            line.clear();
+        } else {
+            break;
+        }
+    }
+
+    // println!("{:?}", ret_vec);
+    return ret_vec;
+}
+
+pub fn get_pop_acc(
+    antigens: &Vec<AntiGen>,
+    antibodies: &Vec<Antibody>,
+    params: &Params,
+) -> (usize, usize, usize) {
+    let mut n_corr = 0;
+    let mut n_wrong = 0;
+    let mut n_no_detect = 0;
+    for antigen in antigens {
+        let pred = is_class_correct(&antigen, &antibodies, &params.eval_method);
+        if let Some(v) = pred {
+            if v {
+                n_corr += 1
+            } else {
+                n_wrong += 1
+            }
+        } else {
+            n_no_detect += 1
+        }
+    }
+    return (n_corr, n_wrong, n_no_detect);
 }

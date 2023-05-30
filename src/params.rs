@@ -2,10 +2,12 @@ use std::{env, slice};
 use std::ops::{Range, RangeInclusive};
 
 use rand::prelude::SliceRandom;
+use strum_macros::{Display, EnumString};
+use crate::prediction::EvaluationMethod;
 
 use crate::representation::antibody::DimValueType;
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, EnumString, Display)]
 pub enum MutationType {
     Offset,
     Multiplier,
@@ -13,20 +15,27 @@ pub enum MutationType {
     ValueType,
     Radius,
     Label,
-    OffsetVector,
-    LengthMatrix,
-    OrientationMatrix,
 }
 
+#[derive(Clone)]
 pub enum ReplaceFractionType{
     Linear(Range<f64>),
     MaxRepFrac(f64)
 }
 
+#[derive(Clone)]
+pub enum PopSizeType{
+    Fraction(f64),
+    Number(usize),
+    BoostingFixed(usize)
+}
+
+#[derive(Clone)]
 pub struct Params {
+    pub eval_method: EvaluationMethod,
     // -- train params -- //
     pub boost: usize,
-    pub antigen_pop_fraction: f64,
+    pub antigen_pop_size: PopSizeType,
     pub leak_fraction: f64,
     pub leak_rand_prob: f64,
     pub generations: usize,
@@ -40,11 +49,22 @@ pub struct Params {
 
     pub mutation_value_type_local_search_dim: bool,
 
+
+    pub ratio_lock: bool,
+    pub crowding: bool,
+
     pub offset_mutation_multiplier_range: RangeInclusive<f64>,
     pub multiplier_mutation_multiplier_range: RangeInclusive<f64>,
     pub radius_mutation_multiplier_range: RangeInclusive<f64>,
     pub value_type_valid_mutations: Vec<DimValueType>,
     pub label_valid_mutations: Vec<usize>,
+
+    // -- train params -- //
+    pub correctness_weight: f64,
+    pub coverage_weight: f64,
+    pub uniqueness_weight: f64,
+    pub good_afin_weight: f64,
+    pub bad_afin_weight: f64,
 
     // reduction
     pub membership_required: f64,
@@ -59,13 +79,13 @@ pub struct Params {
 
     // -- B-cell from antigen initialization -- //
     pub antibody_ag_init_multiplier_range: RangeInclusive<f64>,
-    pub antibody_ag_init_value_types: Vec<DimValueType>,
+    pub antibody_ag_init_value_types: Vec<(DimValueType, usize)>,
     pub antibody_ag_init_range_range: RangeInclusive<f64>,
 
     // -- B-cell from random initialization -- //
     pub antibody_rand_init_offset_range: RangeInclusive<f64>,
     pub antibody_rand_init_multiplier_range: RangeInclusive<f64>,
-    pub antibody_rand_init_value_types: Vec<DimValueType>,
+    pub antibody_rand_init_value_types: Vec<(DimValueType, usize)>,
     pub antibody_rand_init_range_range: RangeInclusive<f64>,
 }
 
@@ -81,10 +101,29 @@ impl Params {
             (MutationType::ValueType, self.mutation_value_type_weight),
             (MutationType::Radius, self.mutation_radius_weight),
             (MutationType::Label, self.mutation_label_weight),
-            (MutationType::OrientationMatrix, self.mutation_label_weight),
-            (MutationType::LengthMatrix, self.mutation_label_weight),
-            (MutationType::OffsetVector, self.mutation_label_weight),
         ];
+
+        let mut rng = rand::thread_rng();
+        return weighted
+            .choose_weighted(&mut rng, |v| v.1)
+            .unwrap()
+            .0
+            .clone();
+    }
+
+      pub fn roll_dim_type_from_ag_ab(&self) -> DimValueType {
+        let weighted = &self.antibody_ag_init_value_types;
+
+        let mut rng = rand::thread_rng();
+        return weighted
+            .choose_weighted(&mut rng, |v| v.1)
+            .unwrap()
+            .0
+            .clone();
+    }
+
+    pub fn roll_dim_type_rand_ab(&self) -> DimValueType {
+        let weighted = &self.antibody_rand_init_value_types;
 
         let mut rng = rand::thread_rng();
         return weighted
@@ -105,6 +144,11 @@ pub struct VerbosityParams {
     pub display_final_ab_info: bool,
     pub display_detailed_error_info: bool,
     pub display_final_acc_info: bool,
+
+    pub print_boost_info: bool,
+
+
+
 }
 
 impl VerbosityParams {
@@ -118,13 +162,14 @@ impl VerbosityParams {
             display_final_ab_info: false,
             display_detailed_error_info: false,
             display_final_acc_info: false,
+            print_boost_info: false
         };
     }
 }
 
 
-fn width_to_range(width: f64) -> RangeInclusive<f64>{
-    return (1.0-width)..=(1.0+width)
+fn width_to_range( center: f64, width: f64) -> RangeInclusive<f64>{
+    return (center-width)..=(center+width)
 }
 
 fn param_string_to_bool(param_string: String) -> bool{
@@ -161,15 +206,49 @@ pub fn modify_config_by_args(params: &mut Params) {
     let mut will_use_open = None;
     let mut will_use_disabled = None;
 
+    let mut local_search_radius = None;
+    let mut local_search_multi = None;
+
+
 
     for arg in args {
         if arg.starts_with("--") {
             let (key, value) = arg.strip_prefix("--").unwrap().split_once("=").unwrap();
             match key {
+                // Value params
+                "correctness_weight" => params.correctness_weight =value.parse().unwrap(),
+                "coverage_weight" => params.coverage_weight =value.parse().unwrap(),
+                "uniqueness_weight" => params.uniqueness_weight =value.parse().unwrap(),
+
+                "good_afin_weight" => params.good_afin_weight =value.parse().unwrap(),
+                "bad_afin_weight" => params.bad_afin_weight =value.parse().unwrap(),
+
+
+
+                // training params
+                "antigen_pop_size_num" => params.antigen_pop_size = PopSizeType::Number(value.parse().unwrap()),
+                "antigen_pop_size_frac" => params.antigen_pop_size = PopSizeType::Fraction(value.parse().unwrap()),
+                "generations" => params.generations = value.parse().unwrap(),
+                "membership_required" => params.membership_required = value.parse().unwrap(),
+
+
+                // ais params
+                "use_open_dims" => will_use_open = Some(param_string_to_bool(value.parse().unwrap())),
+                "local_search_radius" => local_search_radius = Some(param_string_to_bool(value.parse().unwrap())),
+                "local_search_multi" => local_search_multi = Some(param_string_to_bool(value.parse().unwrap())),
+                "boosting_rounds" => params.boost = value.parse().unwrap(),
+
+
+                //other
+
+
                 "tournament_size" => params.tournament_size = value.parse().unwrap(),
                 "leak_fraction" => params.leak_fraction = value.parse().unwrap(),
-                "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
+                // "antigen_pop_fraction" => params.antigen_pop_fraction = value.parse().unwrap(),
                 "max_replacment_frac" => params.replace_frac_type = ReplaceFractionType::MaxRepFrac(value.parse().unwrap()),
+
+
+
 
                 "mutation_value_type_local_search_dim" => params.mutation_value_type_local_search_dim = param_string_to_bool(value.parse().unwrap()),
                 "antibody_init_expand_radius" => params.antibody_init_expand_radius = param_string_to_bool(value.parse().unwrap()),
@@ -184,19 +263,58 @@ pub fn modify_config_by_args(params: &mut Params) {
                 "use_open_dims" => will_use_open = Some(param_string_to_bool(value.parse().unwrap())),
                 "use_disabled_dims" => will_use_disabled = Some(param_string_to_bool(value.parse().unwrap())),
 
-                "offset_mutation_multiplier_range" => params.offset_mutation_multiplier_range = width_to_range(value.parse().unwrap()),
-                "multiplier_mutation_multiplier_range" => params.multiplier_mutation_multiplier_range = width_to_range(value.parse().unwrap()),
-                "radius_mutation_multiplier_range" => params.radius_mutation_multiplier_range = width_to_range(value.parse().unwrap()),
+                "offset_mutation_multiplier_range" => params.offset_mutation_multiplier_range = width_to_range(0.0,value.parse().unwrap()),
+                "multiplier_mutation_multiplier_range" => params.multiplier_mutation_multiplier_range = width_to_range(0.0,value.parse().unwrap()),
+                "radius_mutation_multiplier_range" => params.radius_mutation_multiplier_range = width_to_range(0.0,value.parse().unwrap()),
 
 
                 _ => panic!("invalid config arg"),
             }
         }
     }
-    for v in vec![&mut params.value_type_valid_mutations, &mut params.antibody_ag_init_value_types, &mut params.antibody_rand_init_value_types]{
-        filter_category_list::<DimValueType>(will_use_open, DimValueType::Open, v);
-        filter_category_list::<DimValueType>(will_use_disabled, DimValueType::Disabled, v);
+
+    if let Some(use_open) = will_use_open{
+        let probs = if use_open{
+            vec![
+                (DimValueType::Circle,1),
+                (DimValueType::Disabled,1),
+                (DimValueType::Open,1)
+            ]
+        } else {
+            vec![
+                (DimValueType::Circle,1),
+                (DimValueType::Disabled,1),
+                (DimValueType::Open,0)
+            ]
+        };
+        params.antibody_ag_init_value_types = probs.clone();
+        params.antibody_rand_init_value_types = probs;
     }
+
+    if let Some(local_s_multi) = local_search_multi{
+        if local_s_multi{
+            params.mutation_multiplier_local_search_weight = 1;
+            params.mutation_value_type_local_search_dim = true;
+        } else {
+            params.mutation_multiplier_local_search_weight = 0;
+            params.mutation_value_type_local_search_dim = false;
+        }
+    }
+    if let Some(local_s_radius) = local_search_radius{
+        if local_s_radius{
+            params.antibody_init_expand_radius = true;
+        } else {
+            params.antibody_init_expand_radius = false;
+        }
+
+    }
+
+
+
+    // for v in vec![&mut params.value_type_valid_mutations, &mut params.antibody_ag_init_value_types, &mut params.antibody_rand_init_value_types]{
+    //     filter_category_list::<DimValueType>(will_use_open, DimValueType::Open, v);
+    //     filter_category_list::<DimValueType>(will_use_disabled, DimValueType::Disabled, v);
+    // }
 
 
 

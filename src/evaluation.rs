@@ -1,140 +1,133 @@
 use std::cmp::min;
 use std::collections::{HashMap, HashSet};
+use std::f32::consts::E;
+use std::ops::Deref;
 
 use rayon::prelude::*;
 
 use crate::bucket_empire::{BucketKing, ValueRangeType};
+use crate::params::Params;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
+use crate::representation::evaluated_antibody::EvaluatedAntibody;
+use crate::stupid_mutations::MutationOp;
 
 #[derive(Clone, Debug)]
 pub struct Evaluation {
     pub matched_ids: Vec<usize>,
+    pub matched_afin: Vec<f64>,
     pub wrongly_matched: Vec<usize>,
+    pub wrongly_matched_afin: Vec<f64>,
     pub membership_value: (f64, f64),
+    pub affinity_weight: (f64, f64),
+    pub affinity_ag_map: HashMap<usize, (f64, usize)>
 }
 
-pub fn evaluate_antibody_with_orientation(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
-    todo!();
+impl Evaluation {
+
+    pub fn new(antigens: &Vec<AntiGen>, antibody: &Antibody)-> Evaluation{
+
+    let affinity_ag_map: HashMap<_, (_,_)> =   antigens
+            // .iter()
+            .par_iter()
+            .map(|ag| (ag.id,(calculate_affinity_dist(antibody,ag), ag.class_label)))
+            .collect::<HashMap<usize,(f64,usize)>>();
+
+        return Evaluation{
+            matched_ids: vec![],
+            matched_afin: vec![],
+            wrongly_matched: vec![],
+            wrongly_matched_afin: vec![],
+            membership_value: (0.0, 0.0),
+            affinity_weight: (0.0, 0.0),
+            affinity_ag_map,
+        }
+
+    }
+    pub fn update_eval(&mut self, cur_label: usize){
+
+        let  registered_antigens =  self.affinity_ag_map
+            .iter()
+            .filter(| (id,(afin,label))| is_afinity_registering(*afin))
+            .map(|(id, (afin,label))| (id, afin, label))
+            .collect::<Vec<_>>();
+        // println!("registered {:?}", registered_antigens.len());
+
+
+
+        let mut corr_matched = Vec::with_capacity(registered_antigens.len());
+        let mut corr_matched_afin = Vec::with_capacity(registered_antigens.len());
+    // let mut corr_matched_weighted_count = Vec::with_capacity(registered_antigens.len());
+
+    let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
+    let mut wrong_matched_afin = Vec::with_capacity(registered_antigens.len());
+    // let mut wrong_matched_weighted_count = Vec::with_capacity(registered_antigens.len());
+
+    for (id, afin, label) in registered_antigens {
+        if *label == cur_label {
+            corr_matched.push(*id);
+            corr_matched_afin.push(*afin);
+        } else {
+            wrong_matched.push(*id);
+            wrong_matched_afin.push(*afin);
+        }
+    }
+
+    let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
+
+    let corr_match_afin_sum:f64 = corr_matched_afin.iter().sum::<f64>() * -1.0;
+    let wrong_match_afin_sum:f64 = wrong_matched_afin.iter().sum::<f64>() * -1.0;
+
+    let balance = corr_match_afin_sum/ (corr_match_afin_sum+wrong_match_afin_sum).max(1.0);
+
+
+        self.matched_ids = corr_matched;
+        self.matched_afin = corr_matched_afin;
+        self.wrongly_matched = wrong_matched;
+        self.wrongly_matched_afin = wrong_matched_afin;
+
+        self.membership_value =  (same_label_membership, 1.0 - same_label_membership);
+        self.affinity_weight = (balance, 1.0 - balance);
+
+    }
 }
+
+
+
+fn calculate_affinity_dist(antibody: &Antibody, antigen: &AntiGen) -> f64 {
+        let mut roll_sum: f64 = 0.0;
+        for i in 0..antigen.values.len() {
+            let b_dim = antibody.dim_values.get(i).unwrap();
+            let antigen_dim_val = antigen.values.get(i).unwrap();
+            roll_sum += match b_dim.value_type {
+                DimValueType::Disabled => 0.0,
+                DimValueType::Open => b_dim.multiplier * (antigen_dim_val - b_dim.offset),
+                DimValueType::Circle => {
+                    (b_dim.multiplier * (antigen_dim_val - b_dim.offset)).powi(2)
+                }
+            };
+        }
+        roll_sum -= antibody.radius_constant;
+        return roll_sum;
+}
+
+fn is_afinity_registering(affinity: f64) -> bool{
+    return if affinity <= 0.0 {
+            true
+        } else {
+            false
+        }
+}
+
 
 
 pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
-    /*
-    //todo: this is a mess that does not work if any of the dims are open, some workarounds are possible but probably firmly overoptimizing
-    let dim_radus = antibody
-        .dim_values
-        .iter()
-        .map(|dv| {
-            return match dv.value_type {
-                DimValueType::Disabled => ValueRangeType::Open,
-                DimValueType::Open => ValueRangeType::Open,
+    let mut eval = Evaluation::new(antigens, antibody);
+    eval.update_eval(antibody.class_label);
+    return eval;
 
-                DimValueType::Circle => {
-                    let value = antibody.radius_constant.sqrt() / dv.multiplier;
-                    let flipped_offset = dv.offset;
-                    return ValueRangeType::Symmetric((
-                        flipped_offset - value,
-                        flipped_offset + value,
-                    ));
-                }
-            };
-        })
-        .collect();
-
-    let mut idx_list = bk
-        .get_potential_matches(&dim_radus)
-        .unwrap();
-
-    idx_list.sort();*/
-
-    let registered_antigens = antigens
-        .iter()
-        // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
-        .filter(|ag| antibody.test_antigen(ag))
-        .collect::<Vec<_>>();
-
-    if false {
-        let test_a = antigens
-            .iter()
-            // .filter(|ag| idx_list.binary_search(&ag.id).is_ok())
-            .filter(|ag| antibody.test_antigen(ag))
-            .collect::<Vec<_>>();
-
-        let test_b = antigens
-            .iter()
-            .filter(|ag| antibody.test_antigen(ag))
-            .collect::<Vec<_>>();
-        if test_a.len() != test_b.len() {
-            println!("{:?} vs {:?}", test_a.len(), test_b.len());
-            println!();
-            println!(
-                "cell vt    {:?}",
-                antibody
-                    .dim_values
-                    .iter()
-                    .map(|b| b.value_type.clone())
-                    .collect::<Vec<_>>()
-            );
-            println!(
-                "cell mp    {:?}",
-                antibody
-                    .dim_values
-                    .iter()
-                    .map(|b| b.multiplier.clone())
-                    .collect::<Vec<_>>()
-            );
-            println!(
-                "cell of    {:?}",
-                antibody
-                    .dim_values
-                    .iter()
-                    .map(|b| b.offset.clone())
-                    .collect::<Vec<_>>()
-            );
-            println!("cell rad : {:?}", antibody.radius_constant);
-            println!();
-            // println!("dim rad: {:?}", dim_radus);
-            println!("bk  res: {:?}", test_a);
-            println!();
-            println!("otr res: {:?}", test_b);
-            panic!("bucket empire error")
-        }
-
-        // println!("a {:?} b {:?}", test_a.len(), test_b.len());
-    }
-
-    let mut corr_matched = Vec::with_capacity(registered_antigens.len());
-    let mut wrong_matched = Vec::with_capacity(registered_antigens.len());
-
-    for registered_antigen in registered_antigens {
-        if registered_antigen.class_label == antibody.class_label {
-            corr_matched.push(registered_antigen.id)
-        } else {
-            wrong_matched.push(registered_antigen.id)
-        }
-    }
-
-    // let with_same_label = registered_antigens.iter().filter(|ag|ag.class_label==antibody.class_label ).collect::<Vec<_>>();
-    // let num_wrong = registered_antigens.iter().filter(|ag|ag.class_label!=antibody.class_label ).collect::<Vec<_>>();
-    // let num_wrong = registered_antigens.len()-with_same_label.len();
-
-    // let score = (with_same_label.len()as f64) - ((num_wrong as f64/2.0));
-
-    // println!("matched {:?}\n", corr_matched);
-
-
-    // -- membership value -- //
-    let same_label_membership = corr_matched.len() as f64 / (corr_matched.len() as f64 + wrong_matched.len() as f64).max(1.0);
-
-    let ret_evaluation = Evaluation {
-        matched_ids: corr_matched,
-        wrongly_matched: wrong_matched,
-        membership_value: (same_label_membership, 1.0 - same_label_membership),
-    };
-    // println!("num reg {:?} same label {:?} other label {:?}",antigens.len(), with_same_label.len(), num_wrong);
-    return ret_evaluation;
 }
+
 
 //
 //  Match counter
@@ -182,6 +175,8 @@ impl MatchCounter {
                 )
             })
             .collect();
+
+
         let count_map: HashMap<usize, usize> = class_labels
             .iter()
             .map(|x| {
@@ -195,6 +190,8 @@ impl MatchCounter {
                 )
             })
             .collect();
+
+        // println!("count map tot counts: {:?}", count_map);
 
         return MatchCounter {
             max_id,
@@ -222,34 +219,38 @@ impl MatchCounter {
         return inverse;
     }
 
-    pub fn add_evaluations(&mut self, evaluations: Vec<&Evaluation>) {
-        for evaluation in evaluations {
-            for correct_match_id in &evaluation.matched_ids {
-                if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
-                    *elem += 1;
-                } else {
-                    println!(
-                        "match id {:?} arr len {:?}",
-                        correct_match_id,
-                        self.correct_match_counter.len()
-                    );
-                    panic!("match count error")
-                }
+    pub fn add_evaluation(&mut self, evaluation: &Evaluation) {
+        for correct_match_id in &evaluation.matched_ids {
+            if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
+                *elem += 1;
+            } else {
+                println!(
+                    "match id {:?} arr len {:?}",
+                    correct_match_id,
+                    self.correct_match_counter.len()
+                );
+                panic!("match count error")
             }
+        }
 
-            for correct_match_id in &evaluation.wrongly_matched {
-                if let Some(elem) = self.incorrect_match_counter.get_mut(*correct_match_id) {
-                    *elem += 1;
-                } else {
-                    panic!("match count error")
-                }
+        for correct_match_id in &evaluation.wrongly_matched {
+            if let Some(elem) = self.incorrect_match_counter.get_mut(*correct_match_id) {
+                *elem += 1;
+            } else {
+                panic!("match count error")
             }
         }
     }
 
-    pub fn remove_evaluations(&mut self, evaluations: Vec<&Evaluation>) {
-        for evaluation in evaluations {
-            for correct_match_id in &evaluation.matched_ids {
+
+    pub fn add_evaluations(&mut self, evaluations: &Vec<EvaluatedAntibody>) {
+        for evaluated_ab in evaluations {
+            self.add_evaluation(&evaluated_ab.evaluation);
+        }
+    }
+
+    pub fn remove_evaluation(&mut self, evaluation: &Evaluation) {
+             for correct_match_id in &evaluation.matched_ids {
                 if let Some(elem) = self.correct_match_counter.get_mut(*correct_match_id) {
                     *elem -= 1;
                 } else {
@@ -264,6 +265,10 @@ impl MatchCounter {
                     panic!("match count error")
                 }
             }
+    }
+    pub fn remove_evaluations(&mut self, evaluations: &Vec<EvaluatedAntibody>) {
+        for evaluated_ab in evaluations {
+            self.remove_evaluation(&evaluated_ab.evaluation);
         }
     }
 }

@@ -22,12 +22,12 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
 
     let n_lists = lists.len();
 
-    if n_lists == 0 {
+    return if n_lists == 0 {
         // if no lists are given return a new empty vec
-        return Some(Vec::new());
+        Some(Vec::new())
     } else if n_lists == 1 {
         // if only one lists, this lists matches with itself and is therefore returned
-        return Some(lists.first().unwrap().clone());
+        Some(lists.first().unwrap().clone())
     } else {
         let mut found_matches: Vec<usize> = Vec::new();
 
@@ -86,7 +86,7 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
             first_idx += 1;
         }
         // println!("out: {:?}", found_matches);
-        return Some(found_matches);
+        Some(found_matches)
     }
 }
 
