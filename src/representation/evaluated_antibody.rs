@@ -3,6 +3,7 @@ use nalgebra::{DMatrix, DVector};
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::ops::Range;
+use itertools::any;
 use strum_macros::Display;
 
 use crate::representation::antigen::AntiGen;
@@ -20,6 +21,10 @@ pub struct EvaluatedAntibody {
 }
 
 impl EvaluatedAntibody {
+    pub fn update_eval(&mut self){
+        self.evaluation.update_eval(self.antibody.class_label);
+    }
+
     pub fn get_antigen_local_search_border(
         &self,
         check_dim: usize,
@@ -111,66 +116,76 @@ impl EvaluatedAntibody {
     }
 
     pub fn transform(&mut self, antigens: &Vec<AntiGen>, mut_op: &MutationOp, inverse: bool) {
-        if mut_op.mut_type == MutationType::Radius {
-            let delta = if let MutationDelta::Value(delta) = mut_op.delta {
-                delta
-            } else {
-                panic!("error")
-            };
-
-            if inverse {
-                mut_op.inverse_transform(&mut self.antibody);
-
-                for (afin, label) in self.evaluation.affinity_ag_map.values_mut() {
-                    *afin += delta
-                }
-            } else {
-                mut_op.transform(&mut self.antibody);
-                for (afin, label) in self.evaluation.affinity_ag_map.values_mut() {
-                    *afin -= delta
-                }
-            }
-        } else {
-            let b_dim = self.antibody.dim_values.get(mut_op.dim).unwrap().clone();
-
-            let mut cur_dim_vals = antigens.iter().map(|ag| {
-                let antigen_dim_val = ag.values.get(mut_op.dim).unwrap();
-                let current = match b_dim.value_type {
-                    DimValueType::Disabled => 0.0,
-                    DimValueType::Open => b_dim.multiplier * (antigen_dim_val - b_dim.offset),
-                    DimValueType::Circle => {
-                        (b_dim.multiplier * (antigen_dim_val - b_dim.offset)).powi(2)
-                    }
-                };
-                return current.clone().to_owned();
-            });
-
-            if inverse {
-                mut_op.inverse_transform(&mut self.antibody);
-            } else {
-                mut_op.transform(&mut self.antibody);
-            }
-
-            let b_dim = self.antibody.dim_values.get(mut_op.dim).unwrap();
-
-            for (ag, old_dim_afin) in antigens.iter().zip(cur_dim_vals) {
-                let antigen_dim_val = ag.values.get(mut_op.dim).unwrap();
-                let (current_afin, current_label) =
-                    self.evaluation.affinity_ag_map.get(&ag.id).unwrap();
-
-                let new_val = match b_dim.value_type {
-                    DimValueType::Disabled => 0.0,
-                    DimValueType::Open => b_dim.multiplier * (antigen_dim_val - b_dim.offset),
-                    DimValueType::Circle => {
-                        (b_dim.multiplier * (antigen_dim_val - b_dim.offset)).powi(2)
-                    }
+        match mut_op.mut_type {
+            MutationType::Radius => {
+                let delta = if let MutationDelta::Value(delta) = mut_op.delta {
+                    delta
+                } else {
+                    panic!("error")
                 };
 
-                let delta = new_val - old_dim_afin;
-                let new_afin = current_afin + delta;
-                self.evaluation
-                    .affinity_ag_map
-                    .insert(ag.id, (new_afin, *current_label));
+                if inverse {
+                    mut_op.inverse_transform(&mut self.antibody);
+
+                    for (afin, label) in self.evaluation.affinity_ag_map.values_mut() {
+                        *afin += delta
+                    }
+                } else {
+                    mut_op.transform(&mut self.antibody);
+                    for (afin, label) in self.evaluation.affinity_ag_map.values_mut() {
+                        *afin -= delta
+                    }
+                }
+            }
+            MutationType::Label => {
+                if inverse {
+                    mut_op.inverse_transform(&mut self.antibody);
+                } else {
+                    mut_op.transform(&mut self.antibody);
+                }
+            }
+            _ => {
+                let b_dim = self.antibody.dim_values.get(mut_op.dim).unwrap().clone();
+
+                let mut cur_dim_vals = antigens.iter().map(|ag| {
+                    let antigen_dim_val = ag.values.get(mut_op.dim).unwrap();
+                    let current = match b_dim.value_type {
+                        DimValueType::Disabled => 0.0,
+                        DimValueType::Open => b_dim.multiplier * (antigen_dim_val - b_dim.offset),
+                        DimValueType::Circle => {
+                            (b_dim.multiplier * (antigen_dim_val - b_dim.offset)).powi(2)
+                        }
+                    };
+                    return current.clone().to_owned();
+                });
+
+                if inverse {
+                    mut_op.inverse_transform(&mut self.antibody);
+                } else {
+                    mut_op.transform(&mut self.antibody);
+                }
+
+                let b_dim = self.antibody.dim_values.get(mut_op.dim).unwrap();
+
+                for (ag, old_dim_afin) in antigens.iter().zip(cur_dim_vals) {
+                    let antigen_dim_val = ag.values.get(mut_op.dim).unwrap();
+                    let (current_afin, current_label) =
+                        self.evaluation.affinity_ag_map.get(&ag.id).unwrap();
+
+                    let new_val = match b_dim.value_type {
+                        DimValueType::Disabled => 0.0,
+                        DimValueType::Open => b_dim.multiplier * (antigen_dim_val - b_dim.offset),
+                        DimValueType::Circle => {
+                            (b_dim.multiplier * (antigen_dim_val - b_dim.offset)).powi(2)
+                        }
+                    };
+
+                    let delta = new_val - old_dim_afin;
+                    let new_afin = current_afin + delta;
+                    self.evaluation
+                        .affinity_ag_map
+                        .insert(ag.id, (new_afin, *current_label));
+                }
             }
         }
     }

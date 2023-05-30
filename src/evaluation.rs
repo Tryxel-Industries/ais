@@ -14,7 +14,6 @@ use crate::stupid_mutations::MutationOp;
 
 #[derive(Clone, Debug)]
 pub struct Evaluation {
-    ab_label: usize,
     pub matched_ids: Vec<usize>,
     pub matched_afin: Vec<f64>,
     pub wrongly_matched: Vec<usize>,
@@ -35,7 +34,6 @@ impl Evaluation {
             .collect::<HashMap<usize,(f64,usize)>>();
 
         return Evaluation{
-            ab_label: antibody.class_label,
             matched_ids: vec![],
             matched_afin: vec![],
             wrongly_matched: vec![],
@@ -46,7 +44,7 @@ impl Evaluation {
         }
 
     }
-    pub fn update_eval(&mut self){
+    pub fn update_eval(&mut self, cur_label: usize){
 
         let  registered_antigens =  self.affinity_ag_map
             .iter()
@@ -66,7 +64,7 @@ impl Evaluation {
     // let mut wrong_matched_weighted_count = Vec::with_capacity(registered_antigens.len());
 
     for (id, afin, label) in registered_antigens {
-        if *label == self.ab_label {
+        if *label == cur_label {
             corr_matched.push(*id);
             corr_matched_afin.push(*afin);
         } else {
@@ -125,7 +123,7 @@ fn is_afinity_registering(affinity: f64) -> bool{
 
 pub fn evaluate_antibody(antigens: &Vec<AntiGen>, antibody: &Antibody) -> Evaluation {
     let mut eval = Evaluation::new(antigens, antibody);
-    eval.update_eval();
+    eval.update_eval(antibody.class_label);
     return eval;
 
 }

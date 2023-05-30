@@ -8,8 +8,10 @@ use crate::datasets::Datasets;
 
 use strum_macros::{Display, EnumString};
 
-use serde::Serialize;
+use serde::{Serialize, Serializer};
 use serde_json::{json, Value};
+use statrs::statistics::Statistics;
+use crate::representation::antibody::DimValueType;
 
 #[derive(Clone, Copy, PartialEq, Debug, Display, EnumString)]
 enum FillMode{
@@ -23,15 +25,17 @@ pub enum ExperimentProperty{
     // per iter logging
     TestAccuracy,
     TrainAccuracy,
-    TrainScore,
+    AvgTrainScore,
     PopLabelMemberships,
+    PopDimTypeMemberships,
 
-    TrainLabel,
 
     BoostAccuracy,
     BoostAccuracyTest,
     Runtime,
 
+
+    FoldAccuracy,
 }
 
 
@@ -39,12 +43,18 @@ pub enum ExperimentProperty{
 
 
 impl ExperimentProperty {
-    const STEP_PROPS: [ExperimentProperty; 2] = [
-        ExperimentProperty::TestAccuracy,
-        ExperimentProperty::PopLabelMemberships
-    ];
     pub fn is_step_prop(&self) -> bool{
-        return ExperimentProperty::STEP_PROPS.contains(self);
+        return match self {
+            ExperimentProperty::TestAccuracy => {true}
+            ExperimentProperty::TrainAccuracy => {true}
+            ExperimentProperty::AvgTrainScore => {true}
+            ExperimentProperty::PopLabelMemberships => {true}
+            ExperimentProperty::PopDimTypeMemberships => {true}
+            ExperimentProperty::BoostAccuracy => {false}
+            ExperimentProperty::BoostAccuracyTest => {false}
+            ExperimentProperty::Runtime => {false}
+            ExperimentProperty::FoldAccuracy => {false}
+        }
 
     }
 }
@@ -53,13 +63,25 @@ impl ExperimentProperty {
 
 #[derive(Clone, PartialEq, Debug, Serialize, EnumString, Display)]
 pub enum LoggedValue{
-    TrainTest(f64,f64),
-    CorWrongNoReg(usize,usize,usize),
+    TrainTest(HashMap<String, f64>),
+    CorWrongNoReg(HashMap<String, usize>),
     SingleValue(f64),
     LabelMembership(HashMap<usize,usize>),
+    DimTypeMembership(HashMap<DimValueType,f64>),
     NoValue
 }
 
+impl LoggedValue {
+    pub fn gen_corr_wrong_no_reg(cor: usize, wrong: usize, no_reg: usize) -> LoggedValue{
+        let map = HashMap::from([("cor".to_string(), cor),("wrong".to_string(), wrong),("no_reg".to_string(), no_reg)]);
+        return LoggedValue::CorWrongNoReg(map)
+    }
+    pub fn gen_train_test(train: f64, test: f64) -> LoggedValue{
+        let map = HashMap::from([("train".to_string(), train),("test".to_string(), test)]);
+        return LoggedValue::TrainTest(map)
+    }
+
+}
 
 #[derive(Clone, Debug, Serialize)]
 struct TrackedProperty{
@@ -118,6 +140,9 @@ pub struct ExperimentLogger{
 
     current_step: usize,
     current_fold: usize,
+    current_run: usize,
+
+    run_every_n_step: usize,
 
 }
 fn build_trackers(active_properties: &Vec<ExperimentProperty>) -> HashMap<ExperimentProperty, TrackedProperty>{
@@ -128,7 +153,7 @@ fn build_trackers(active_properties: &Vec<ExperimentProperty>) -> HashMap<Experi
 }
 
 impl  ExperimentLogger {
-    pub fn new(dataset_used: Datasets, tracked_props: Vec<ExperimentProperty>) -> ExperimentLogger {
+    pub fn new(dataset_used: Datasets, tracked_props: Vec<ExperimentProperty>, run_every_n_step: usize) -> ExperimentLogger {
 
         let step_properties = tracked_props.clone().into_iter().filter(|prop| prop.is_step_prop()).collect();
         let meta_properties = tracked_props.clone().into_iter().filter(|prop| !prop.is_step_prop()).collect();
@@ -145,13 +170,23 @@ impl  ExperimentLogger {
             map_hist: Vec::new(),
             current_step: 0,
             current_fold: 0,
+            current_run: 0,
+            run_every_n_step,
         }
     }
 
 
 
     pub fn should_run(&self, experiment_property: ExperimentProperty) -> bool{
-        self.full_properties.contains(&experiment_property)
+        if experiment_property.is_step_prop(){
+            if self.current_step % self.run_every_n_step == 0{
+                self.full_properties.contains(&experiment_property)
+            }else {
+                false
+            }
+        }else {
+            self.full_properties.contains(&experiment_property)
+        }
     }
 
     pub fn iter_step(&mut self){
@@ -172,8 +207,12 @@ impl  ExperimentLogger {
                 self.map_hist.push(old_map.clone())
             }
         }
+        self.current_fold += 1;
         self.step_properties_map = None;
+    }
 
+    pub fn end_run(&mut self){
+        self.current_run += 1;
     }
 
     pub fn init_train(&mut self){
@@ -218,6 +257,21 @@ impl  ExperimentLogger {
         });
 
         serde_json::to_writer_pretty(writer, &json);
+    }
+    
+    pub fn log_multi_run_acc(&self){
+        if let Some(tp) = self.meta_properties_map.get(&ExperimentProperty::FoldAccuracy){
+            let (test_acc_vec, train_acc_vec): (Vec<f64>, Vec<f64>) = tp.prop_values.iter().map(|lv| {
+                if let LoggedValue::TrainTest(m) = lv{
+                    (m.get("test").unwrap(), m.get("train").unwrap())
+                }else { 
+                    panic!()
+                }
+            }).unzip(); 
+            println!("with dataset {:?}, over {:?} runs", self.dataset_used, test_acc_vec.len());
+            println!("train acc mean: {:?}, std: {:?}", (&train_acc_vec).mean(), train_acc_vec.std_dev());
+            println!("test acc mean: {:?}, std: {:?}", (&test_acc_vec).mean(), test_acc_vec.std_dev());
+        }
     }
 }
 

@@ -13,6 +13,7 @@ struct SentenceKey {
     local_id: usize,
 }
 
+#[derive(Clone)]
 struct NewsArticleKey {
     pub article_id: usize,
     pub article_label: usize,
@@ -20,7 +21,7 @@ struct NewsArticleKey {
 }
 
 //TODO: implement a hash check of the embeddings to avoid running multiple simmelar ones
-
+#[derive(Clone)]
 pub struct NewsArticleAntigenTranslator {
     news_article_keys: Vec<NewsArticleKey>,
     id_counter: usize,

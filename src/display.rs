@@ -1,7 +1,7 @@
 use crate::ais::ArtificialImmuneSystem;
 use crate::params::Params;
 use crate::prediction::EvaluationMethod;
-use crate::representation::antibody::Antibody;
+use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use std::collections::HashMap;
@@ -11,7 +11,7 @@ use std::collections::HashMap;
 //
 pub fn show_ab_dim_multipliers(antibody: &Antibody) {
     println!(
-        "genome dim values    {:?}",
+        "genome dim multiplier    {:?}",
         antibody
             .dim_values
             .iter()
@@ -39,6 +39,24 @@ pub fn show_ab_dim_value_types(antibody: &Antibody) {
             .map(|v| &v.value_type)
             .collect::<Vec<_>>()
     );
+}
+
+pub fn show_ab_dim_type_dist(antibodies: &Vec<Antibody>){
+    let mut dim_type_map: HashMap<DimValueType, f64> = HashMap::from([(DimValueType::Open,0.0), (DimValueType::Disabled,0.0), (DimValueType::Circle,0.0)]);
+                antibodies.iter().for_each(|ab| {
+                    for dim_value in &ab.dim_values {
+                        if let Some(v) = dim_type_map.get_mut(&dim_value.value_type) {
+                            *v += 1.0/ab.dim_values.len() as f64;
+                        }
+                    }
+                }
+                );
+
+                dim_type_map.iter_mut().for_each(|(k,v)|{
+                    *v /= antibodies.len() as f64;
+                });
+
+    println!("antibody dim type dist   {:?}", dim_type_map);
 }
 
 //
@@ -99,12 +117,14 @@ pub fn eval_display(
         eval_vals.push(eval_count);
     }
 
+
     if verbose {
         println!();
         println!("==========================");
         println!("      MUT info");
         println!("==========================");
         ais.print_ab_mut_info();
+        show_ab_dim_type_dist(&ais.antibodies);
 
         println!("=============================================================================");
         println!("      {:}", display_headline);

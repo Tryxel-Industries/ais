@@ -4,12 +4,13 @@ use std::ops::Range;
 use nalgebra::{DVector, DMatrix};
 use strum_macros::Display;
 
+use serde::Serialize;
 use crate::representation::antigen::AntiGen;
 
 use strum_macros::EnumString;
 use crate::params::MutationType::ValueType;
 
-#[derive(Clone, Copy, PartialEq, Debug, Display, EnumString)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash, Serialize, Display, EnumString)]
 pub enum DimValueType {
     Disabled,
     Open,

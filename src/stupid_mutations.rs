@@ -70,7 +70,7 @@ pub fn mutate_clone_transform(
         let old_multi = eval_ab.antibody.dim_values.get(mut_op.dim).unwrap().multiplier;
 
         eval_ab.transform(antigens, &mut_op, false);
-        eval_ab.evaluation.update_eval();
+        eval_ab.update_eval();
         let new_score = score_antibody(&eval_ab, params, match_counter);
 
         let child_cor_matches = eval_ab.evaluation.matched_ids.len();
@@ -93,7 +93,7 @@ pub fn mutate_clone_transform(
 
     if let Some(winner_op) = best_op{
         eval_ab.transform(antigens, &winner_op, false);
-        eval_ab.evaluation.update_eval();
+        eval_ab.update_eval();
         eval_ab.antibody.clone_count += 1;
         if let Some(count) = eval_ab.antibody.mutation_counter.get_mut(&winner_op.mut_type){
             *count += 1;
@@ -101,7 +101,7 @@ pub fn mutate_clone_transform(
             eval_ab.antibody.mutation_counter.insert(winner_op.mut_type, 1);
         }
     } else {
-        eval_ab.evaluation.update_eval();
+        eval_ab.update_eval();
     }
 
 
@@ -137,7 +137,7 @@ pub fn get_mut_op(
         }
         MutationType::ValueType => mutate_value_type_op(&params, &eval_ab, antigens, fitness_scaler),
         MutationType::Radius => mutate_radius_op(&params, &eval_ab.antibody, fitness_scaler),
-        // MutationType::Label => mutate_label(&params, antibody),
+        MutationType::Label => mutate_label_op(&params, &eval_ab.antibody, fitness_scaler),
         _ =>  panic!("alalal"),
     };
 
@@ -159,7 +159,8 @@ pub enum MutationDelta{
     Value(f64),
     DimAndOffset(f64,f64),
     // from dim type, to dim type, local s multi op, flip multi
-    DimType((DimValueType, DimValueType, Option<Box<MutationOp>>, bool))
+    DimType((DimValueType, DimValueType, Option<Box<MutationOp>>, bool)),
+    Label(usize, usize),
 }
 
 pub struct MutationOp{
@@ -287,8 +288,8 @@ fn cor_err_relat(corr: usize, err: usize) -> f64{
     let corr = (corr as f64 + 2.0).ln() * 1.5;
     let err = (err as f64 + 2.0).ln();
     return (corr)/ ((corr + err).max(1.0))
-
 }
+
 fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &f64, open_dim: bool) -> (f64, f64) {
 
     // println!("#############  DIM MULTI ###################");
@@ -753,17 +754,40 @@ pub fn mutate_radius_op(params: &Params, genome: &Antibody, fitness_scaler: f64)
 
 
 
-pub fn mutate_label(params: &Params, mut genome: Antibody) -> Antibody {
+
+pub fn mutate_label(mut genome: &mut Antibody, mut_delta: &MutationDelta, dim: &usize, inverse: bool) {
+
+    if let MutationDelta::Label(old,new) = mut_delta{
+        let applied_delta = if inverse{
+            genome.class_label = old.clone();
+        }else {
+            genome.class_label = new.clone();
+        };
+    }else {
+        panic!("invalid mutation delta type")
+    }
+}
+
+pub fn mutate_label_op(params: &Params, genome: &Antibody, fitness_scaler: f64) -> Option<MutationOp> {
+
+    let old_label = genome.class_label;
+
     let mut rng = rand::thread_rng();
 
-    let dim_type = params
+    let new_label = params
         .label_valid_mutations
         .get(rng.gen_range(0..params.label_valid_mutations.len()))
         .unwrap()
         .clone();
 
-    genome.class_label = dim_type;
+    return Some(MutationOp{
+        transformation_fn: mutate_label,
+        mut_type: MutationType::Label,
+        dim: 0,
+        delta: MutationDelta::Label(old_label,new_label),
+    });
 
-    return genome;
 }
+
+
 

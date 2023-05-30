@@ -18,19 +18,16 @@ use crate::evaluation::{evaluate_antibody, Evaluation, MatchCounter};
 use crate::experiment_logger::LoggedValue::{CorWrongNoReg, SingleValue, TrainTest};
 use crate::experiment_logger::{ExperimentLogger, ExperimentProperty, LoggedValue};
 use crate::params::{MutationType, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
+use crate::params::MutationType::ValueType;
 use crate::prediction::{is_class_correct, make_prediction, EvaluationMethod, Prediction};
-use crate::representation::antibody::{Antibody, InitType};
+use crate::representation::antibody::{Antibody, DimValueType, InitType};
 use crate::representation::antibody_factory::AntibodyFactory;
 use crate::representation::antigen::AntiGen;
 use crate::representation::evaluated_antibody::EvaluatedAntibody;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use crate::representation::{evaluate_population, expand_antibody_radius_until_hit};
 use crate::scoring::{score_antibodies, score_antibody};
-use crate::selection::{
-    elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n,
-    remove_strictly_worse, replace_if_better_per_cat, replace_worst_n_per_cat, snip_worst_n,
-    tournament_pick,
-};
+use crate::selection::{elitism_selection, kill_by_mask_yo, labeled_tournament_pick, pick_best_n, remove_strictly_worse, replace_if_better, replace_if_better_per_cat, replace_worst_n_per_cat, snip_worst_n, tournament_pick};
 use crate::stupid_mutations::mutate_clone_transform;
 use crate::util::get_pop_acc;
 
@@ -522,7 +519,7 @@ impl ArtificialImmuneSystem {
             if logger.should_run(ExperimentProperty::BoostAccuracy) {
                 logger.log_prop(
                     ExperimentProperty::BoostAccuracy,
-                    CorWrongNoReg(n_corr, n_wrong, n_no_reg),
+                    LoggedValue::gen_corr_wrong_no_reg(n_corr, n_wrong, n_no_reg),
                 )
             }
 
@@ -532,7 +529,7 @@ impl ArtificialImmuneSystem {
 
                 logger.log_prop(
                     ExperimentProperty::BoostAccuracyTest,
-                    CorWrongNoReg(n_corr, n_wrong, n_no_reg),
+                    LoggedValue::gen_corr_wrong_no_reg(n_corr, n_wrong, n_no_reg),
                 )
             }
 
@@ -627,6 +624,7 @@ impl ArtificialImmuneSystem {
         highly_dubious_practices: &Vec<AntiGen>
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         logger.init_train();
+        let t0 = Instant::now();
         // =======  init misc training params  ======= //
 
         let leak_size = (antigens.len() as f64 * params.leak_fraction) as usize;
@@ -717,9 +715,9 @@ impl ArtificialImmuneSystem {
             train_score_hist.push(avg_score.clone());
 
 
-            if logger.should_run(ExperimentProperty::TrainScore) {
+            if logger.should_run(ExperimentProperty::AvgTrainScore) {
                 logger.log_prop(
-                    ExperimentProperty::TrainScore,
+                    ExperimentProperty::AvgTrainScore,
                     LoggedValue::SingleValue(avg_score),
                 )
             }
@@ -737,7 +735,7 @@ impl ArtificialImmuneSystem {
                             .filter(|(a, b)| b.antibody.class_label == cl)
                             .map(|(a, b)| 1usize)
                             .collect();
-                        print!("num with {:?} is {:?} ", cl, filtered.len());
+                        // print!("num with {:?} is {:?} ", cl, filtered.len());
                         (cl, filtered.len())
                     })
                     .collect();
@@ -746,6 +744,24 @@ impl ArtificialImmuneSystem {
                     ExperimentProperty::PopLabelMemberships,
                     LoggedValue::LabelMembership(label_membership_vals),
                 )
+            }
+
+            if logger.should_run(ExperimentProperty::PopDimTypeMemberships){
+                let mut dim_type_map: HashMap<DimValueType, f64> = HashMap::from([(DimValueType::Open,0.0), (DimValueType::Disabled,0.0), (DimValueType::Circle,0.0)]);
+                scored_pop.iter().for_each(|(_,ab)| {
+                    for dim_value in &ab.antibody.dim_values {
+                        if let Some(v) = dim_type_map.get_mut(&dim_value.value_type) {
+                            *v += 1.0/n_dims as f64;
+                        }
+                    }
+                }
+                );
+
+                dim_type_map.iter_mut().for_each(|(k,v)|{
+                    *v /= scored_pop.len() as f64;
+                });
+
+                logger.log_prop(ExperimentProperty::PopDimTypeMemberships,LoggedValue::DimTypeMembership(dim_type_map) )
             }
 
             // =======  parent selection  ======= //
@@ -921,15 +937,31 @@ impl ArtificialImmuneSystem {
                 let mut local_match_counter = match_counter.clone();
 
                 for (label, count) in &n_to_gen_map {
+
+                    let mut rng = rand::thread_rng();
+
+
                     if *count <= 0 {
                         continue;
                     }
 
-                    let filtered: Vec<_> = antigens
-                        .iter()
-                        .filter(|ag| ag.class_label == *label)
-                        .map(|ag| (ag, inversed.get(ag.id).unwrap_or(&0).clone() as i32)) // todo: validate that this unwrap or does not hide a bug
-                        .collect();
+                    let filtered: Vec<_> = if params.ratio_lock{
+                        antigens
+                            .iter()
+                            .filter(|ag| ag.class_label == *label)
+                            .map(|ag| (ag, inversed.get(ag.id).unwrap_or(&0).clone() as i32)) // todo: validate that this unwrap or does not hide a bug
+                            .collect()
+                    } else {
+                        antigens
+                            .iter()
+                            .map(|ag| (ag, inversed.get(ag.id).unwrap_or(&0).clone() as i32)) // todo: validate that this unwrap or does not hide a bug
+                            .collect()
+                    };
+
+                    if filtered.len() == 0{
+                        println!("\n\nno elm in label continuing");
+                        continue
+                    }
 
                     let mut new_pop_pop: Vec<_> = (0..*count)
                         .into_par_iter()
@@ -944,6 +976,8 @@ impl ArtificialImmuneSystem {
                                 cell_factory.generate_from_antigen(&new_ag)
                             } else {
                                 cell_factory.generate_random_genome_with_label(new_ag.class_label)
+                                // let mut new_ab = cell_factory.generate_random_genome_with_label(label);
+                                //     expand_antibody_radius_until_hit(new_ab, &antigens)
                             };
 
                             if params.antibody_init_expand_radius {
@@ -971,11 +1005,15 @@ impl ArtificialImmuneSystem {
             }
 
             if new_leaked.len() > 0 {
-                if is_strip_round {
-                    scored_pop.extend(new_leaked);
-                } else {
-                    // scored_pop = replace_worst_n_per_cat(scored_pop, new_leaked, n_to_gen_map);
+                if params.ratio_lock {
                     scored_pop = replace_if_better_per_cat(
+                        scored_pop,
+                        new_leaked,
+                        n_to_gen_map,
+                        &mut match_counter,
+                    );
+                } else {
+                    scored_pop = replace_if_better(
                         scored_pop,
                         new_leaked,
                         n_to_gen_map,
@@ -1035,13 +1073,14 @@ impl ArtificialImmuneSystem {
                     let (n_corr, n_wrong, n_no_detect) = get_pop_acc(antigens, &antibodies, params);
                     logger.log_prop(
                         ExperimentProperty::TrainAccuracy,
-                        LoggedValue::CorWrongNoReg(n_corr, n_wrong, n_no_detect)
+                        LoggedValue::gen_corr_wrong_no_reg(n_corr, n_wrong, n_no_detect)
                     )
-                }else {
+                };
+                if logger.should_run(ExperimentProperty::TestAccuracy) {
                     let (n_corr, n_wrong, n_no_detect) = get_pop_acc(highly_dubious_practices, &antibodies, params);
                     logger.log_prop(
                         ExperimentProperty::TestAccuracy,
-                        LoggedValue::CorWrongNoReg(n_corr, n_wrong, n_no_detect)
+                        LoggedValue::gen_corr_wrong_no_reg(n_corr, n_wrong, n_no_detect)
                     )
 
                 }
@@ -1164,6 +1203,11 @@ impl ArtificialImmuneSystem {
             .collect();
 
         logger.end_train();
+
+        let duration = t0.elapsed();
+        if logger.should_run(ExperimentProperty::Runtime){
+            logger.log_prop(ExperimentProperty::Runtime, LoggedValue::SingleValue(duration.as_secs_f64()))
+        }
         return (train_acc_hist, train_score_hist, splitted);
     }
 

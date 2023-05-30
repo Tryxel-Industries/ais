@@ -23,8 +23,8 @@ use crate::bucket_empire::BucketKing;
 use crate::datasets::{Datasets, get_dataset, get_dataset_optimal_params};
 use crate::display::{eval_display, show_ab_dim_multipliers, show_ab_dim_offsets, show_ab_dim_value_types};
 use crate::evaluation::MatchCounter;
-use crate::experiment_logger::{ExperimentLogger, ExperimentProperty};
-use crate::experiment_logger::ExperimentProperty::BoostAccuracyTest;
+use crate::experiment_logger::{ExperimentLogger, ExperimentProperty, LoggedValue};
+use crate::experiment_logger::ExperimentProperty::{BoostAccuracyTest, FoldAccuracy};
 use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
 use crate::plotting::plot_hist;
 use crate::prediction::EvaluationMethod;
@@ -52,6 +52,7 @@ mod experiment_logger;
 mod prediction;
 mod display;
 mod stupid_mutations;
+mod experiments;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -83,6 +84,10 @@ fn ais_n_fold_test(
         std::mem::replace(estm, test_acc);
         train_acc_vals.push(train_acc);
         test_acc_vals.push(test_acc);
+        if logger.should_run(FoldAccuracy){
+            logger.log_prop(FoldAccuracy, LoggedValue::gen_train_test(train_acc, test_acc))
+        }
+
         println!(
             "on fold {:<2?} the test accuracy was: {:<5.4?} and the train accuracy was: {:.4}. Current best score estimate {:.4?}",
             n, test_acc, train_acc, fold_score_estimator.clone().mean()
@@ -222,9 +227,21 @@ fn trail_training() {
     let mut logger = ExperimentLogger::new(
         dataset_used.clone(),
         vec![
+            //
+            // ExperimentProperty::TrainAccuracy,
+            // ExperimentProperty::TestAccuracy,
+            // ExperimentProperty::AvgTrainScore,
+            // ExperimentProperty::PopLabelMemberships,
+            // ExperimentProperty::PopDimTypeMemberships,
+            //
+            // ExperimentProperty::Runtime,
+            //
             // ExperimentProperty::BoostAccuracy,
             // ExperimentProperty::BoostAccuracyTest
-        ]
+
+            ExperimentProperty::FoldAccuracy,
+        ],
+        50
     );
 
 
@@ -242,27 +259,32 @@ fn trail_training() {
         .map(|x| x.class_label)
         .collect::<HashSet<_>>();
 
+    let log_file_name = format!("./logg_dat/logg_dat_{:?}.json", dataset_used);
 
     let mut params =  if false{
         get_dataset_optimal_params(dataset_used, class_labels)
     } else {
         Params {
             eval_method: EvaluationMethod::Fraction,
-            boost: 00,
+            boost: 0,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(1.0),
             antigen_pop_size: PopSizeType::BoostingFixed(20),
-            generations: 1000,
+            generations: 400,
 
             mutation_offset_weight: 1,
             mutation_multiplier_weight: 1,
-            mutation_multiplier_local_search_weight: 1,
+            mutation_multiplier_local_search_weight: 3,
             mutation_radius_weight: 1,
-            mutation_value_type_weight: 1,
+            mutation_value_type_weight: 2,
 
             mutation_label_weight: 0,
 
             mutation_value_type_local_search_dim: true,
+
+            ratio_lock: true,
+            crowding: true,
+
 
             // -- reduction -- //
             membership_required: 0.0,
@@ -282,8 +304,8 @@ fn trail_training() {
             correctness_weight: 1.0,
             coverage_weight: 1.0,
             uniqueness_weight: 0.5,
-            good_afin_weight: 0.2,
-            bad_afin_weight: 1.0,
+            good_afin_weight: 1.0,
+            bad_afin_weight: 0.0,
 
             //selection
             leak_fraction: 0.5,
@@ -293,16 +315,16 @@ fn trail_training() {
             // replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
             // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
             tournament_size: 1,
-            n_parents_mutations: 20,
+            n_parents_mutations: 40,
 
             antibody_init_expand_radius: false,
 
             // -- B-cell from antigen initialization -- //
             antibody_ag_init_multiplier_range: 0.8..=1.2,
             antibody_ag_init_value_types: vec![
-                (DimValueType::Circle, 1),
-                (DimValueType::Disabled, 1),
-                (DimValueType::Open, 1),
+                (DimValueType::Circle, 2),
+                (DimValueType::Disabled, 4),
+                (DimValueType::Open, 3),
             ],
             antibody_ag_init_range_range: 0.1..=0.4,
 
@@ -310,9 +332,9 @@ fn trail_training() {
             antibody_rand_init_offset_range: 0.0..=1.0,
             antibody_rand_init_multiplier_range: 0.8..=1.2,
             antibody_rand_init_value_types: vec![
-                (DimValueType::Circle, 1),
-                (DimValueType::Disabled, 1),
-                (DimValueType::Open, 1),
+                (DimValueType::Circle, 2),
+                (DimValueType::Disabled, 4),
+                (DimValueType::Open, 3),
             ],
             antibody_rand_init_range_range: 0.1..=0.4,
         }
@@ -322,21 +344,28 @@ fn trail_training() {
         show_initial_pop_info: true,
         // iter_info_interval: None,
         // full_pop_acc_interval: None,
-        iter_info_interval: Some(100),
-        full_pop_acc_interval: Some(100),
+        iter_info_interval: Some(1),
+        full_pop_acc_interval: Some(1),
         show_class_info: false,
         make_plots: true,
-        display_final_ab_info: false,
+        display_final_ab_info: true,
         display_detailed_error_info: true,
         display_final_acc_info: true,
         print_boost_info: true,
     };
     modify_config_by_args(&mut params);
 
-    // ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-    ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
+    if false{
+        ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
+        // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5, translator,&mut logger);
+    }else {
+        for n in 0..10{
+            ais_n_fold_test(params.clone(), antigens.clone(), &VerbosityParams::n_fold_defaults(), 10, translator.clone() ,&mut logger);
+        }
+        logger.log_multi_run_acc()
+    }
 
-    logger.dump_to_json_file("./bip_bop.json".to_string())
+    logger.dump_to_json_file(log_file_name);
 }
 
 fn main(){

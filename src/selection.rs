@@ -185,6 +185,59 @@ pub fn replace_worst_n_per_cat(
     return population;
 }
 
+
+pub fn replace_if_better(
+    mut population: Vec<(f64, EvaluatedAntibody)>,
+    mut replacements: Vec<(f64, EvaluatedAntibody)>,
+    mut snip_list: HashMap<usize, usize>,
+    match_counter: &mut MatchCounter,
+) -> Vec<(f64, EvaluatedAntibody)> {
+    population.sort_by(|(score_a, _), (score_b, _)| score_a.total_cmp(score_b));
+
+    replacements.sort_by(|(score_a, _), (score_b, _)| score_a.total_cmp(score_b));
+
+    let mut rep_map: Vec<(usize, usize)> = Vec::new();
+    let to_replace: usize = snip_list.iter().map(|(k,v)| v).sum();
+
+    let mut pop_cur_idx = 0;
+    let mut rep_cur_idx = 0;
+    loop {
+        let pop_option = population.get(pop_cur_idx);
+        let rep_option = replacements.get(rep_cur_idx);
+
+        if pop_option.is_none() | rep_option.is_none() {
+            break;
+        }
+
+        let (pop_score,  pop_cell) = pop_option.unwrap();
+        let (rep_score,  rep_cell) = rep_option.unwrap();
+
+        if rep_score > pop_score {
+            rep_map.push((pop_cur_idx.clone(), rep_cur_idx.clone()));
+            pop_cur_idx += 1;
+            rep_cur_idx += 1;
+        } else {
+            rep_cur_idx += 1;
+        }
+    }
+
+    for (pop_idx, rep_idx) in rep_map {
+        // let mut parent_value = scored_pop.get_mut(idx).unwrap();
+        let (p_score, p_eab) = population.get_mut(pop_idx).unwrap();
+        let (c_score, c_eab) = replacements.get(rep_idx).unwrap();
+
+        match_counter.remove_evaluation(&p_eab.evaluation);
+        match_counter.add_evaluation(&c_eab.evaluation);
+
+        // std::mem::replace(p_score, c_score);
+        // std::mem::replace(p_eval, c_eval);
+        // std::mem::replace(p_cell, c_cell);
+        *p_score = c_score.clone();
+        *p_eab = c_eab.clone();
+    }
+
+    return population;
+}
 pub fn replace_if_better_per_cat(
     mut population: Vec<(f64, EvaluatedAntibody)>,
     mut replacements: Vec<(f64, EvaluatedAntibody)>,

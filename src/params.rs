@@ -49,6 +49,10 @@ pub struct Params {
 
     pub mutation_value_type_local_search_dim: bool,
 
+
+    pub ratio_lock: bool,
+    pub crowding: bool,
+
     pub offset_mutation_multiplier_range: RangeInclusive<f64>,
     pub multiplier_mutation_multiplier_range: RangeInclusive<f64>,
     pub radius_mutation_multiplier_range: RangeInclusive<f64>,
