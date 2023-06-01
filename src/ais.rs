@@ -906,15 +906,20 @@ impl ArtificialImmuneSystem {
                     //     .map(|idx| child_pool.get(idx).unwrap().1.clone()).collect::<Vec<_>>()
 
                 };
-                parents_eval
-                    .iter()
-                    .for_each(|ev| match_counter.remove_evaluation(&ev));
+
                 if params.crowding {
+                    parents_eval
+                        .iter()
+                        .for_each(|ev| match_counter.remove_evaluation(&ev));
+
                     match_counter.add_evaluations(&label_gen);
                     new_gen.extend(label_gen)
                 }else {
                     let abc = score_antibodies(params, label_gen, &match_counter);
-                    new_gen.extend( elitism_selection(abc, &replace_count_for_label).into_iter().map(|(a,b)| b));
+                    let new_vals: Vec<_> = elitism_selection(abc, &replace_count_for_label).into_iter().map(|(a,b)| b).collect();
+                    //match_counter.add_evaluations(&new_vals);
+
+                    new_gen.extend(new_vals);
 
                 }
 
@@ -1009,6 +1014,8 @@ impl ArtificialImmuneSystem {
                         .into_par_iter()
                         .map(|_| {
                             let mut rng = rand::thread_rng();
+                            //println!("inversed {:?}", inversed);
+                            //println!("weighted {:?}", filtered);
                             let new_ag = filtered
                                 .choose_weighted(&mut rng, |v| v.1 + 1)
                                 .unwrap()
