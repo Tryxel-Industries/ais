@@ -88,7 +88,7 @@ impl NewsArticleAntigenTranslator {
                 picked.extend(
                     article.embeddings[1..article.embeddings.len() - 1]
                         .into_iter()
-                        .choose_multiple(&mut rng, sample_s -2)
+                        .choose_multiple(&mut rng, sample_s - 2)
                         .into_iter()
                         .cloned(),
                 );
@@ -141,7 +141,7 @@ impl NewsArticleAntigenTranslator {
             println!("{}", tbl_header);
         }
 
-       /* print!("ag id list: ");
+        /* print!("ag id list: ");
         pred_res.iter().for_each(|(a,b)|{
             print!("{:?}, ", b.id);
         });
@@ -149,10 +149,10 @@ impl NewsArticleAntigenTranslator {
         let (
             true_positive,
             false_positive,
-            true_negative,
-            false_negative,
+            // true_negative,
+            // false_negative,
             nodetect_positive,
-            nodetect_negative,
+            // nodetect_negative,
         ) = self
             .news_article_keys
             .par_iter()
@@ -161,7 +161,6 @@ impl NewsArticleAntigenTranslator {
                 let mut false_sentences = 0;
                 let mut nodetect_sentences = 0;
                 let mut noreg_sentences = 0;
-
 
                 for n in &article_key.sentence_id_list {
                     let search_res = pred_res.binary_search_by_key(&n, |(_, ag)| &ag.id);
@@ -184,79 +183,82 @@ impl NewsArticleAntigenTranslator {
                     }
                 }
 
-                      // println!("id: {:<4} noreg :{:?}", article_key.article_id, noreg_sentences);
+                // println!("id: {:<4} noreg :{:?}", article_key.article_id, noreg_sentences);
 
-                if true_sentences+false_sentences+nodetect_sentences == 0 {
+                if true_sentences + false_sentences + nodetect_sentences == 0 {
                     return None;
-                }else {
-                              if table {
-                    let (t, f) = if article_key.article_label == 1 {
-                        (true_sentences, false_sentences)
-                    } else {
-                        (false_sentences, true_sentences)
-                    };
-
-                    println!(
-                        "| {:>4?} | {:>5?} | {:>6?} | {:<6?} | {:<12?} | {:<9?} |",
-                        article_key.article_id,
-                        article_key.article_label == 1,
-                        t,
-                        f,
-                        nodetect_sentences,
-                        (true_sentences > false_sentences)
-                    );
-                }
-
-                let mut true_positives = 0;
-                let mut false_positives = 0;
-                let mut nodetect_positives = 0;
-
-                let mut true_negatives = 0;
-                let mut false_negatives = 0;
-                let mut nodetect_negatives = 0;
-
-                if true_sentences > false_sentences {
-                    if article_key.article_label == 0 {
-                        true_positives += 1;
-                    } else {
-                        true_negatives += 1;
+                } else {
+                    if table {
+                        println!(
+                            "| {:>4?} | {:>5?} | {:>6?} | {:<6?} | {:<12?} | {:<9?} |",
+                            article_key.article_id,
+                            article_key.article_label,
+                            true_sentences,
+                            false_sentences,
+                            nodetect_sentences,
+                            (true_sentences > false_sentences)
+                        );
                     }
-                } else if (false_sentences >= true_sentences) & (false_sentences+true_sentences > 0) {
-                    if article_key.article_label == 0 {
-                        false_negatives += 1;
-                    } else {
-                        false_positives += 1;
+
+                    let mut true_positives = 0;
+                    let mut false_positives = 0;
+                    let mut nodetect_positives = 0;
+
+                    let mut true_negatives = 0;
+                    let mut false_negatives = 0;
+                    let mut nodetect_negatives = 0;
+
+                    let mut true_s = 0;
+                    let mut false_s = 0;
+                    let mut nodetect_s = 0;
+
+                    if true_sentences > false_sentences {
+                        true_s += 1
+                    }else if (false_sentences >= true_sentences)
+                        & (false_sentences + true_sentences > 0){
+                        false_s += 1
+                    }else {
+                        nodetect_s += 1
                     }
-                } else if nodetect_sentences > 0 {
-                    if article_key.article_label == 0 {
-                        nodetect_positives += 1
-                    } else {
-                        nodetect_negatives += 1
+ /*                   if true_sentences > false_sentences {
+                        if article_key.article_label == 0 {
+                            true_positives += 1;
+                        } else {
+                            true_negatives += 1;
+                        }
+                    } else if (false_sentences >= true_sentences)
+                        & (false_sentences + true_sentences > 0)
+                    {
+                        if article_key.article_label == 0 {
+                            false_negatives += 1;
+                        } else {
+                            false_positives += 1;
+                        }
+                    } else if nodetect_sentences > 0 {
+                        if article_key.article_label == 0 {
+                            nodetect_positives += 1
+                        } else {
+                            nodetect_negatives += 1
+                        }
                     }
+
+*/                    return Some((
+                        true_s,
+                        false_s,
+                        nodetect_s,
+                    ));
                 }
-
-
-                      return Some((
-                    true_positives,
-                    false_positives,
-                    true_negatives,
-                    false_negatives,
-                    nodetect_positives,
-                    nodetect_negatives,
-                ));
-                }
-
             })
             .reduce(
-                || (0, 0, 0, 0, 0, 0),
+                || (0, 0, 0),
                 |a, b| {
                     (
                         a.0 + b.0,
                         a.1 + b.1,
                         a.2 + b.2,
-                        a.3 + b.3,
+          /*              a.3 + b.3,
                         a.4 + b.4,
-                        a.5 + b.5,
+                        a.5 + b.5,*/
                     )
                 },
             );
@@ -293,9 +295,12 @@ impl NewsArticleAntigenTranslator {
                 num_no_detect += 1
             }
         }*/
-        let num_cor = true_positive + true_negative;
-        let num_false = false_positive + false_negative;
-        let num_no_detect = nodetect_positive + nodetect_negative;
-        println!("| num cor {:?}, num false {:?}, num no detect {:?}, accuracy: {:.4}%\n| true/false/nodetect positive: {:?}/{:?}/{:?} ,true/false/nodetect negative: {:?}/{:?}/{:?}", num_cor, num_false, num_no_detect, (num_cor as f64/(num_cor+num_false+num_no_detect) as f64), true_positive, false_positive, nodetect_positive, true_negative, false_negative, nodetect_negative)
+
+        println!("| num cor {:?}, num false {:?}, num no detect {:?}, accuracy: {:.4}%\n|", true_positive, false_positive, nodetect_positive, (true_positive as f64/(true_positive+false_positive+nodetect_positive) as f64))
+
+        // let num_cor = true_positive + true_negative;
+        // let num_false = false_positive + false_negative;
+        // let num_no_detect = nodetect_positive + nodetect_negative;
+        // println!("| num cor {:?}, num false {:?}, num no detect {:?}, accuracy: {:.4}%\n| true/false/nodetect positive: {:?}/{:?}/{:?} ,true/false/nodetect negative: {:?}/{:?}/{:?}", num_cor, num_false, num_no_detect, (num_cor as f64/(num_cor+num_false+num_no_detect) as f64), true_positive, false_positive, nodetect_positive, true_negative, false_negative, nodetect_negative)
     }
 }

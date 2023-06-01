@@ -29,6 +29,7 @@ pub enum ExperimentProperty{
     PopLabelMemberships,
     PopDimTypeMemberships,
 
+    ScoreComponents,
 
     BoostAccuracy,
     BoostAccuracyTest,
@@ -50,6 +51,7 @@ impl ExperimentProperty {
             ExperimentProperty::AvgTrainScore => {true}
             ExperimentProperty::PopLabelMemberships => {true}
             ExperimentProperty::PopDimTypeMemberships => {true}
+            ExperimentProperty::ScoreComponents => {true}
             ExperimentProperty::BoostAccuracy => {false}
             ExperimentProperty::BoostAccuracyTest => {false}
             ExperimentProperty::Runtime => {false}
@@ -63,8 +65,8 @@ impl ExperimentProperty {
 
 #[derive(Clone, PartialEq, Debug, Serialize, EnumString, Display)]
 pub enum LoggedValue{
-    TrainTest(HashMap<String, f64>),
-    CorWrongNoReg(HashMap<String, usize>),
+    MappedFloats(HashMap<String, f64>),
+    MappedInts(HashMap<String, usize>),
     SingleValue(f64),
     LabelMembership(HashMap<usize,usize>),
     DimTypeMembership(HashMap<DimValueType,f64>),
@@ -74,11 +76,11 @@ pub enum LoggedValue{
 impl LoggedValue {
     pub fn gen_corr_wrong_no_reg(cor: usize, wrong: usize, no_reg: usize) -> LoggedValue{
         let map = HashMap::from([("cor".to_string(), cor),("wrong".to_string(), wrong),("no_reg".to_string(), no_reg)]);
-        return LoggedValue::CorWrongNoReg(map)
+        return LoggedValue::MappedInts(map)
     }
     pub fn gen_train_test(train: f64, test: f64) -> LoggedValue{
         let map = HashMap::from([("train".to_string(), train),("test".to_string(), test)]);
-        return LoggedValue::TrainTest(map)
+        return LoggedValue::MappedFloats(map)
     }
 
 }
@@ -262,12 +264,13 @@ impl  ExperimentLogger {
     pub fn log_multi_run_acc(&self){
         if let Some(tp) = self.meta_properties_map.get(&ExperimentProperty::FoldAccuracy){
             let (test_acc_vec, train_acc_vec): (Vec<f64>, Vec<f64>) = tp.prop_values.iter().map(|lv| {
-                if let LoggedValue::TrainTest(m) = lv{
+                if let LoggedValue::MappedFloats(m) = lv{
                     (m.get("test").unwrap(), m.get("train").unwrap())
                 }else { 
                     panic!()
                 }
-            }).unzip(); 
+            }).unzip();
+            println!("with vec {:?},",  test_acc_vec);
             println!("with dataset {:?}, over {:?} runs", self.dataset_used, test_acc_vec.len());
             println!("train acc mean: {:?}, std: {:?}", (&train_acc_vec).mean(), train_acc_vec.std_dev());
             println!("test acc mean: {:?}, std: {:?}", (&test_acc_vec).mean(), test_acc_vec.std_dev());

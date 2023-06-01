@@ -6,6 +6,7 @@ use rayon::prelude::*;
 
 use crate::bucket_empire::{BucketKing, ValueRangeType};
 use crate::evaluation::{Evaluation, MatchCounter};
+use crate::experiment_logger::{ExperimentLogger, ExperimentProperty, LoggedValue};
 use crate::params::Params;
 use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
@@ -19,7 +20,7 @@ pub fn score_antibody(
     eval_ab: &EvaluatedAntibody,
     params: &Params,
     match_counter: &MatchCounter,
-) -> f64 {
+) -> (f64, (f64, f64, f64, f64, f64)) {
     let eval = &eval_ab.evaluation;
     let cell = &eval_ab.antibody;
 
@@ -162,10 +163,10 @@ pub fn score_antibody(
 
     // println!("score {:?}  good {:?} bad {:?}", score, good_affinity, bad_affinity );
 
-    let mut score = correctness * params.correctness_weight
-        + coverage * params.coverage_weight
-        + uniqueness * params.uniqueness_weight
-        + good_affinity * params.good_afin_weight
+    let mut score = correctness * params.correctness_weight* uniqueness
+        + coverage * params.coverage_weight * uniqueness
+        // + uniqueness * params.uniqueness_weight
+        + good_affinity * params.good_afin_weight * uniqueness
         + bad_affinity * params.bad_afin_weight;
 
     if pred_pos == tot_elements {
@@ -173,9 +174,11 @@ pub fn score_antibody(
     }
 
     if !score.is_finite(){
-        return 0.0;
+        return (0.0, (0.0, 0.0,0.0,0.0,0.0));
     }else {
-        return score;
+        //return (score, (correctness , uniqueness, good_affinity, bad_affinity));
+        return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight));
+
     }
 }
 
@@ -192,11 +195,53 @@ pub fn score_antibodies(
         // .into_iter()
         .into_par_iter() // TODO: set paralell
         .map(|eab| {
-            let score = score_antibody(&eab, params, match_counter);
+            let (score, _) = score_antibody(&eab, params, match_counter);
 
             return (score, eab);
         })
         .collect();
+
+    return scored;
+}
+
+pub fn log_and_score_antibodies(
+    params: &Params,
+    evaluated_population: Vec<EvaluatedAntibody>,
+    match_counter: &MatchCounter,
+    logger: &mut ExperimentLogger,
+) -> Vec<(f64, EvaluatedAntibody)> {
+            let ab_num = evaluated_population.len();
+
+    // println!("{:?}", merged_mask);
+    // println!("len {:?}", merged_mask.len());
+    // println!("sum {:?}", merged_mask.iter().sum::<usize>());
+    // println!("match -s: ");
+    let scored = if logger.should_run(ExperimentProperty::ScoreComponents){
+        let scored_comp: Vec<_> = evaluated_population
+        // .into_iter()
+        .into_par_iter() // TODO: set paralell
+        .map(|eab| {
+            let (score, comp) = score_antibody(&eab, params, match_counter);
+
+            return (score, eab, comp);
+        })
+        .collect();
+        let (correctness_sum,coverage_sum, uniqueness_sum, god_afin_sum, bad_afin_sum) = scored_comp.iter()
+            .map(|x| x.2)
+            .fold((0.0,0.0, 0.0, 0.0, 0.0),|a,b| (a.0+b.0, a.1+b.1, a.2+b.2,a.3 +b.3, a.4+b.4));
+        logger.log_prop(ExperimentProperty::ScoreComponents,LoggedValue::MappedFloats(HashMap::from([
+            ("correctness".to_string(), (correctness_sum/ab_num as f64)),
+            ("coverage".to_string(), (coverage_sum/ab_num as f64)),
+            ("uniqueness".to_string(), (uniqueness_sum/ab_num as f64)),
+            ("good_afin".to_string(), (god_afin_sum/ab_num as f64)),
+            ("bad_afin".to_string(), (bad_afin_sum/ab_num as f64)),
+        ])));
+        scored_comp.into_iter().map(|(a,b,c)|(a,b)).collect()
+    } else {
+        score_antibodies(params,evaluated_population,match_counter)
+    };
+
+
 
     return scored;
 }

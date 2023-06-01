@@ -316,24 +316,22 @@ pub fn pick_best_n(
     return population;
 }
 
-pub fn selection(
-    _params: &Params,
-    population: Vec<(f64, Evaluation, Antibody)>,
-    _match_mask: &mut Vec<usize>,
-) -> Vec<(f64, Evaluation, Antibody)> {
-    let (selected, _drained) = elitism_selection(population, &150);
-    // selected.extend(pick_n_random(drained, 70).into_iter());
-    return selected;
-}
-
+// pub fn selection(
+//     _params: &Params,
+//     population: Vec<(f64, Evaluation, Antibody)>,
+//     _match_mask: &mut Vec<usize>,
+// ) -> Vec<(f64, Evaluation, Antibody)> {
+//     let (selected, _drained) = elitism_selection(population, &150);
+//     // selected.extend(pick_n_random(drained, 70).into_iter());
+//     return selected;
+// }
+//
 pub fn elitism_selection(
-    mut population: Vec<(f64, Evaluation, Antibody)>,
+    mut population: Vec<(f64, EvaluatedAntibody)>,
     num: &usize,
-) -> (
-    Vec<(f64, Evaluation, Antibody)>,
-    Vec<(f64, Evaluation, Antibody)>,
-) {
-    population.sort_by(|(score_a, _, _), (score_b, _, _)| score_a.partial_cmp(score_b).unwrap());
+) ->
+    Vec<(f64, EvaluatedAntibody )> {
+    population.sort_by(|(score_a, _), (score_b, _)| score_a.partial_cmp(score_b).unwrap());
 
     // let mut res_cells  = population.into_iter().map(|(a, b)| b).collect::<Vec<_>>();
     let mut res_cells = population.into_iter().collect::<Vec<_>>();
@@ -341,35 +339,77 @@ pub fn elitism_selection(
     // println!("{:?}", res_cells.get(res_cells.len()-1).unwrap());
     // return res_cells.drain(..num).collect();
 
-    let select: Vec<(f64, Evaluation, Antibody)> = res_cells
+    let select: Vec<_> = res_cells
         .drain((res_cells.len() - num)..res_cells.len())
         .collect();
-    if false {
-        println!("\n selected: ");
-        select.iter().for_each(|(x, _, y)| {
-            println!(
-                "score {:.5}, genome dim value {:?}",
-                x,
-                y.dim_values
-                    .iter()
-                    .map(|v| v.multiplier)
-                    .collect::<Vec<_>>()
-            );
-        });
-        println!("\n discard: ");
-        res_cells.iter().for_each(|(x, _, y)| {
-            println!(
-                "score {:.5}, genome dim value {:?}",
-                x,
-                y.dim_values
-                    .iter()
-                    .map(|v| v.multiplier)
-                    .collect::<Vec<_>>()
-            );
-        });
-        println!();
+
+    return select;
+}
+
+
+pub fn tournament_replace(
+    population: &Vec<(f64, EvaluatedAntibody)>,
+    replace_ab: (f64, EvaluatedAntibody),
+    tournament_size: &usize,
+    run_labeled: bool
+) -> Option<(usize, (f64, EvaluatedAntibody))> {
+    let mut rng = rand::thread_rng();
+
+    let pop_s: usize; // = population.len();
+    // idx map for convenience
+    let idx_list: Vec<(usize, f64)>; // = population.iter().enumerate().map(|(idx, (score,_,_))| (idx, score.clone())).collect();
+    let label_to_filter = replace_ab.1.antibody.class_label;
+
+    if run_labeled {
+        let filtered: Vec<_> = population
+            .iter()
+            .enumerate()
+            .filter(|(_, (_, eab))| eab.antibody.class_label == label_to_filter)
+            .collect();
+
+        let _index_vali: Vec<_> = filtered
+            .iter()
+            .map(|(_, (_, eab))| eab.antibody.class_label)
+            .collect();
+
+        // println!("for label {:?}", v);
+        // println!("{:?}", index_vali);
+
+        pop_s = filtered.len();
+        idx_list = filtered
+            .iter()
+            .map(|(idx, (score, _))| (idx.clone(), score.clone()))
+            .collect();
+    } else {
+        idx_list = population
+            .iter()
+            .enumerate()
+            .map(|(idx, (score, _))| (idx, score.clone()))
+            .collect();
+        pop_s = population.len();
     }
-    return (select, res_cells);
+    // let mut picks: Vec<usize> = Vec::with_capacity();
+  if idx_list.len() == 0 || *tournament_size == 0{
+        return None
+    }
+    let mut tournament: Vec<_> = idx_list.choose_multiple(&mut rng, *tournament_size).collect();
+
+
+    tournament.sort_by(|(_, score_a), (_, score_b)| score_a.total_cmp(score_b));
+
+    let mut cur_test_idx: usize = 0;
+    while cur_test_idx < *tournament_size {
+        // println!("ts {:?} cur_idx {:?}", tournament.len(), cur_test_idx);
+            // println!("trial {:?} pool {:?}",cur_fetch_idx, pool);
+            // println!("picks {:?}", picks);
+            let (cand_idx, s) = tournament.get(cur_test_idx).unwrap();
+        if *s < replace_ab.0 {
+            return Some((*cand_idx,replace_ab))
+        }else {
+            cur_test_idx += 1
+        }
+    }
+    return None;
 }
 
 pub fn labeled_tournament_pick(
@@ -436,7 +476,6 @@ pub fn labeled_tournament_pick(
             }
         }
     }
-
 
     return picks;
 }

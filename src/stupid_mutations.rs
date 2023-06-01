@@ -51,7 +51,7 @@ pub fn mutate_clone_transform(
     n_clones: usize,
 ) -> f64{
     let mut best_op: Option<MutationOp> = None;
-    let parent_score = score_antibody(&eval_ab, params, match_counter);;
+    let (parent_score,_) = score_antibody(&eval_ab, params, match_counter);;
     let mut best_score = parent_score;
 
     //
@@ -71,7 +71,7 @@ pub fn mutate_clone_transform(
 
         eval_ab.transform(antigens, &mut_op, false);
         eval_ab.update_eval();
-        let new_score = score_antibody(&eval_ab, params, match_counter);
+        let (new_score, _) = score_antibody(&eval_ab, params, match_counter);
 
         let child_cor_matches = eval_ab.evaluation.matched_ids.len();
         let child_errors_matches = eval_ab.evaluation.wrongly_matched.len();
