@@ -20,7 +20,7 @@ pub fn score_antibody(
     eval_ab: &EvaluatedAntibody,
     params: &Params,
     match_counter: &MatchCounter,
-) -> (f64, (f64, f64, f64, f64, f64)) {
+) -> (f64, (f64, f64, f64, f64, f64, f64, f64,f64)) {
     let eval = &eval_ab.evaluation;
     let cell = &eval_ab.antibody;
 
@@ -124,9 +124,14 @@ pub fn score_antibody(
 
     let beta: f64 = 0.5f64.powi(2);
 
-    let f1_divisor = (1.0 + beta) * true_positives + beta * false_negatives + false_positives;
+    let f1_divisor = (beta) * true_positives + beta * false_negatives + false_positives;
     let f1_top = (1.0 + beta) * true_positives;
     let f1 = f1_top / f1_divisor;
+
+    let precession = true_positives/ (true_positives+false_positives).max(1.0) as f64;
+    let recall = true_positives/ (true_positives+ false_negatives).max(1.0) as f64;
+
+    let f1 = ((1.0+beta)* ((precession*recall)/((beta*precession)+ recall)));
 
     // the precession
     let positive_predictive_value = true_positives / pred_pos.max(1.0);
@@ -163,10 +168,12 @@ pub fn score_antibody(
 
     // println!("score {:?}  good {:?} bad {:?}", score, good_affinity, bad_affinity );
 
-    let mut score = correctness * params.correctness_weight* uniqueness
-        + coverage * params.coverage_weight * uniqueness
-        // + uniqueness * params.uniqueness_weight
-        + good_affinity * params.good_afin_weight * uniqueness
+    let uniqness_score = ((uniqueness * params.uniqueness_weight) - 1.0).abs();
+
+    let mut score = correctness * params.correctness_weight//* uniqueness
+        + coverage * params.coverage_weight //* uniqueness
+        + uniqueness * params.uniqueness_weight
+        + good_affinity * params.good_afin_weight //* uniqueness
         + bad_affinity * params.bad_afin_weight;
 
     if pred_pos == tot_elements {
@@ -174,10 +181,11 @@ pub fn score_antibody(
     }
 
     if !score.is_finite(){
-        return (0.0, (0.0, 0.0,0.0,0.0,0.0));
+        return (0.0, (0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0));
     }else {
-        //return (score, (correctness , uniqueness, good_affinity, bad_affinity));
-        return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight));
+        //return (score, (correctness , uniqueness, good_affinity, bad_affinity, precession, recall, f1));
+        return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
+        //return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
 
     }
 }
@@ -226,15 +234,18 @@ pub fn log_and_score_antibodies(
             return (score, eab, comp);
         })
         .collect();
-        let (correctness_sum,coverage_sum, uniqueness_sum, god_afin_sum, bad_afin_sum) = scored_comp.iter()
+        let (correctness_sum,coverage_sum, uniqueness_sum, god_afin_sum, bad_afin_sum, precession, recall, f1) = scored_comp.iter()
             .map(|x| x.2)
-            .fold((0.0,0.0, 0.0, 0.0, 0.0),|a,b| (a.0+b.0, a.1+b.1, a.2+b.2,a.3 +b.3, a.4+b.4));
+            .fold((0.0,0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0),|a,b| (a.0+b.0, a.1+b.1, a.2+b.2,a.3 +b.3, a.4+b.4, a.5+b.5, a.6+b.6, a.7+b.7));
         logger.log_prop(ExperimentProperty::ScoreComponents,LoggedValue::MappedFloats(HashMap::from([
             ("correctness".to_string(), (correctness_sum/ab_num as f64)),
             ("coverage".to_string(), (coverage_sum/ab_num as f64)),
             ("uniqueness".to_string(), (uniqueness_sum/ab_num as f64)),
             ("good_afin".to_string(), (god_afin_sum/ab_num as f64)),
             ("bad_afin".to_string(), (bad_afin_sum/ab_num as f64)),
+            ("precession".to_string(), (precession/ab_num as f64)),
+            ("recall".to_string(), (recall/ab_num as f64)),
+            ("f1".to_string(), (f1/ab_num as f64)),
         ])));
         scored_comp.into_iter().map(|(a,b,c)|(a,b)).collect()
     } else {
