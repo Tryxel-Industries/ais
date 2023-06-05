@@ -11,6 +11,7 @@ use strum_macros::{Display, EnumString};
 use serde::{Serialize, Serializer};
 use serde_json::{json, Value};
 use statrs::statistics::Statistics;
+use crate::params::Params;
 use crate::representation::antibody::DimValueType;
 
 #[derive(Clone, Copy, PartialEq, Debug, Display, EnumString)]
@@ -145,6 +146,7 @@ pub struct ExperimentLogger{
     current_run: usize,
 
     run_every_n_step: usize,
+    params: Option<Params>,
 
 }
 fn build_trackers(active_properties: &Vec<ExperimentProperty>) -> HashMap<ExperimentProperty, TrackedProperty>{
@@ -174,6 +176,7 @@ impl  ExperimentLogger {
             current_fold: 0,
             current_run: 0,
             run_every_n_step,
+            params: None,
         }
     }
 
@@ -255,10 +258,13 @@ impl  ExperimentLogger {
             "dataset": self.dataset_used.to_string(),
             "meta_props": meta_props,
             "iter_props": iter_props,
-
+            "params": self.params.as_ref().map(|p| serde_json::to_value(&p).unwrap()).unwrap_or(serde_json::Value::Null),
         });
 
         serde_json::to_writer_pretty(writer, &json);
+    }
+    pub fn log_params(&mut self, params: &Params){
+        self.params = Some(params.clone());
     }
     
     pub fn log_multi_run_acc(&self){

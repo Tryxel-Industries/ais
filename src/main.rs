@@ -342,6 +342,8 @@ fn trail_training() {
             antibody_rand_init_range_range: 0.1..=0.4,
         }
     };
+    logger.log_params(&params);
+
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: true,

@@ -11,6 +11,7 @@ use crate::representation::antigen::AntiGen;
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
 use rayon::prelude::*;
+use serde::Serialize;
 use statrs::statistics::Statistics;
 use strum_macros::{Display, EnumString};
 
@@ -33,7 +34,7 @@ pub enum Prediction {
     NoPredict,
 }
 
-#[derive(Copy, Clone, Display,EnumString, Hash, Eq, PartialEq, Debug)]
+#[derive(Copy, Clone, Display,EnumString, Hash, Eq, PartialEq, Debug, Serialize)]
 pub enum EvaluationMethod {
     Count,
     Fraction,

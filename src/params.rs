@@ -1,13 +1,18 @@
 use std::{env, slice};
 use std::ops::{Range, RangeInclusive};
 
-use rand::prelude::SliceRandom;
+
 use strum_macros::{Display, EnumString};
+
+use serde::{Serialize, Serializer};
+
+use rand::prelude::SliceRandom;
 use crate::prediction::EvaluationMethod;
 
 use crate::representation::antibody::DimValueType;
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash, EnumString, Display)]
+
+#[derive(Clone, Eq, PartialEq, Debug, Hash, Serialize, EnumString, Display)]
 pub enum MutationType {
     Offset,
     Multiplier,
@@ -17,20 +22,23 @@ pub enum MutationType {
     Label,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug, Serialize, EnumString, Display)]
 pub enum ReplaceFractionType{
     Linear(Range<f64>),
     MaxRepFrac(f64)
 }
 
-#[derive(Clone)]
+
+#[derive(Clone, PartialEq, Debug, Serialize, EnumString, Display)]
 pub enum PopSizeType{
     Fraction(f64),
     Number(usize),
     BoostingFixed(usize)
 }
 
-#[derive(Clone)]
+
+
+#[derive(Clone, PartialEq, Debug, Serialize)]
 pub struct Params {
     pub eval_method: EvaluationMethod,
     // -- train params -- //
