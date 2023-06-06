@@ -1,0 +1,6454 @@
+{
+  "dataset": "Diabetes",
+  "iter_props": [
+    [
+      {
+        "prop_values": [
+          {
+            "SingleValue": 0.4881622469686438
+          },
+          {
+            "SingleValue": 0.5505885864663835
+          },
+          {
+            "SingleValue": 0.5726645515974617
+          },
+          {
+            "SingleValue": 0.5840681772192284
+          },
+          {
+            "SingleValue": 0.5838342354784157
+          },
+          {
+            "SingleValue": 0.5963721833061467
+          },
+          {
+            "SingleValue": 0.6164408653968182
+          },
+          {
+            "SingleValue": 0.624104708228339
+          },
+          {
+            "SingleValue": 0.6301578851696084
+          },
+          {
+            "SingleValue": 0.6329550188967938
+          },
+          {
+            "SingleValue": 0.6388846789727288
+          },
+          {
+            "SingleValue": 0.6413795561854624
+          },
+          {
+            "SingleValue": 0.6451359898047894
+          },
+          {
+            "SingleValue": 0.6619533721753793
+          },
+          {
+            "SingleValue": 0.6642760237933604
+          },
+          {
+            "SingleValue": 0.6665048428600209
+          },
+          {
+            "SingleValue": 0.6566122015145596
+          },
+          {
+            "SingleValue": 0.6438648010351643
+          },
+          {
+            "SingleValue": 0.6700420992606161
+          },
+          {
+            "SingleValue": 0.6708831555219156
+          },
+          {
+            "SingleValue": 0.6585340702977863
+          },
+          {
+            "SingleValue": 0.6616806969415631
+          },
+          {
+            "SingleValue": 0.6456684580224347
+          },
+          {
+            "SingleValue": 0.6617538770820657
+          },
+          {
+            "SingleValue": 0.6662085523417067
+          },
+          {
+            "SingleValue": 0.6788270563114176
+          },
+          {
+            "SingleValue": 0.6623770872622927
+          },
+          {
+            "SingleValue": 0.6772106902045296
+          },
+          {
+            "SingleValue": 0.663617479318656
+          },
+          {
+            "SingleValue": 0.649252722764471
+          },
+          {
+            "SingleValue": 0.6680182455530629
+          },
+          {
+            "SingleValue": 0.6835806549111552
+          },
+          {
+            "SingleValue": 0.685266491842241
+          },
+          {
+            "SingleValue": 0.6408494516944617
+          },
+          {
+            "SingleValue": 0.6827939359515254
+          },
+          {
+            "SingleValue": 0.6818421024678489
+          },
+          {
+            "SingleValue": 0.6822776352227248
+          },
+          {
+            "SingleValue": 0.6854313967370915
+          },
+          {
+            "SingleValue": 0.6852182173409289
+          },
+          {
+            "SingleValue": 0.6859462264540258
+          },
+          {
+            "SingleValue": 0.6859510704462326
+          },
+          {
+            "SingleValue": 0.6864294037325566
+          },
+          {
+            "SingleValue": 0.6868039422548072
+          },
+          {
+            "SingleValue": 0.671265806923179
+          },
+          {
+            "SingleValue": 0.6703935481916449
+          },
+          {
+            "SingleValue": 0.673107636751874
+          },
+          {
+            "SingleValue": 0.6607202717153943
+          },
+          {
+            "SingleValue": 0.6589795131240496
+          },
+          {
+            "SingleValue": 0.659303022646095
+          },
+          {
+            "SingleValue": 0.67180069145794
+          },
+          {
+            "SingleValue": 0.6727474052737904
+          },
+          {
+            "SingleValue": 0.6756041767096568
+          },
+          {
+            "SingleValue": 0.6917150464726783
+          },
+          {
+            "SingleValue": 0.6932239622073175
+          },
+          {
+            "SingleValue": 0.6933086917696424
+          },
+          {
+            "SingleValue": 0.692062651581163
+          },
+          {
+            "SingleValue": 0.6928133993917318
+          },
+          {
+            "SingleValue": 0.6920318774083397
+          },
+          {
+            "SingleValue": 0.6924582233739754
+          },
+          {
+            "SingleValue": 0.6937629249396186
+          },
+          {
+            "SingleValue": 0.6951189795704017
+          },
+          {
+            "SingleValue": 0.6949867596831266
+          },
+          {
+            "SingleValue": 0.6818673627266454
+          },
+          {
+            "SingleValue": 0.6944575310354311
+          },
+          {
+            "SingleValue": 0.6938342798573959
+          },
+          {
+            "SingleValue": 0.6952250637290632
+          },
+          {
+            "SingleValue": 0.6961610722337875
+          },
+          {
+            "SingleValue": 0.6823373217030181
+          },
+          {
+            "SingleValue": 0.6953419502811354
+          },
+          {
+            "SingleValue": 0.6953335732325193
+          },
+          {
+            "SingleValue": 0.680455979153336
+          },
+          {
+            "SingleValue": 0.6806270856729654
+          },
+          {
+            "SingleValue": 0.6821883690773163
+          },
+          {
+            "SingleValue": 0.6943738242594909
+          },
+          {
+            "SingleValue": 0.6816608677777929
+          },
+          {
+            "SingleValue": 0.6953437079589398
+          },
+          {
+            "SingleValue": 0.6947468382347619
+          },
+          {
+            "SingleValue": 0.6950195598824718
+          },
+          {
+            "SingleValue": 0.6959402242930887
+          },
+          {
+            "SingleValue": 0.6973219087576032
+          },
+          {
+            "SingleValue": 0.697723393461393
+          },
+          {
+            "SingleValue": 0.6981404923772598
+          },
+          {
+            "SingleValue": 0.6835232401021053
+          },
+          {
+            "SingleValue": 0.6972778981562039
+          },
+          {
+            "SingleValue": 0.6975011641829593
+          },
+          {
+            "SingleValue": 0.6985816534505663
+          },
+          {
+            "SingleValue": 0.6689676906721482
+          },
+          {
+            "SingleValue": 0.6809851646742231
+          },
+          {
+            "SingleValue": 0.6930190168781611
+          },
+          {
+            "SingleValue": 0.6948145796423453
+          },
+          {
+            "SingleValue": 0.6968276343014141
+          },
+          {
+            "SingleValue": 0.6936442416339768
+          },
+          {
+            "SingleValue": 0.6954024510309487
+          },
+          {
+            "SingleValue": 0.694866224123991
+          },
+          {
+            "SingleValue": 0.6966891582284209
+          },
+          {
+            "SingleValue": 0.6977593905914292
+          },
+          {
+            "SingleValue": 0.6981739884328751
+          },
+          {
+            "SingleValue": 0.6974424504822828
+          },
+          {
+            "SingleValue": 0.6966539762161253
+          },
+          {
+            "SingleValue": 0.6982646321806998
+          },
+          {
+            "SingleValue": 0.6977631080784777
+          },
+          {
+            "SingleValue": 0.6976381346480538
+          },
+          {
+            "SingleValue": 0.6981480078688076
+          },
+          {
+            "SingleValue": 0.69846742661179
+          },
+          {
+            "SingleValue": 0.6982520357049763
+          },
+          {
+            "SingleValue": 0.6986973955066013
+          },
+          {
+            "SingleValue": 0.6998632032147817
+          },
+          {
+            "SingleValue": 0.7014751534932323
+          },
+          {
+            "SingleValue": 0.7019546892711727
+          },
+          {
+            "SingleValue": 0.7026115844000809
+          },
+          {
+            "SingleValue": 0.6887860243614278
+          },
+          {
+            "SingleValue": 0.701841675132717
+          },
+          {
+            "SingleValue": 0.6998411042447886
+          },
+          {
+            "SingleValue": 0.7001363589842814
+          },
+          {
+            "SingleValue": 0.6991207364596786
+          },
+          {
+            "SingleValue": 0.6980077454562168
+          },
+          {
+            "SingleValue": 0.6857327979219685
+          },
+          {
+            "SingleValue": 0.6849807516391332
+          },
+          {
+            "SingleValue": 0.6855756204249297
+          },
+          {
+            "SingleValue": 0.6719222347785024
+          },
+          {
+            "SingleValue": 0.6710349105315547
+          },
+          {
+            "SingleValue": 0.6975129937919784
+          },
+          {
+            "SingleValue": 0.6981884929004842
+          },
+          {
+            "SingleValue": 0.6975926641646617
+          },
+          {
+            "SingleValue": 0.6844349250987205
+          },
+          {
+            "SingleValue": 0.6978195465740248
+          },
+          {
+            "SingleValue": 0.69940808350448
+          },
+          {
+            "SingleValue": 0.6987642096040225
+          },
+          {
+            "SingleValue": 0.6994106882276522
+          },
+          {
+            "SingleValue": 0.7004574798495325
+          },
+          {
+            "SingleValue": 0.7003028718613786
+          },
+          {
+            "SingleValue": 0.7003332512342363
+          },
+          {
+            "SingleValue": 0.7003567497791215
+          },
+          {
+            "SingleValue": 0.6867641335414756
+          },
+          {
+            "SingleValue": 0.6590196010950115
+          },
+          {
+            "SingleValue": 0.6850112344244603
+          },
+          {
+            "SingleValue": 0.7002612402546584
+          },
+          {
+            "SingleValue": 0.7013188541466921
+          },
+          {
+            "SingleValue": 0.7016083900210984
+          },
+          {
+            "SingleValue": 0.7009690694513336
+          },
+          {
+            "SingleValue": 0.7017320233956315
+          },
+          {
+            "SingleValue": 0.7016137411540128
+          },
+          {
+            "SingleValue": 0.7016701192092355
+          },
+          {
+            "SingleValue": 0.7023779442510877
+          },
+          {
+            "SingleValue": 0.7024785469449242
+          },
+          {
+            "SingleValue": 0.7028455608137375
+          },
+          {
+            "SingleValue": 0.7029011107749468
+          },
+          {
+            "SingleValue": 0.7033340870283903
+          },
+          {
+            "SingleValue": 0.7022019954473564
+          },
+          {
+            "SingleValue": 0.6877024458127249
+          }
+        ],
+        "property_type": "AvgTrainScore"
+      },
+      {
+        "prop_values": [
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3301122194513716,
+              "Disabled": 0.3341645885286783,
+              "Open": 0.3357231920199501
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3263715710723192,
+              "Disabled": 0.3357231920199501,
+              "Open": 0.33790523690773067
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.32512468827930174,
+              "Disabled": 0.3329177057356609,
+              "Open": 0.3419576059850374
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.32231920199501246,
+              "Disabled": 0.3335411471321696,
+              "Open": 0.34413965087281795
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.321072319201995,
+              "Disabled": 0.3341645885286783,
+              "Open": 0.34476309226932667
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31982543640897754,
+              "Disabled": 0.33322942643391523,
+              "Open": 0.34694513715710723
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3185785536159601,
+              "Disabled": 0.33447630922693267,
+              "Open": 0.34694513715710723
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31982543640897754,
+              "Disabled": 0.3329177057356609,
+              "Open": 0.3472568578553616
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3185785536159601,
+              "Disabled": 0.3341645885286783,
+              "Open": 0.3472568578553616
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3185785536159601,
+              "Disabled": 0.33447630922693267,
+              "Open": 0.34694513715710723
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31889027431421446,
+              "Disabled": 0.33322942643391523,
+              "Open": 0.3478802992518703
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3185785536159601,
+              "Disabled": 0.3335411471321696,
+              "Open": 0.3478802992518703
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31826683291770574,
+              "Disabled": 0.33198254364089774,
+              "Open": 0.3497506234413965
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.317643391521197,
+              "Disabled": 0.3316708229426434,
+              "Open": 0.3506857855361596
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3151496259351621,
+              "Disabled": 0.3282418952618454,
+              "Open": 0.3566084788029925
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3151496259351621,
+              "Disabled": 0.3266832917705736,
+              "Open": 0.35816708229426436
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31483790523690774,
+              "Disabled": 0.3260598503740648,
+              "Open": 0.35910224438902744
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.314214463840399,
+              "Disabled": 0.3263715710723192,
+              "Open": 0.3594139650872818
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31296758104738154,
+              "Disabled": 0.32512468827930174,
+              "Open": 0.3619077306733167
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3123441396508728,
+              "Disabled": 0.32356608478802995,
+              "Open": 0.3640897755610973
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3104738154613466,
+              "Disabled": 0.32418952618453867,
+              "Open": 0.3653366583541147
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31140897755610975,
+              "Disabled": 0.324501246882793,
+              "Open": 0.3640897755610973
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3123441396508728,
+              "Disabled": 0.3238778054862843,
+              "Open": 0.36377805486284287
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3117206982543641,
+              "Disabled": 0.32325436408977554,
+              "Open": 0.36502493765586036
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3110972568578554,
+              "Disabled": 0.32325436408977554,
+              "Open": 0.3656483790523691
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3104738154613466,
+              "Disabled": 0.3229426433915212,
+              "Open": 0.36658354114713215
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3089152119700748,
+              "Disabled": 0.3248129675810474,
+              "Open": 0.3662718204488778
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31016209476309226,
+              "Disabled": 0.32325436408977554,
+              "Open": 0.36658354114713215
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.31140897755610975,
+              "Disabled": 0.3204488778054863,
+              "Open": 0.368142144638404
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.310785536159601,
+              "Disabled": 0.32169576059850374,
+              "Open": 0.3675187032418953
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30953865336658354,
+              "Disabled": 0.3213840399002494,
+              "Open": 0.3690773067331671
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3089152119700748,
+              "Disabled": 0.32076059850374067,
+              "Open": 0.37032418952618457
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30860349127182046,
+              "Disabled": 0.31982543640897754,
+              "Open": 0.371571072319202
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30860349127182046,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3725062344139651
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3082917705735661,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3731296758104738
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30798004987531175,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3731296758104738
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30766832917705733,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3731296758104738
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.307356608478803,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.37375311720698257
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3070448877805486,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.375
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30673316708229426,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.37531172069825436
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3070448877805486,
+              "Disabled": 0.317643391521197,
+              "Open": 0.37531172069825436
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3064214463840399,
+              "Disabled": 0.31701995012468825,
+              "Open": 0.3765586034912718
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30610972568578554,
+              "Disabled": 0.3167082294264339,
+              "Open": 0.37718204488778057
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30610972568578554,
+              "Disabled": 0.31733167082294267,
+              "Open": 0.3765586034912718
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30673316708229426,
+              "Disabled": 0.3160847880299252,
+              "Open": 0.37718204488778057
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30798004987531175,
+              "Disabled": 0.3151496259351621,
+              "Open": 0.3768703241895262
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30798004987531175,
+              "Disabled": 0.31546134663341646,
+              "Open": 0.3765586034912718
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30798004987531175,
+              "Disabled": 0.3151496259351621,
+              "Open": 0.3768703241895262
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30766832917705733,
+              "Disabled": 0.31483790523690774,
+              "Open": 0.3774937655860349
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3057980049875312,
+              "Disabled": 0.3160847880299252,
+              "Open": 0.37811720698254364
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30517456359102246,
+              "Disabled": 0.31639650872817954,
+              "Open": 0.378428927680798
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3045511221945137,
+              "Disabled": 0.31639650872817954,
+              "Open": 0.3790523690773067
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3036159600997506,
+              "Disabled": 0.31733167082294267,
+              "Open": 0.3790523690773067
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3036159600997506,
+              "Disabled": 0.317643391521197,
+              "Open": 0.37874064837905236
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30330423940149626,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3778054862842893
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3029925187032419,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3778054862842893
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30268079800498754,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.37811720698254364
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3023690773067332,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.378428927680798
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30174563591022446,
+              "Disabled": 0.31982543640897754,
+              "Open": 0.378428927680798
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3020573566084788,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.37874064837905236
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3011221945137157,
+              "Disabled": 0.3201371571072319,
+              "Open": 0.37874064837905236
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30081047381546133,
+              "Disabled": 0.3201371571072319,
+              "Open": 0.3790523690773067
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30143391521197005,
+              "Disabled": 0.3195137157107232,
+              "Open": 0.3790523690773067
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30143391521197005,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3793640897755611
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.30174563591022446,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.37967581047381543
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3011221945137157,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.37998753117206985
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.300498753117207,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3802992518703242
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.300498753117207,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3809226932668329
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3001870324189526,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.38154613466334164
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2995635910224439,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.38154613466334164
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.300498753117207,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.38154613466334164
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29987531172069826,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3812344139650873
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.300498753117207,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3809226932668329
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2989401496259352,
+              "Disabled": 0.31982543640897754,
+              "Open": 0.3812344139650873
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29800498753117205,
+              "Disabled": 0.3204488778054863,
+              "Open": 0.38154613466334164
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2967581047381546,
+              "Disabled": 0.3201371571072319,
+              "Open": 0.3831047381546135
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.297069825436409,
+              "Disabled": 0.3204488778054863,
+              "Open": 0.3824812967581047
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.297069825436409,
+              "Disabled": 0.3204488778054863,
+              "Open": 0.3824812967581047
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.297069825436409,
+              "Disabled": 0.3204488778054863,
+              "Open": 0.3824812967581047
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.297069825436409,
+              "Disabled": 0.32076059850374067,
+              "Open": 0.38216957605985036
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29644638403990026,
+              "Disabled": 0.3204488778054863,
+              "Open": 0.3831047381546135
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2967581047381546,
+              "Disabled": 0.3195137157107232,
+              "Open": 0.3837281795511222
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2967581047381546,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.38497506234413964
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29738154613466333,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.3843516209476309
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29738154613466333,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3837281795511222
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2967581047381546,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.38403990024937656
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29644638403990026,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3843516209476309
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29644638403990026,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3843516209476309
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29644638403990026,
+              "Disabled": 0.3195137157107232,
+              "Open": 0.38403990024937656
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29582294264339154,
+              "Disabled": 0.3195137157107232,
+              "Open": 0.3846633416458853
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2955112219451372,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.385286783042394
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2961346633416459,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.38559850374064836
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2961346633416459,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.3859102244389027
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2961346633416459,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.385286783042394
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29582294264339154,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.385286783042394
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2955112219451372,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.38559850374064836
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2955112219451372,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3859102244389027
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2948877805486284,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3859102244389027
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2948877805486284,
+              "Disabled": 0.3192019950124688,
+              "Open": 0.3859102244389027
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2948877805486284,
+              "Disabled": 0.3195137157107232,
+              "Open": 0.38559850374064836
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2955112219451372,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3859102244389027
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2955112219451372,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.3865336658354115
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2948877805486284,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.3871571072319202
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29457605985037405,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.38746882793017456
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2942643391521197,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3871571072319202
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29395261845386533,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3871571072319202
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2933291770573566,
+              "Disabled": 0.31889027431421446,
+              "Open": 0.3877805486284289
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2933291770573566,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3880922693266833
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2933291770573566,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.388715710723192
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2933291770573566,
+              "Disabled": 0.317643391521197,
+              "Open": 0.38902743142144636
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2933291770573566,
+              "Disabled": 0.31733167082294267,
+              "Open": 0.38933915211970077
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29301745635910226,
+              "Disabled": 0.317643391521197,
+              "Open": 0.38933915211970077
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29239401496259354,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.38933915211970077
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.3899625935162095
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.3905860349127182
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.39089775561097256
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.3905860349127182
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.3905860349127182
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.31826683291770574,
+              "Open": 0.3905860349127182
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.39027431421446385
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2908354114713217,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3905860349127182
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2908354114713217,
+              "Disabled": 0.3185785536159601,
+              "Open": 0.3905860349127182
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.317643391521197,
+              "Open": 0.3912094763092269
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.39089775561097256
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2908354114713217,
+              "Disabled": 0.3179551122194514,
+              "Open": 0.3912094763092269
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.317643391521197,
+              "Open": 0.3912094763092269
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.31701995012468825,
+              "Open": 0.3912094763092269
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.31701995012468825,
+              "Open": 0.39183291770573564
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3167082294264339,
+              "Open": 0.39183291770573564
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.3167082294264339,
+              "Open": 0.3915211970074813
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.31701995012468825,
+              "Open": 0.3912094763092269
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29114713216957605,
+              "Disabled": 0.31733167082294267,
+              "Open": 0.3915211970074813
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.31701995012468825,
+              "Open": 0.3915211970074813
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2920822942643391,
+              "Disabled": 0.3167082294264339,
+              "Open": 0.3912094763092269
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2920822942643391,
+              "Disabled": 0.31639650872817954,
+              "Open": 0.3915211970074813
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29239401496259354,
+              "Disabled": 0.3160847880299252,
+              "Open": 0.3915211970074813
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2920822942643391,
+              "Disabled": 0.3160847880299252,
+              "Open": 0.39183291770573564
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3160847880299252,
+              "Open": 0.3924563591022444
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.3160847880299252,
+              "Open": 0.39214463840399
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.31546134663341646,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.31546134663341646,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29177057356608477,
+              "Disabled": 0.31546134663341646,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3157730673316708,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3157730673316708,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3157730673316708,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3157730673316708,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3157730673316708,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2914588528678304,
+              "Disabled": 0.3157730673316708,
+              "Open": 0.39276807980049877
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29052369077306733,
+              "Disabled": 0.31639650872817954,
+              "Open": 0.39307980049875313
+            }
+          },
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29052369077306733,
+              "Disabled": 0.31639650872817954,
+              "Open": 0.39307980049875313
+            }
+          }
+        ],
+        "property_type": "PopDimTypeMemberships"
+      },
+      {
+        "prop_values": [
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          },
+          {
+            "LabelMembership": {
+              "0": 261,
+              "1": 140
+            }
+          }
+        ],
+        "property_type": "PopLabelMemberships"
+      },
+      {
+        "prop_values": [
+          {
+            "MappedFloats": {
+              "bad_afin": -0.9736191387910914,
+              "correctness": -0.2004270223173795,
+              "coverage": 0.9858518991776757,
+              "f1": 0.5648010354557808,
+              "good_afin": 0.0,
+              "precession": 0.5924344361787485,
+              "recall": 0.6572345994517841,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.0231745803800134,
+              "correctness": -0.13326634841954563,
+              "coverage": 0.9828294965066678,
+              "f1": 0.5861358567233513,
+              "good_afin": 0.0,
+              "precession": 0.6173087598446133,
+              "recall": 0.655219664337778,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.0412951037690652,
+              "correctness": -0.10518214969020825,
+              "coverage": 0.9871567637380378,
+              "f1": 0.597539482345118,
+              "good_afin": 0.0,
+              "precession": 0.6277103149295531,
+              "recall": 0.6581045091586921,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.0690514909816702,
+              "correctness": -0.06021147257142731,
+              "coverage": 0.9881563996345231,
+              "f1": 0.6115179895937024,
+              "good_afin": 0.0,
+              "precession": 0.6443661212698417,
+              "recall": 0.6587709330896822,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.0835538240019404,
+              "correctness": -0.030429620949858162,
+              "coverage": 0.9878871691295186,
+              "f1": 0.6233147935579259,
+              "good_afin": 0.0,
+              "precession": 0.6553964366852374,
+              "recall": 0.6585914460863459,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.0938186591011907,
+              "correctness": -0.021887275373263945,
+              "coverage": 0.993871794343343,
+              "f1": 0.6299121705227079,
+              "good_afin": 0.0,
+              "precession": 0.658560268380273,
+              "recall": 0.6625811962288953,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1028128208731394,
+              "correctness": -0.006531922373691007,
+              "coverage": 0.9951198450155612,
+              "f1": 0.6383171572177362,
+              "good_afin": 0.0,
+              "precession": 0.664247436157893,
+              "recall": 0.6634132300103738,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1075764708806766,
+              "correctness": 0.018558053162021575,
+              "coverage": 0.984843950729238,
+              "f1": 0.6443703341590055,
+              "good_afin": 0.0,
+              "precession": 0.6735400196896383,
+              "recall": 0.6565626338194919,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1095933156299898,
+              "correctness": 0.027755613749129323,
+              "coverage": 0.983112329369414,
+              "f1": 0.6471674678861912,
+              "good_afin": 0.0,
+              "precession": 0.6769465236107889,
+              "recall": 0.6554082195796095,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1140300801598568,
+              "correctness": 0.043371769084437774,
+              "coverage": 0.9842590493463312,
+              "f1": 0.653097127962126,
+              "good_afin": 0.0,
+              "precession": 0.6827302848460887,
+              "recall": 0.656172699564221,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1116985813116622,
+              "correctness": 0.05218158428780727,
+              "coverage": 0.9848719111312634,
+              "f1": 0.6555920051748595,
+              "good_afin": 0.0,
+              "precession": 0.685993179365855,
+              "recall": 0.6565812740875087,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1069077101592237,
+              "correctness": 0.060150454242081985,
+              "coverage": 0.9889203987276983,
+              "f1": 0.6593484387941863,
+              "good_afin": 0.0,
+              "precession": 0.6889446126822525,
+              "recall": 0.6592802658184659,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1073646544583922,
+              "correctness": 0.058122733049024176,
+              "coverage": 0.9975014941983891,
+              "f1": 0.6619533721753793,
+              "good_afin": 0.0,
+              "precession": 0.6881936048329713,
+              "recall": 0.6650009961322587,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1192538477340503,
+              "correctness": 0.06853876031820558,
+              "coverage": 0.9938915795909669,
+              "f1": 0.6642760237933604,
+              "good_afin": 0.0,
+              "precession": 0.6920513927104454,
+              "recall": 0.6625943863939784,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1256692412952176,
+              "correctness": 0.08357622720263545,
+              "coverage": 0.9886447792364813,
+              "f1": 0.6665048428600209,
+              "good_afin": 0.0,
+              "precession": 0.6976208248898644,
+              "recall": 0.6590965194909878,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1208257534400132,
+              "correctness": 0.09244668679484755,
+              "coverage": 0.9914259805032866,
+              "f1": 0.6700835066404488,
+              "good_afin": 0.0,
+              "precession": 0.7009061802943881,
+              "recall": 0.6609506536688586,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1208615414111398,
+              "correctness": 0.09590253216838318,
+              "coverage": 0.9846901341687102,
+              "f1": 0.670807411286943,
+              "good_afin": 0.0,
+              "precession": 0.7021861230253271,
+              "recall": 0.6564600894458074,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1198862056913046,
+              "correctness": 0.10067896398801564,
+              "coverage": 0.9791107630373103,
+              "f1": 0.6700420992606161,
+              "good_afin": 0.0,
+              "precession": 0.703955171847413,
+              "recall": 0.6527405086915403,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1225635516087202,
+              "correctness": 0.10639485815426963,
+              "coverage": 0.9755428233823155,
+              "f1": 0.6708831555219156,
+              "good_afin": 0.0,
+              "precession": 0.7060721696867662,
+              "recall": 0.6503618822548769,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1223927789075943,
+              "correctness": 0.10756403930273019,
+              "coverage": 0.9781932221787125,
+              "f1": 0.6727465192871832,
+              "good_afin": 0.0,
+              "precession": 0.706505199741752,
+              "recall": 0.6521288147858085,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1272721831183752,
+              "correctness": 0.11477367727404827,
+              "coverage": 0.9798898758613107,
+              "f1": 0.6758931459309601,
+              "good_afin": 0.0,
+              "precession": 0.7091754360274252,
+              "recall": 0.653259917240874,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1236864078282847,
+              "correctness": 0.11078351694005031,
+              "coverage": 0.9751936962002711,
+              "f1": 0.6740933560012292,
+              "good_afin": 0.0,
+              "precession": 0.707697598866685,
+              "recall": 0.6501291308001809,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.123226863918603,
+              "correctness": 0.11299554629104405,
+              "coverage": 0.9786396268282469,
+              "f1": 0.675966326071463,
+              "good_afin": 0.0,
+              "precession": 0.7085168689966829,
+              "recall": 0.6524264178854978,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1259174690973845,
+              "correctness": 0.11789838769742249,
+              "coverage": 0.9837915541724206,
+              "f1": 0.6804210013311037,
+              "good_afin": 0.0,
+              "precession": 0.7103327361842302,
+              "recall": 0.6558610361149472,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1271154679843998,
+              "correctness": 0.11853249354353988,
+              "coverage": 0.9848559730151206,
+              "f1": 0.6788270563114176,
+              "good_afin": 0.0,
+              "precession": 0.71056759020131,
+              "recall": 0.656570648676747,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1280319990766063,
+              "correctness": 0.11758360246681847,
+              "coverage": 0.9822680901053146,
+              "f1": 0.67658953625169,
+              "good_afin": 0.0,
+              "precession": 0.7102161490617839,
+              "recall": 0.6548453934035432,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1239585054008459,
+              "correctness": 0.11876634111735232,
+              "coverage": 0.9815146706237156,
+              "f1": 0.6772106902045296,
+              "good_afin": 0.0,
+              "precession": 0.7106542004138338,
+              "recall": 0.654343113749144,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1255037161664172,
+              "correctness": 0.1177598470222683,
+              "coverage": 0.9891835150415974,
+              "f1": 0.6778299283080532,
+              "good_afin": 0.0,
+              "precession": 0.710281424823062,
+              "recall": 0.659455676694398,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.121037131437184,
+              "correctness": 0.1135633634105167,
+              "coverage": 0.9927651257531108,
+              "f1": 0.6769364768797578,
+              "good_afin": 0.0,
+              "precession": 0.7087271716335243,
+              "recall": 0.6618434171687402,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1217282909681132,
+              "correctness": 0.1290007639281922,
+              "coverage": 0.9854399813139328,
+              "f1": 0.6814895506789527,
+              "good_afin": 0.0,
+              "precession": 0.7144447273808116,
+              "recall": 0.6569599875426212,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.123474944366335,
+              "correctness": 0.1315570240482216,
+              "coverage": 0.983137885314262,
+              "f1": 0.6835806549111552,
+              "good_afin": 0.0,
+              "precession": 0.7153914903882302,
+              "recall": 0.6554252568761749,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1248252540836536,
+              "correctness": 0.1391272057336634,
+              "coverage": 0.9781129820077895,
+              "f1": 0.685266491842241,
+              "good_afin": 0.0,
+              "precession": 0.7181952613828385,
+              "recall": 0.6520753213385269,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1247954278261156,
+              "correctness": 0.13483023842885736,
+              "coverage": 0.9789828459155133,
+              "f1": 0.6834867986626532,
+              "good_afin": 0.0,
+              "precession": 0.716603792010688,
+              "recall": 0.6526552306103428,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1245295055191984,
+              "correctness": 0.13020176365921093,
+              "coverage": 0.9802027987881532,
+              "f1": 0.6827939359515254,
+              "good_afin": 0.0,
+              "precession": 0.7148895420960039,
+              "recall": 0.653468532525436,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1208792026972467,
+              "correctness": 0.1333031192816343,
+              "coverage": 0.9740375644909756,
+              "f1": 0.6818421024678489,
+              "good_afin": 0.0,
+              "precession": 0.7143756819358414,
+              "recall": 0.6493583763273174,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1232611102989731,
+              "correctness": 0.13401922815235676,
+              "coverage": 0.9763022883562442,
+              "f1": 0.6822776352227248,
+              "good_afin": 0.0,
+              "precession": 0.714640907443516,
+              "recall": 0.6508681922374964,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1260603951996013,
+              "correctness": 0.13934108698322797,
+              "coverage": 0.9768857470648451,
+              "f1": 0.6854313967370915,
+              "good_afin": 0.0,
+              "precession": 0.7182744766604543,
+              "recall": 0.6512571647098966,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1279351273382447,
+              "correctness": 0.14503521269559536,
+              "coverage": 0.9658813709527837,
+              "f1": 0.6852182173409289,
+              "good_afin": 0.0,
+              "precession": 0.720383412109479,
+              "recall": 0.6439209139685222,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1290624492057428,
+              "correctness": 0.14644379279943337,
+              "coverage": 0.9690534682577308,
+              "f1": 0.6859462264540258,
+              "good_afin": 0.0,
+              "precession": 0.720905108444234,
+              "recall": 0.6460356455051536,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1283942115696837,
+              "correctness": 0.14621315201422394,
+              "coverage": 0.970262841518792,
+              "f1": 0.6859510704462326,
+              "good_afin": 0.0,
+              "precession": 0.7208196859311935,
+              "recall": 0.6468418943458617,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1275633271879635,
+              "correctness": 0.15126010387796118,
+              "coverage": 0.9620143168250173,
+              "f1": 0.6864294037325566,
+              "good_afin": 0.0,
+              "precession": 0.7226889273622082,
+              "recall": 0.6413428778833447,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1282619209345013,
+              "correctness": 0.15316681628929496,
+              "coverage": 0.9629776110687472,
+              "f1": 0.6868039422548072,
+              "good_afin": 0.0,
+              "precession": 0.7233951171441836,
+              "recall": 0.6419850740458309,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1260144471054452,
+              "correctness": 0.15177695803808924,
+              "coverage": 0.9645393403543483,
+              "f1": 0.6854782559125764,
+              "good_afin": 0.0,
+              "precession": 0.7228803548289219,
+              "recall": 0.6430262269028989,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.118368766832293,
+              "correctness": 0.1480490324760299,
+              "coverage": 0.965819404656403,
+              "f1": 0.6846059971810422,
+              "good_afin": 0.0,
+              "precession": 0.7214996416577889,
+              "recall": 0.6438796031042687,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1177834260672979,
+              "correctness": 0.15094638976528107,
+              "coverage": 0.9696824742551337,
+              "f1": 0.6873200857412711,
+              "good_afin": 0.0,
+              "precession": 0.7225727369501043,
+              "recall": 0.6464549828367556,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1189557503067273,
+              "correctness": 0.15606959222911232,
+              "coverage": 0.967216119480912,
+              "f1": 0.6891451696941887,
+              "good_afin": 0.0,
+              "precession": 0.724470219344116,
+              "recall": 0.6448107463206081,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1207291419965408,
+              "correctness": 0.1514116417223271,
+              "coverage": 0.9738296132945868,
+              "f1": 0.6874044111028438,
+              "good_afin": 0.0,
+              "precession": 0.7227450524897505,
+              "recall": 0.6492197421963917,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1175331004135145,
+              "correctness": 0.156817991470835,
+              "coverage": 0.9712159683436032,
+              "f1": 0.6877279206248893,
+              "good_afin": 0.0,
+              "precession": 0.7247474042484567,
+              "recall": 0.6474773122290693,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1195653601426496,
+              "correctness": 0.15516135164498207,
+              "coverage": 0.9741615657825128,
+              "f1": 0.6860131404473373,
+              "good_afin": 0.0,
+              "precession": 0.7241338339425857,
+              "recall": 0.6494410438550092,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1214090307016014,
+              "correctness": 0.15678582459239887,
+              "coverage": 0.9732032178506891,
+              "f1": 0.6869598542631877,
+              "good_afin": 0.0,
+              "precession": 0.7247354905897767,
+              "recall": 0.6488021452337933,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1231378119578985,
+              "correctness": 0.16022032885116141,
+              "coverage": 0.9761449681581164,
+              "f1": 0.6898166256990541,
+              "good_afin": 0.0,
+              "precession": 0.7260075292041338,
+              "recall": 0.6507633121054115,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1274469463562893,
+              "correctness": 0.16996675820271043,
+              "coverage": 0.9635357886276036,
+              "f1": 0.6917150464726783,
+              "good_afin": 0.0,
+              "precession": 0.7296173178528559,
+              "recall": 0.642357192418403,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.12505555322306,
+              "correctness": 0.16949552161100118,
+              "coverage": 0.9676848512327992,
+              "f1": 0.6932239622073175,
+              "good_afin": 0.0,
+              "precession": 0.7294427857818523,
+              "recall": 0.6451232341551999,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1255751671259093,
+              "correctness": 0.1709916200135503,
+              "coverage": 0.9680234675020436,
+              "f1": 0.6933086917696424,
+              "good_afin": 0.0,
+              "precession": 0.7299968963013151,
+              "recall": 0.6453489783346963,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1246076417999624,
+              "correctness": 0.16836585335915663,
+              "coverage": 0.9727189601753194,
+              "f1": 0.692062651581163,
+              "good_afin": 0.0,
+              "precession": 0.7290243901330203,
+              "recall": 0.6484793067835467,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1253539050923436,
+              "correctness": 0.16229372595204913,
+              "coverage": 0.9847776564099393,
+              "f1": 0.6928133993917318,
+              "good_afin": 0.0,
+              "precession": 0.7267754540563142,
+              "recall": 0.6565184376066263,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1264631550856974,
+              "correctness": 0.16734279908854385,
+              "coverage": 0.9761128171307267,
+              "f1": 0.6920318774083397,
+              "good_afin": 0.0,
+              "precession": 0.728645481143905,
+              "recall": 0.6507418780871516,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1279036193612513,
+              "correctness": 0.16968026563034744,
+              "coverage": 0.9747374676257011,
+              "f1": 0.6924582233739754,
+              "good_afin": 0.0,
+              "precession": 0.7295112094927214,
+              "recall": 0.6498249784171349,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1285841987458505,
+              "correctness": 0.17342674615454298,
+              "coverage": 0.9739845290355374,
+              "f1": 0.6937629249396186,
+              "good_afin": 0.0,
+              "precession": 0.730898794872053,
+              "recall": 0.6493230193570254,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1254663298030074,
+              "correctness": 0.17124287679481098,
+              "coverage": 0.9805136607517017,
+              "f1": 0.6951189795704017,
+              "good_afin": 0.0,
+              "precession": 0.7300899543684486,
+              "recall": 0.6536757738344682,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1223506582857037,
+              "correctness": 0.17256294532412067,
+              "coverage": 0.9780930593626128,
+              "f1": 0.6949867596831266,
+              "good_afin": 0.0,
+              "precession": 0.7305788686385631,
+              "recall": 0.6520620395750751,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1225263460409516,
+              "correctness": 0.17259233535998442,
+              "coverage": 0.9769098603353874,
+              "f1": 0.6953386678525352,
+              "good_afin": 0.0,
+              "precession": 0.7305897538370312,
+              "recall": 0.6512732402235916,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.123685772486896,
+              "correctness": 0.1746250658220363,
+              "coverage": 0.9683859222467246,
+              "f1": 0.6944575310354311,
+              "good_afin": 0.0,
+              "precession": 0.7313426169711248,
+              "recall": 0.6455906148311498,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1234431214605325,
+              "correctness": 0.17653972370918183,
+              "coverage": 0.9664899734135731,
+              "f1": 0.6938342798573959,
+              "good_afin": 0.0,
+              "precession": 0.7320517495219195,
+              "recall": 0.6443266489423819,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.121146858425237,
+              "correctness": 0.17363100272967813,
+              "coverage": 0.9736189141471393,
+              "f1": 0.6952250637290632,
+              "good_afin": 0.0,
+              "precession": 0.7309744454554362,
+              "recall": 0.6490792760980927,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1229274844171957,
+              "correctness": 0.18148336303962384,
+              "coverage": 0.9645914140269167,
+              "f1": 0.6961610722337875,
+              "good_afin": 0.0,
+              "precession": 0.7338827270517122,
+              "recall": 0.6430609426846108,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.122409668861823,
+              "correctness": 0.18198065402621805,
+              "coverage": 0.9634923023020958,
+              "f1": 0.6958086268289078,
+              "good_afin": 0.0,
+              "precession": 0.7340669088985995,
+              "recall": 0.6423282015347302,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1231834886847465,
+              "correctness": 0.17788066813850142,
+              "coverage": 0.9719692504276498,
+              "f1": 0.6953419502811354,
+              "good_afin": 0.0,
+              "precession": 0.7325483956068524,
+              "recall": 0.6479795002851003,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1244335522021356,
+              "correctness": 0.17672754576067518,
+              "coverage": 0.9743566703077013,
+              "f1": 0.6953335732325193,
+              "good_afin": 0.0,
+              "precession": 0.7321213132446949,
+              "recall": 0.6495711135384682,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1247032759091062,
+              "correctness": 0.17812567235748553,
+              "coverage": 0.9749256335744658,
+              "f1": 0.6939272842792257,
+              "good_afin": 0.0,
+              "precession": 0.7326391379101798,
+              "recall": 0.6499504223829777,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1262104214928585,
+              "correctness": 0.18065573542860186,
+              "coverage": 0.9737377630304404,
+              "f1": 0.6940983907988548,
+              "good_afin": 0.0,
+              "precession": 0.7335761983068892,
+              "recall": 0.6491585086869605,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1271836969580757,
+              "correctness": 0.17713712850632152,
+              "coverage": 0.9813322066733995,
+              "f1": 0.695659674203206,
+              "good_afin": 0.0,
+              "precession": 0.732273010557897,
+              "recall": 0.6542214711155996,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.127386563524397,
+              "correctness": 0.17344943514553338,
+              "coverage": 0.9816381910238178,
+              "f1": 0.6943738242594909,
+              "good_afin": 0.0,
+              "precession": 0.730907198202049,
+              "recall": 0.6544254606825457,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.126081833328105,
+              "correctness": 0.17031856103199428,
+              "coverage": 0.9905677953875639,
+              "f1": 0.6951321729036825,
+              "good_afin": 0.0,
+              "precession": 0.7297476151970349,
+              "recall": 0.6603785302583767,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1324511059630367,
+              "correctness": 0.1782850621378218,
+              "coverage": 0.9746373735083773,
+              "f1": 0.6953437079589398,
+              "good_afin": 0.0,
+              "precession": 0.7326981711621563,
+              "recall": 0.6497582490055854,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.129292177214423,
+              "correctness": 0.17349304847140276,
+              "coverage": 0.9815448293865882,
+              "f1": 0.6947468382347619,
+              "good_afin": 0.0,
+              "precession": 0.7309233512857048,
+              "recall": 0.6543632195910596,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1295786166135175,
+              "correctness": 0.1731624596264812,
+              "coverage": 0.9788964915534847,
+              "f1": 0.6950195598824718,
+              "good_afin": 0.0,
+              "precession": 0.7308009109727703,
+              "recall": 0.652597661035657,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1287459513325533,
+              "correctness": 0.17627764348024866,
+              "coverage": 0.9759151707508082,
+              "f1": 0.6959402242930887,
+              "good_afin": 0.0,
+              "precession": 0.731954682770462,
+              "recall": 0.6506101138338727,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1245566694523281,
+              "correctness": 0.17801780386481628,
+              "coverage": 0.9744516120167891,
+              "f1": 0.6973219087576032,
+              "good_afin": 0.0,
+              "precession": 0.7325991866165984,
+              "recall": 0.6496344080111934,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1247589759127923,
+              "correctness": 0.17922001187730915,
+              "coverage": 0.9742529351552249,
+              "f1": 0.697723393461393,
+              "good_afin": 0.0,
+              "precession": 0.7330444488434474,
+              "recall": 0.6495019567701503,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1202021123317885,
+              "correctness": 0.18171409017430054,
+              "coverage": 0.9724971318260827,
+              "f1": 0.6981404923772598,
+              "good_afin": 0.0,
+              "precession": 0.7339681815460366,
+              "recall": 0.6483314212173886,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1192045773147836,
+              "correctness": 0.17986193222282787,
+              "coverage": 0.9700959034919584,
+              "f1": 0.6977356890915026,
+              "good_afin": 0.0,
+              "precession": 0.7332821971195657,
+              "recall": 0.6467306023279729,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.118784724974956,
+              "correctness": 0.18332168168096263,
+              "coverage": 0.9671007055364339,
+              "f1": 0.6972778981562039,
+              "good_afin": 0.0,
+              "precession": 0.7345635858077639,
+              "recall": 0.6447338036909565,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1200213015678384,
+              "correctness": 0.18093759924010702,
+              "coverage": 0.9761064281445144,
+              "f1": 0.6975011641829593,
+              "good_afin": 0.0,
+              "precession": 0.7336805923111508,
+              "recall": 0.6507376187630102,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.12148055286699,
+              "correctness": 0.18147623908174224,
+              "coverage": 0.9763937264277319,
+              "f1": 0.6985816534505663,
+              "good_afin": 0.0,
+              "precession": 0.7338800885487933,
+              "recall": 0.6509291509518216,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1169685435976242,
+              "correctness": 0.1776886756115924,
+              "coverage": 0.9813230010373517,
+              "f1": 0.6973925886509426,
+              "good_afin": 0.0,
+              "precession": 0.7324772872635527,
+              "recall": 0.6542153340249012,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1196472309263792,
+              "correctness": 0.18400469412798295,
+              "coverage": 0.9702698487939937,
+              "f1": 0.6951976136636201,
+              "good_afin": 0.0,
+              "precession": 0.7348165533807344,
+              "recall": 0.6468465658626616,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1228306467832456,
+              "correctness": 0.18830126127645722,
+              "coverage": 0.9604865247349952,
+              "f1": 0.6930190168781611,
+              "good_afin": 0.0,
+              "precession": 0.7364078745468353,
+              "recall": 0.6403243498233295,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1232027576305914,
+              "correctness": 0.18629704496053093,
+              "coverage": 0.9618991089768693,
+              "f1": 0.6948145796423453,
+              "good_afin": 0.0,
+              "precession": 0.735665572207604,
+              "recall": 0.6412660726512462,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1204124119105494,
+              "correctness": 0.1865823419215517,
+              "coverage": 0.9658387090125921,
+              "f1": 0.6968276343014141,
+              "good_afin": 0.0,
+              "precession": 0.7357712377487228,
+              "recall": 0.6438924726750621,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1168721599759988,
+              "correctness": 0.1934842942098129,
+              "coverage": 0.9567210760976337,
+              "f1": 0.6936442416339768,
+              "good_afin": 0.0,
+              "precession": 0.7383275163740047,
+              "recall": 0.6378140507317567,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1164403257730886,
+              "correctness": 0.19643171226409695,
+              "coverage": 0.9544112171362226,
+              "f1": 0.6954024510309487,
+              "good_afin": 0.0,
+              "precession": 0.7394191526904061,
+              "recall": 0.6362741447574819,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1172017110777663,
+              "correctness": 0.1915109954658751,
+              "coverage": 0.9574993645363173,
+              "f1": 0.694866224123991,
+              "good_afin": 0.0,
+              "precession": 0.7375966649873612,
+              "recall": 0.6383329096908786,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1184169981008407,
+              "correctness": 0.19362993302510448,
+              "coverage": 0.9579517459794036,
+              "f1": 0.6966891582284209,
+              "good_afin": 0.0,
+              "precession": 0.7383814566759651,
+              "recall": 0.6386344973196032,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1197708074073425,
+              "correctness": 0.18848141985029948,
+              "coverage": 0.9641228883713575,
+              "f1": 0.6977593905914292,
+              "good_afin": 0.0,
+              "precession": 0.7364745999445561,
+              "recall": 0.6427485922475724,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1201166477118112,
+              "correctness": 0.18957759152255418,
+              "coverage": 0.9630430123039514,
+              "f1": 0.6981739884328751,
+              "good_afin": 0.0,
+              "precession": 0.7368805894527981,
+              "recall": 0.6420286748693004,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1199010031908936,
+              "correctness": 0.1848095282729181,
+              "coverage": 0.9698261233967421,
+              "f1": 0.6974424504822828,
+              "good_afin": 0.0,
+              "precession": 0.7351146401010809,
+              "recall": 0.6465507489311616,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.119415879882754,
+              "correctness": 0.1796150988326662,
+              "coverage": 0.9747492151164774,
+              "f1": 0.6966539762161253,
+              "good_afin": 0.0,
+              "precession": 0.7331907773454323,
+              "recall": 0.6498328100776524,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1177382666145323,
+              "correctness": 0.1789475450632157,
+              "coverage": 0.9805911529715647,
+              "f1": 0.6982646321806998,
+              "good_afin": 0.0,
+              "precession": 0.7329435352085985,
+              "recall": 0.6537274353143772,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1218953640511582,
+              "correctness": 0.17949183941347693,
+              "coverage": 0.973199439417983,
+              "f1": 0.6977631080784777,
+              "good_afin": 0.0,
+              "precession": 0.7331451257086953,
+              "recall": 0.6487996262786563,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1199460930497205,
+              "correctness": 0.17687579237568826,
+              "coverage": 0.9780034074593121,
+              "f1": 0.6976381346480538,
+              "good_afin": 0.0,
+              "precession": 0.7321762193984033,
+              "recall": 0.6520022716395424,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1230210125506415,
+              "correctness": 0.1821464649065013,
+              "coverage": 0.9697530278985721,
+              "f1": 0.6981480078688076,
+              "good_afin": 0.0,
+              "precession": 0.7341283203357412,
+              "recall": 0.6465020185990489,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.124278036899354,
+              "correctness": 0.18384212003449768,
+              "coverage": 0.9682907057425298,
+              "f1": 0.69846742661179,
+              "good_afin": 0.0,
+              "precession": 0.7347563407535171,
+              "recall": 0.6455271371616872,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1274976388237112,
+              "correctness": 0.1868091210347506,
+              "coverage": 0.9645646215040906,
+              "f1": 0.6982520357049763,
+              "good_afin": 0.0,
+              "precession": 0.7358552300128705,
+              "recall": 0.6430430810027277,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.121688196027597,
+              "correctness": 0.18258920377002705,
+              "coverage": 0.9754959708167593,
+              "f1": 0.6986973955066013,
+              "good_afin": 0.0,
+              "precession": 0.7342922976926027,
+              "recall": 0.6503306472111734,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1201661234609581,
+              "correctness": 0.1855624869393886,
+              "coverage": 0.9725070244498945,
+              "f1": 0.6998632032147817,
+              "good_afin": 0.0,
+              "precession": 0.7353935136812552,
+              "recall": 0.64833801629993,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1212516677166284,
+              "correctness": 0.19286104670279453,
+              "coverage": 0.9613846925386258,
+              "f1": 0.7014751534932323,
+              "good_afin": 0.0,
+              "precession": 0.7380966839639977,
+              "recall": 0.6409231283590842,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1227557047596235,
+              "correctness": 0.18902758068214812,
+              "coverage": 0.9705261639290202,
+              "f1": 0.7019546892711727,
+              "good_afin": 0.0,
+              "precession": 0.7366768817341288,
+              "recall": 0.6470174426193476,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1235256369591304,
+              "correctness": 0.1942480651105431,
+              "coverage": 0.9658332818092508,
+              "f1": 0.7026115844000809,
+              "good_afin": 0.0,
+              "precession": 0.7386103944853862,
+              "recall": 0.6438888545395013,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1225075978154797,
+              "correctness": 0.1939519126927513,
+              "coverage": 0.9693694139307378,
+              "f1": 0.702998473350825,
+              "good_afin": 0.0,
+              "precession": 0.7385007084047226,
+              "recall": 0.6462462759538258,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1212665286251435,
+              "correctness": 0.19697563290858286,
+              "coverage": 0.96497331052534,
+              "f1": 0.701841675132717,
+              "good_afin": 0.0,
+              "precession": 0.7396206047809568,
+              "recall": 0.6433155403502272,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1252589695075907,
+              "correctness": 0.19977123216884812,
+              "coverage": 0.9597266475684071,
+              "f1": 0.6998411042447886,
+              "good_afin": 0.0,
+              "precession": 0.7406560119143885,
+              "recall": 0.6398177650456053,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.12633679203241,
+              "correctness": 0.1993746873285652,
+              "coverage": 0.9621508899926493,
+              "f1": 0.7001363589842814,
+              "good_afin": 0.0,
+              "precession": 0.7405091434550246,
+              "recall": 0.6414339266617667,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1258521488939965,
+              "correctness": 0.19712188234297556,
+              "coverage": 0.9635696571244059,
+              "f1": 0.6991207364596786,
+              "good_afin": 0.0,
+              "precession": 0.7396747712381393,
+              "recall": 0.6423797714162715,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1281888477022153,
+              "correctness": 0.19938509103490354,
+              "coverage": 0.9609013966461254,
+              "f1": 0.6980077454562168,
+              "good_afin": 0.0,
+              "precession": 0.7405129966795939,
+              "recall": 0.6406009310974174,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1218382945885448,
+              "correctness": 0.19170132917261226,
+              "coverage": 0.9747775877111626,
+              "f1": 0.699945246911366,
+              "good_afin": 0.0,
+              "precession": 0.7376671589528195,
+              "recall": 0.6498517251407753,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.117839107150179,
+              "correctness": 0.18358944676748398,
+              "coverage": 0.9830019304356186,
+              "f1": 0.6991932006285305,
+              "good_afin": 0.0,
+              "precession": 0.7346627580620309,
+              "recall": 0.6553346202904131,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1189561293172905,
+              "correctness": 0.18590404547996192,
+              "coverage": 0.9806053049195186,
+              "f1": 0.699788069414327,
+              "good_afin": 0.0,
+              "precession": 0.7355200168444299,
+              "recall": 0.6537368699463465,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1175584782995605,
+              "correctness": 0.18478810121205524,
+              "coverage": 0.9828143827758425,
+              "f1": 0.6996059888937896,
+              "good_afin": 0.0,
+              "precession": 0.735106704152613,
+              "recall": 0.6552095885172289,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1174981552029681,
+              "correctness": 0.1846299272776944,
+              "coverage": 0.9813974705110499,
+              "f1": 0.698718664646842,
+              "good_afin": 0.0,
+              "precession": 0.7350481212139609,
+              "recall": 0.6542649803407006,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.118540923646228,
+              "correctness": 0.18469005617548948,
+              "coverage": 0.9796532772751314,
+              "f1": 0.6975129937919784,
+              "good_afin": 0.0,
+              "precession": 0.7350703911761072,
+              "recall": 0.6531021848500881,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1169777382129606,
+              "correctness": 0.19066942573132611,
+              "coverage": 0.971983058881721,
+              "f1": 0.6981884929004842,
+              "good_afin": 0.0,
+              "precession": 0.7372849724930834,
+              "recall": 0.6479887059211477,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1177638307331035,
+              "correctness": 0.19223384732127882,
+              "coverage": 0.9650244911138134,
+              "f1": 0.6975926641646617,
+              "good_afin": 0.0,
+              "precession": 0.7378643878967702,
+              "recall": 0.6433496607425426,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1120516712617612,
+              "correctness": 0.18498913314609697,
+              "coverage": 0.9767914236447447,
+              "f1": 0.6979062302246102,
+              "good_afin": 0.0,
+              "precession": 0.7351811604244805,
+              "recall": 0.6511942824298302,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1120705375691777,
+              "correctness": 0.187978112549598,
+              "coverage": 0.9715203039233872,
+              "f1": 0.6978195465740248,
+              "good_afin": 0.0,
+              "precession": 0.7362881898331841,
+              "recall": 0.6476802026155918,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1130244599140382,
+              "correctness": 0.19348304002821995,
+              "coverage": 0.9692140859971283,
+              "f1": 0.69940808350448,
+              "good_afin": 0.0,
+              "precession": 0.7383270518623034,
+              "recall": 0.6461427239980863,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1157514279540097,
+              "correctness": 0.18981852023238283,
+              "coverage": 0.9746836077849456,
+              "f1": 0.6987642096040225,
+              "good_afin": 0.0,
+              "precession": 0.7369698223082896,
+              "recall": 0.6497890718566306,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1178811632008279,
+              "correctness": 0.1936356578665232,
+              "coverage": 0.9730038540013604,
+              "f1": 0.6994106882276522,
+              "good_afin": 0.0,
+              "precession": 0.7383835769876009,
+              "recall": 0.6486692360009071,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1198588046236089,
+              "correctness": 0.19038544127647766,
+              "coverage": 0.9742431112301884,
+              "f1": 0.7004574798495325,
+              "good_afin": 0.0,
+              "precession": 0.7371797930653621,
+              "recall": 0.6494954074867928,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1208808138740702,
+              "correctness": 0.19045680472751386,
+              "coverage": 0.9741431545104179,
+              "f1": 0.7003028718613786,
+              "good_afin": 0.0,
+              "precession": 0.7372062239731529,
+              "recall": 0.6494287696736126,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1221059568634446,
+              "correctness": 0.1921099665496795,
+              "coverage": 0.9736530574390473,
+              "f1": 0.7003332512342363,
+              "good_afin": 0.0,
+              "precession": 0.7378185061295102,
+              "recall": 0.6491020382926983,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1219020743658599,
+              "correctness": 0.1936170278477969,
+              "coverage": 0.9728455033215861,
+              "f1": 0.7003567497791215,
+              "good_afin": 0.0,
+              "precession": 0.7383766769806652,
+              "recall": 0.6485636688810575,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1207467220075205,
+              "correctness": 0.19813071434397705,
+              "coverage": 0.9683107657852618,
+              "f1": 0.7009765825308725,
+              "good_afin": 0.0,
+              "precession": 0.740048412719991,
+              "recall": 0.6455405105235077,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1161228510905792,
+              "correctness": 0.1961965968192803,
+              "coverage": 0.9707360386911515,
+              "f1": 0.7016569480632028,
+              "good_afin": 0.0,
+              "precession": 0.7393320728960292,
+              "recall": 0.6471573591274341,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1212850877021987,
+              "correctness": 0.19269525910921587,
+              "coverage": 0.9731202297287083,
+              "f1": 0.6992236834138574,
+              "good_afin": 0.0,
+              "precession": 0.7380352811515608,
+              "recall": 0.6487468198191393,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1200437920448174,
+              "correctness": 0.19141661353223743,
+              "coverage": 0.9759150333532556,
+              "f1": 0.7002612402546584,
+              "good_afin": 0.0,
+              "precession": 0.7375617087156432,
+              "recall": 0.6506100222355045,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1235647489897609,
+              "correctness": 0.19286677096116714,
+              "coverage": 0.9764842027163497,
+              "f1": 0.7013188541466921,
+              "good_afin": 0.0,
+              "precession": 0.7380988040596916,
+              "recall": 0.6509894684775666,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1239207216790557,
+              "correctness": 0.19635004224920943,
+              "coverage": 0.9722017957860171,
+              "f1": 0.7016083900210984,
+              "good_afin": 0.0,
+              "precession": 0.7393889045367442,
+              "recall": 0.6481345305240118,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1231781407267047,
+              "correctness": 0.1913947859258576,
+              "coverage": 0.9761690127298828,
+              "f1": 0.7009690694513336,
+              "good_afin": 0.0,
+              "precession": 0.7375536244169839,
+              "recall": 0.6507793418199223,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1230683445664196,
+              "correctness": 0.19137368205044203,
+              "coverage": 0.9774155520290176,
+              "f1": 0.7017320233956315,
+              "good_afin": 0.0,
+              "precession": 0.7375458081668296,
+              "recall": 0.6516103680193456,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1231668810211632,
+              "correctness": 0.19031130421396167,
+              "coverage": 0.9789930133344322,
+              "f1": 0.7016137411540128,
+              "good_afin": 0.0,
+              "precession": 0.7371523348940598,
+              "recall": 0.6526620088896218,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1238091084788326,
+              "correctness": 0.18961865974023726,
+              "coverage": 0.9786085062825022,
+              "f1": 0.7016701192092355,
+              "good_afin": 0.0,
+              "precession": 0.7368957999037915,
+              "recall": 0.6524056708550022,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1255755863492272,
+              "correctness": 0.1940779729602309,
+              "coverage": 0.9739900936364313,
+              "f1": 0.7023779442510877,
+              "good_afin": 0.0,
+              "precession": 0.7385473973926785,
+              "recall": 0.6493267290909552,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1260981954450657,
+              "correctness": 0.1958436722861693,
+              "coverage": 0.9724515845372784,
+              "f1": 0.7024785469449242,
+              "good_afin": 0.0,
+              "precession": 0.7392013601059891,
+              "recall": 0.6483010563581869,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1253749148757264,
+              "correctness": 0.19872045031295815,
+              "coverage": 0.9705671083997987,
+              "f1": 0.7028455608137375,
+              "good_afin": 0.0,
+              "precession": 0.7402668334492437,
+              "recall": 0.6470447389331999,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.126970528805827,
+              "correctness": 0.2002249608501585,
+              "coverage": 0.9688766376070838,
+              "f1": 0.7029011107749468,
+              "good_afin": 0.0,
+              "precession": 0.7408240595741328,
+              "recall": 0.6459177584047232,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1276456437917428,
+              "correctness": 0.19730834054928298,
+              "coverage": 0.9758398768917922,
+              "f1": 0.7033340870283903,
+              "good_afin": 0.0,
+              "precession": 0.7397438298330675,
+              "recall": 0.650559917927862,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1280927981379711,
+              "correctness": 0.19917012880514978,
+              "coverage": 0.9735472613232753,
+              "f1": 0.7022019954473564,
+              "good_afin": 0.0,
+              "precession": 0.7404333810389438,
+              "recall": 0.649031507548851,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1295396715161292,
+              "correctness": 0.19973342566780725,
+              "coverage": 0.9732372924438214,
+              "f1": 0.7019148948021222,
+              "good_afin": 0.0,
+              "precession": 0.7406420095065951,
+              "recall": 0.6488248616292147,
+              "uniqueness": 0.0
+            }
+          },
+          {
+            "MappedFloats": {
+              "bad_afin": -1.1317767891967765,
+              "correctness": 0.20143948833438954,
+              "coverage": 0.9705697876520821,
+              "f1": 0.7021393340980998,
+              "good_afin": 0.0,
+              "precession": 0.7412738845682919,
+              "recall": 0.647046525101388,
+              "uniqueness": 0.0
+            }
+          }
+        ],
+        "property_type": "ScoreComponents"
+      },
+      {
+        "prop_values": [
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 51,
+              "no_reg": 0,
+              "wrong": 25
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 51,
+              "no_reg": 0,
+              "wrong": 25
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 53,
+              "no_reg": 0,
+              "wrong": 23
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 53,
+              "no_reg": 0,
+              "wrong": 23
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 53,
+              "no_reg": 0,
+              "wrong": 23
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 54,
+              "no_reg": 0,
+              "wrong": 22
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 54,
+              "no_reg": 0,
+              "wrong": 22
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 54,
+              "no_reg": 0,
+              "wrong": 22
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 54,
+              "no_reg": 0,
+              "wrong": 22
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 54,
+              "no_reg": 0,
+              "wrong": 22
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 54,
+              "no_reg": 0,
+              "wrong": 22
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 53,
+              "no_reg": 0,
+              "wrong": 23
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 53,
+              "no_reg": 0,
+              "wrong": 23
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 55,
+              "no_reg": 0,
+              "wrong": 21
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 56,
+              "no_reg": 0,
+              "wrong": 20
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 57,
+              "no_reg": 0,
+              "wrong": 19
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 58,
+              "no_reg": 0,
+              "wrong": 18
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 59,
+              "no_reg": 0,
+              "wrong": 17
+            }
+          }
+        ],
+        "property_type": "TestAccuracy"
+      },
+      {
+        "prop_values": [
+          {
+            "MappedInts": {
+              "cor": 450,
+              "no_reg": 0,
+              "wrong": 242
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 450,
+              "no_reg": 0,
+              "wrong": 242
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 450,
+              "no_reg": 0,
+              "wrong": 242
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 457,
+              "no_reg": 0,
+              "wrong": 235
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 464,
+              "no_reg": 0,
+              "wrong": 228
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 469,
+              "no_reg": 0,
+              "wrong": 223
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 475,
+              "no_reg": 0,
+              "wrong": 217
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 477,
+              "no_reg": 0,
+              "wrong": 215
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 485,
+              "no_reg": 0,
+              "wrong": 207
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 485,
+              "no_reg": 0,
+              "wrong": 207
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 494,
+              "no_reg": 0,
+              "wrong": 198
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 494,
+              "no_reg": 0,
+              "wrong": 198
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 500,
+              "no_reg": 0,
+              "wrong": 192
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 501,
+              "no_reg": 0,
+              "wrong": 191
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 503,
+              "no_reg": 0,
+              "wrong": 189
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 504,
+              "no_reg": 0,
+              "wrong": 188
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 505,
+              "no_reg": 0,
+              "wrong": 187
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 505,
+              "no_reg": 0,
+              "wrong": 187
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 511,
+              "no_reg": 0,
+              "wrong": 181
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 512,
+              "no_reg": 0,
+              "wrong": 180
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 512,
+              "no_reg": 0,
+              "wrong": 180
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 513,
+              "no_reg": 0,
+              "wrong": 179
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 515,
+              "no_reg": 0,
+              "wrong": 177
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 516,
+              "no_reg": 0,
+              "wrong": 176
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 520,
+              "no_reg": 0,
+              "wrong": 172
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 520,
+              "no_reg": 0,
+              "wrong": 172
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 521,
+              "no_reg": 0,
+              "wrong": 171
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 523,
+              "no_reg": 0,
+              "wrong": 169
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 525,
+              "no_reg": 0,
+              "wrong": 167
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 527,
+              "no_reg": 0,
+              "wrong": 165
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 529,
+              "no_reg": 0,
+              "wrong": 163
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 528,
+              "no_reg": 0,
+              "wrong": 164
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 530,
+              "no_reg": 0,
+              "wrong": 162
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 531,
+              "no_reg": 0,
+              "wrong": 161
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 531,
+              "no_reg": 0,
+              "wrong": 161
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 531,
+              "no_reg": 0,
+              "wrong": 161
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 532,
+              "no_reg": 0,
+              "wrong": 160
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 534,
+              "no_reg": 0,
+              "wrong": 158
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 533,
+              "no_reg": 0,
+              "wrong": 159
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 535,
+              "no_reg": 0,
+              "wrong": 157
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 536,
+              "no_reg": 0,
+              "wrong": 156
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 537,
+              "no_reg": 0,
+              "wrong": 155
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 541,
+              "no_reg": 0,
+              "wrong": 151
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 541,
+              "no_reg": 0,
+              "wrong": 151
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 540,
+              "no_reg": 0,
+              "wrong": 152
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 539,
+              "no_reg": 0,
+              "wrong": 153
+            }
+          },
+          {
+            "MappedInts": {
+              "cor": 538,
+              "no_reg": 0,
+              "wrong": 154
+            }
+          }
+        ],
+        "property_type": "TrainAccuracy"
+      }
+    ]
+  ],
+  "meta_props": [
+    {
+      "prop_values": [],
+      "property_type": "FoldAccuracy"
+    },
+    {
+      "prop_values": [
+        {
+          "SingleValue": 21.748769407
+        }
+      ],
+      "property_type": "Runtime"
+    }
+  ],
+  "params": {
+    "antibody_ag_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_ag_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_ag_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        1
+      ]
+    ],
+    "antibody_init_expand_radius": false,
+    "antibody_rand_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_rand_init_offset_range": {
+      "end": 1.0,
+      "start": 0.0
+    },
+    "antibody_rand_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_rand_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        1
+      ]
+    ],
+    "antigen_pop_size": {
+      "BoostingFixed": 400
+    },
+    "bad_afin_weight": 1.6,
+    "boost": 0,
+    "correctness_weight": 0.9,
+    "coverage_weight": 1.5,
+    "crowding": true,
+    "eval_method": "Fraction",
+    "generations": 150,
+    "good_afin_weight": 0.0,
+    "label_valid_mutations": [
+      0,
+      1
+    ],
+    "leak_fraction": 0.0,
+    "leak_rand_prob": 0.5,
+    "membership_required": 0.0,
+    "multiplier_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "mutation_label_weight": 0,
+    "mutation_multiplier_local_search_weight": 1,
+    "mutation_multiplier_weight": 1,
+    "mutation_offset_weight": 1,
+    "mutation_radius_weight": 1,
+    "mutation_value_type_local_search_dim": true,
+    "mutation_value_type_weight": 1,
+    "n_parents_mutations": 10,
+    "offset_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "radius_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "ratio_lock": true,
+    "replace_frac_type": {
+      "Linear": {
+        "end": 0.3,
+        "start": 0.8
+      }
+    },
+    "tournament_size": 1,
+    "uniqueness_weight": 0.0,
+    "value_type_valid_mutations": [
+      "Circle",
+      "Disabled",
+      "Open"
+    ]
+  }
+}

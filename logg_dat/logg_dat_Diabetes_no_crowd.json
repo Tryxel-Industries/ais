@@ -1,0 +1,5906 @@
+{
+  "dataset": "Diabetes",
+  "iter_props": [
+    [
+      {
+        "prop_values": [
+          {
+            "SingleValue": -0.4168640142160424
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0065691676119501
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0065691676119501
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0065691676119501
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0065691676119501
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.006586722843409
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0075171501107343
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0354619576633817
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0429766110300849
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0430468319559207
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0430468319559207
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0430468319559207
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0430468319559207
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0447847998703594
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0449427969534901
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "SingleValue": 1.0468387619510595
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue"
+        ],
+        "property_type": "AvgTrainScore"
+      },
+      {
+        "prop_values": [
+          {
+            "DimTypeMembership": {
+              "Circle": 0.34068627450980393,
+              "Disabled": 0.33578431372549017,
+              "Open": 0.3235294117647059
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.4150326797385621,
+              "Disabled": 0.21405228758169934,
+              "Open": 0.3709150326797386
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.4150326797385621,
+              "Disabled": 0.21405228758169934,
+              "Open": 0.3709150326797386
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.4150326797385621,
+              "Disabled": 0.21405228758169934,
+              "Open": 0.3709150326797386
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.4150326797385621,
+              "Disabled": 0.21405228758169934,
+              "Open": 0.3709150326797386
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.4150326797385621,
+              "Disabled": 0.21405228758169934,
+              "Open": 0.3709150326797386
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.41748366013071897,
+              "Disabled": 0.24836601307189543,
+              "Open": 0.3341503267973856
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.3553921568627451,
+              "Disabled": 0.45751633986928103,
+              "Open": 0.18709150326797386
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.33986928104575165,
+              "Disabled": 0.4681372549019608,
+              "Open": 0.1919934640522876
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.33905228758169936,
+              "Disabled": 0.46568627450980393,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.33905228758169936,
+              "Disabled": 0.46568627450980393,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.33905228758169936,
+              "Disabled": 0.46568627450980393,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.33905228758169936,
+              "Disabled": 0.46568627450980393,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5081699346405228,
+              "Open": 0.19444444444444445
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.29411764705882354,
+              "Disabled": 0.5106209150326797,
+              "Open": 0.19526143790849673
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "DimTypeMembership": {
+              "Circle": 0.2973856209150327,
+              "Disabled": 0.5089869281045751,
+              "Open": 0.19362745098039216
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue"
+        ],
+        "property_type": "PopDimTypeMemberships"
+      },
+      {
+        "prop_values": [
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "LabelMembership": {
+              "0": 99,
+              "1": 54
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue"
+        ],
+        "property_type": "PopLabelMemberships"
+      },
+      {
+        "prop_values": [
+          {
+            "MappedFloats": {
+              "bad_afin": -0.5404711788236137,
+              "correctness": 0.00032303651459783626,
+              "coverage": 0.411815769099192,
+              "f1": null,
+              "good_afin": 0.0,
+              "precession": 0.6493451516050825,
+              "recall": 0.6335627216910631,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.006569167611948374,
+              "f1": 0.04853566958698382,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.010106411710689758,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.006569167611948374,
+              "f1": 0.04853566958698382,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.010106411710689758,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.006569167611948374,
+              "f1": 0.04853566958698382,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.010106411710689758,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.006569167611948374,
+              "f1": 0.04853566958698382,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.010106411710689758,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.006586722843407348,
+              "f1": 0.04866021284260628,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.010133419759088182,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.0075171501107329985,
+              "f1": 0.05526100539059657,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.011564846324204625,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.041749539362730195,
+              "f1": 0.23884404405948256,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06423006055804643,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04304683195592298,
+              "f1": 0.24723413863174518,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06622589531680455,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04304683195592298,
+              "f1": 0.24723413863174518,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06622589531680455,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04304683195592298,
+              "f1": 0.24723413863174518,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06622589531680455,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04304683195592298,
+              "f1": 0.24723413863174518,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06622589531680455,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04304683195592298,
+              "f1": 0.24723413863174518,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06622589531680455,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04494279695349226,
+              "f1": 0.2596797533525418,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.06914276454383422,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedFloats": {
+              "bad_afin": 0.0,
+              "correctness": 1.0,
+              "coverage": 0.04683876195106156,
+              "f1": 0.2713986168487663,
+              "good_afin": 0.0,
+              "precession": 1.0,
+              "recall": 0.07205963377086387,
+              "uniqueness": 0.0
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue"
+        ],
+        "property_type": "ScoreComponents"
+      },
+      {
+        "prop_values": [
+          {
+            "MappedInts": {
+              "cor": 53,
+              "no_reg": 0,
+              "wrong": 23
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 39,
+              "no_reg": 31,
+              "wrong": 6
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 40,
+              "no_reg": 31,
+              "wrong": 5
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 40,
+              "no_reg": 31,
+              "wrong": 5
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 40,
+              "no_reg": 31,
+              "wrong": 5
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 39,
+              "no_reg": 31,
+              "wrong": 6
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 40,
+              "no_reg": 9,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 50,
+              "no_reg": 0,
+              "wrong": 26
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 52,
+              "no_reg": 0,
+              "wrong": 24
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 49,
+              "no_reg": 0,
+              "wrong": 27
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue"
+        ],
+        "property_type": "TestAccuracy"
+      },
+      {
+        "prop_values": [
+          {
+            "MappedInts": {
+              "cor": 475,
+              "no_reg": 0,
+              "wrong": 217
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 364,
+              "no_reg": 218,
+              "wrong": 110
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 364,
+              "no_reg": 218,
+              "wrong": 110
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 363,
+              "no_reg": 218,
+              "wrong": 111
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 364,
+              "no_reg": 218,
+              "wrong": 110
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 365,
+              "no_reg": 218,
+              "wrong": 109
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 384,
+              "no_reg": 72,
+              "wrong": 236
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 449,
+              "no_reg": 0,
+              "wrong": 243
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 443,
+              "no_reg": 1,
+              "wrong": 248
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 443,
+              "no_reg": 1,
+              "wrong": 248
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 443,
+              "no_reg": 1,
+              "wrong": 248
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 443,
+              "no_reg": 1,
+              "wrong": 248
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 443,
+              "no_reg": 1,
+              "wrong": 248
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 453,
+              "no_reg": 0,
+              "wrong": 239
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 453,
+              "no_reg": 0,
+              "wrong": 239
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 453,
+              "no_reg": 0,
+              "wrong": 239
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 453,
+              "no_reg": 0,
+              "wrong": 239
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 452,
+              "no_reg": 0,
+              "wrong": 240
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 453,
+              "no_reg": 0,
+              "wrong": 239
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 457,
+              "no_reg": 1,
+              "wrong": 234
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 458,
+              "no_reg": 1,
+              "wrong": 233
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 463,
+              "no_reg": 1,
+              "wrong": 228
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 462,
+              "no_reg": 1,
+              "wrong": 229
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 462,
+              "no_reg": 1,
+              "wrong": 229
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 458,
+              "no_reg": 1,
+              "wrong": 233
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 460,
+              "no_reg": 1,
+              "wrong": 231
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 458,
+              "no_reg": 1,
+              "wrong": 233
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 461,
+              "no_reg": 1,
+              "wrong": 230
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          {
+            "MappedInts": {
+              "cor": 459,
+              "no_reg": 1,
+              "wrong": 232
+            }
+          },
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue",
+          "NoValue"
+        ],
+        "property_type": "TrainAccuracy"
+      }
+    ]
+  ],
+  "meta_props": [
+    {
+      "prop_values": [],
+      "property_type": "FoldAccuracy"
+    }
+  ],
+  "params": {
+    "antibody_ag_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_ag_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_ag_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        1
+      ]
+    ],
+    "antibody_init_expand_radius": false,
+    "antibody_rand_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_rand_init_offset_range": {
+      "end": 1.0,
+      "start": 0.0
+    },
+    "antibody_rand_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_rand_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        1
+      ]
+    ],
+    "antigen_pop_size": {
+      "Fraction": 0.22
+    },
+    "bad_afin_weight": 1.0,
+    "boost": 0,
+    "correctness_weight": 1.0,
+    "coverage_weight": 0.65,
+    "crowding": false,
+    "eval_method": "Fraction",
+    "generations": 600,
+    "good_afin_weight": 0.0,
+    "label_valid_mutations": [
+      0,
+      1
+    ],
+    "leak_fraction": 0.5,
+    "leak_rand_prob": 0.5,
+    "membership_required": 0.0,
+    "multiplier_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "mutation_label_weight": 0,
+    "mutation_multiplier_local_search_weight": 3,
+    "mutation_multiplier_weight": 1,
+    "mutation_offset_weight": 1,
+    "mutation_radius_weight": 1,
+    "mutation_value_type_local_search_dim": true,
+    "mutation_value_type_weight": 2,
+    "n_parents_mutations": 40,
+    "offset_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "radius_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "ratio_lock": true,
+    "replace_frac_type": {
+      "Linear": {
+        "end": 0.3,
+        "start": 0.8
+      }
+    },
+    "tournament_size": 1,
+    "uniqueness_weight": 0.0,
+    "value_type_valid_mutations": [
+      "Circle",
+      "Disabled",
+      "Open"
+    ]
+  }
+}
