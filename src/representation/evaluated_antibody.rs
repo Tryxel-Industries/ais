@@ -10,7 +10,7 @@ use crate::representation::antigen::AntiGen;
 
 use crate::evaluation::Evaluation;
 use crate::params::MutationType::ValueType;
-use crate::representation::antibody::{Antibody, DimValueType, LocalSearchBorder};
+use crate::representation::antibody::{Antibody, DimValueType, LocalSearchBorder, LocalSearchBorderType};
 use crate::stupid_mutations::{MutationDelta, MutationOp};
 use strum_macros::EnumString;
 
@@ -69,19 +69,22 @@ impl EvaluatedAntibody {
                     // if the solved value is on the other side of 0 return as unsolvable
                     None
                 } else {
-                    if *antigen_affinity <= 0.0 {
+                    let lsb_type = if *antigen_affinity <= 0.0 {
                         // By testing what ag's the system matches when the multi is set to 0 we
                         // can quicly figure out if the treshold will leave or enter the ag
-                        Some(LocalSearchBorder::LeavesAt(
-                            dim_border_multi,
-                            self.antibody.class_label == antigen.class_label,
-                        ))
+
+                        LocalSearchBorderType::LeavesAt
                     } else {
-                        Some(LocalSearchBorder::EntersAt(
-                            dim_border_multi,
-                            self.antibody.class_label == antigen.class_label,
-                        ))
-                    }
+                        LocalSearchBorderType::EntersAt
+                    };
+
+                    Some(LocalSearchBorder{
+                        border_type: lsb_type,
+                        multiplier: dim_border_multi,
+                        same_label: self.antibody.class_label==antigen.class_label,
+                        boost_value: self.antibody.boosting_model_alpha,
+                    })
+
                 };
             }
             DimValueType::Circle => {
@@ -90,17 +93,18 @@ impl EvaluatedAntibody {
                     // if the rest sub radius is negative it is not solvable
                     None
                 } else {
-                    if *antigen_affinity <= 0.0 {
-                        Some(LocalSearchBorder::LeavesAt(
-                            dim_border_multi,
-                            self.antibody.class_label == antigen.class_label,
-                        ))
+                    let lsb_type = if *antigen_affinity <= 0.0 {
+                        LocalSearchBorderType::LeavesAt
                     } else {
-                        Some(LocalSearchBorder::EntersAt(
-                            dim_border_multi,
-                            self.antibody.class_label == antigen.class_label,
-                        ))
-                    }
+                        LocalSearchBorderType::EntersAt
+                    };
+
+                    Some(LocalSearchBorder{
+                        border_type: lsb_type,
+                        multiplier: dim_border_multi,
+                        same_label: self.antibody.class_label==antigen.class_label,
+                        boost_value: self.antibody.boosting_model_alpha,
+                    })
                 };
             }
         };

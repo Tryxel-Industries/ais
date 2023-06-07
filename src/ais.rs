@@ -239,9 +239,9 @@ impl ArtificialImmuneSystem {
         let mut current_boost_round = 0;
 
         let agl = antigens.len() as f64;
-        antigens
-            .iter_mut()
-            .for_each(|ag| ag.boosting_weight = (1.0 / agl));
+        // antigens
+        //     .iter_mut()
+        //     .for_each(|ag| ag.boosting_weight = (1.0 / agl));
         loop {
             if current_retries >= max_retries {
                 current_boost_round += 1;
@@ -344,10 +344,10 @@ impl ArtificialImmuneSystem {
             let mut update_map: HashMap<usize, (Vec<f64>, Vec<f64>)> = HashMap::new();
             let mut alpha_update_map: HashMap<usize, Vec<f64>> = HashMap::new();
 
-            antibodies
-                .iter_mut()
+            antibodies = antibodies
+                .into_iter()
                 .zip(eval.into_iter())
-                .for_each(|(ab, eval)| {
+                .filter_map(|(mut ab, eval)| {
                     let cor_ag: Vec<_> = eval
                         .matched_ids
                         .iter()
@@ -363,24 +363,27 @@ impl ArtificialImmuneSystem {
                     let corr_weight_sum: f64 = cor_ag.iter().map(|ag| ag.boosting_weight).sum();
                     let wrong_weight_sum: f64 = wrong_ag.iter().map(|ag| ag.boosting_weight).sum();
 
-                    let error = wrong_weight_sum / corr_weight_sum;
+                    let error = wrong_weight_sum / (corr_weight_sum + wrong_weight_sum);
 
                     // calculate alpha weight for the ag
                     let alpha_m = ((1.0 - error) / error).ln();
+                    println!("error {:.2?}, alpha {:?}, num cor is {:.2?} num wrong is: {:.2?}, sum cor {:.2?} sum wrong {:.2?}",error, alpha_m,cor_ag.len(), wrong_ag.len(), corr_weight_sum, wrong_weight_sum);
                     if alpha_m <= 0.0 {
                         println!(
                             "Alpha is negative ({:.2?}) error: {:.2?} discarding round",
                             alpha_m, error
                         );
+                        return None
                     }
                     ab.boosting_model_alpha = alpha_m;
 
                     wrong_ag.iter().for_each(|ag| {
+                        let update_val = alpha_m;
                         if let Some(alpha_list) = alpha_update_map.get_mut(&ag.id) {
-                            alpha_list.push(ag.boosting_weight * alpha_m.exp())
+                            alpha_list.push(update_val);
                         } else {
                             alpha_update_map
-                                .insert(ag.id, vec![ag.boosting_weight * alpha_m.exp()]);
+                                .insert(ag.id, vec![update_val]);
                         }
                         if let Some((cor, wrong)) = update_map.get_mut(&ag.id) {
                             cor.push(corr_weight_sum);
@@ -391,7 +394,8 @@ impl ArtificialImmuneSystem {
                             update_map.insert(ag.id, (cor, wrong));
                         }
                     });
-                });
+                    return Some(ab);
+                }).collect();
             ab_pool.extend(antibodies);
 
             //
@@ -410,30 +414,49 @@ impl ArtificialImmuneSystem {
                 antigen.boosting_weight = antigen.boosting_weight + scaled_updates_sum  ;
             }*/
 
+
+            let full_alpha = alpha_update_map.iter().map(|(k,v)|v.mean()).mean();
+            if full_alpha <= 0.0 {
+                            println!("\n\nMean Alpha is negative ({:.2?})", full_alpha);
+                        }
+
+
             // update weights
             for antigen in &mut antigens {
-                if full_alpha_m <= 0.0 {
-                    println!(
-                        "Alpha is negative ({:.2?}) error: {:.2?} discarding round",
-                        full_alpha_m, full_error
-                    );
-                }
+                // let scaled_updates_sum: f64 = updates.iter().map(|upd| upd * (1.0/ab_count as f64)).sum();
 
                 let pred = is_class_correct(&antigen, &ab_pool, &params.eval_method);
 
                 let val: f64 = if let Some(is_corr) = pred {
+                    let optn = alpha_update_map.get(&antigen.id);
+                    /*         if optn.is_none(){
+                        println!("\n\n\n\n\n\nISSUE");
+                        continue
+                    }*/
+
                     if is_corr {
                         n_corr += 1;
                         0.0
                     } else {
                         n_wrong += 1;
+                        //
+                        // if optn.is_none(){
+                        //     println!("ag: {:?}, map: {:?}", antigen, alpha_update_map)
+                        // }
+                        // let mean_alpha = optn.unwrap().mean();
+                        //
+                        // if mean_alpha <= 0.0 {
+                        //     println!("\n\nMean Alpha is negative ({:.2?})", mean_alpha);
+                        // }
                         // full_alpha_m
-                        1.3
+                        full_alpha
+                        // 1.3
                         // 1.0
                     }
                 } else {
                     n_no_reg += 1;
                     // 0.0
+
                     1.1
                     // full_alpha_m
                 };
@@ -839,7 +862,6 @@ impl ArtificialImmuneSystem {
                     })
                     .collect();
 
-
                 let label_gen: Vec<_> = if params.crowding {
                     parents
                         .clone()
@@ -853,7 +875,7 @@ impl ArtificialImmuneSystem {
                             let fitness_scaler = 1.0 - frac_of_max;
 
                             // println!();
-                            // println!("score pre {:}", score_antibody(&eval_ab, &params, &match_counter));
+                            let score_p = score_antibody(&eval_ab, &params, &match_counter).0;
 
                             let best_score = mutate_clone_transform(
                                 &mut eval_ab,
@@ -869,18 +891,23 @@ impl ArtificialImmuneSystem {
                                 println!("\nISSUE")
                             }
 
-                            // println!("score post {:}",  score_antibody(&eval_ab, &params, &match_counter));
+                            let score_post = score_antibody(&eval_ab, &params, &match_counter).0;
+
+                            if score_post<score_p{
+                                println!("score pre {:}", score_p);
+                                println!("score post {:}", score_post );
+                                println!("");
+                            }
                             return eval_ab;
                         })
                         .collect()
-                }else {
+                } else {
                     // let child_pool = parents
-                     parents
+                    parents
                         .clone()
                         .into_par_iter() // TODO: set parallel
                         .flat_map(|idx| {
                             let (score, mut eval_ab) = scored_pop.get(idx).unwrap().clone();
-
 
                             let frac_of_max = (score / max_score).max(0.2).min(1.0);
                             let n_clones =
@@ -888,7 +915,7 @@ impl ArtificialImmuneSystem {
                             let fitness_scaler = 1.0 - frac_of_max;
 
                             let mut ret_vec: Vec<_> = Vec::new();
-                            for n in 0..n_clones{
+                            for n in 0..n_clones {
                                 let op = get_mut_op(params, fitness_scaler, &eval_ab, antigens);
 
                                 let mut child = eval_ab.clone();
@@ -904,7 +931,6 @@ impl ArtificialImmuneSystem {
 
                     // labeled_tournament_pick(&child_pool, &replace_count_for_label, &5, None).into_iter()
                     //     .map(|idx| child_pool.get(idx).unwrap().1.clone()).collect::<Vec<_>>()
-
                 };
 
                 if params.crowding {
@@ -914,15 +940,16 @@ impl ArtificialImmuneSystem {
 
                     match_counter.add_evaluations(&label_gen);
                     new_gen.extend(label_gen)
-                }else {
+                } else {
                     let abc = score_antibodies(params, label_gen, &match_counter);
-                    let new_vals: Vec<_> = elitism_selection(abc, &replace_count_for_label).into_iter().map(|(a,b)| b).collect();
+                    let new_vals: Vec<_> = elitism_selection(abc, &replace_count_for_label)
+                        .into_iter()
+                        .map(|(a, b)| b)
+                        .collect();
                     //match_counter.add_evaluations(&new_vals);
 
                     new_gen.extend(new_vals);
-
                 }
-
             }
 
             let new_gen_scored = score_antibodies(params, new_gen, &match_counter);
@@ -934,19 +961,27 @@ impl ArtificialImmuneSystem {
             let mut from_sum = 0.0;
             let mut to_sum = 0.0;
 
-            if params.crowding{
+            if params.crowding {
+                let mut pre = 0.0;
+                let mut post = 0.0;
                 for idx in parent_idx_vec {
                     // let mut parent_value = scored_pop.get_mut(idx).unwrap();
                     let (p_score, p_eab) = scored_pop.get_mut(idx).unwrap();
                     let (c_score, c_eab) = to_add.pop().unwrap();
+                    pre += *p_score;
+                    post += c_score;
                     std::mem::replace(p_score, c_score);
                     std::mem::replace(p_eab, c_eab);
                 }
+                if -0.5 > pre - post{
+                    println!("\n\nERROR!!!!!!");
+                    println!("pre  {:?}, \npost {:?}", pre, post);
+                }
             } else {
-                 let rep_list: Vec<_> = to_add
-                        .into_par_iter()
-                        .filter_map(|scored| tournament_replace(&scored_pop, scored, &5, true))
-                        .collect();
+                let rep_list: Vec<_> = to_add
+                    .into_par_iter()
+                    .filter_map(|scored| tournament_replace(&scored_pop, scored, &5, true))
+                    .collect();
 
                 for (rep_idx, rep_elm) in rep_list {
                     // let mut parent_value = scored_pop.get_mut(idx).unwrap();
@@ -959,9 +994,7 @@ impl ArtificialImmuneSystem {
                     *p_score = c_score.clone();
                     *p_eab = c_eab.clone();
                 }
-
             }
-
 
             // =======  leak new  ======= //
             // let is_strip_round = i % 100 == 0;
@@ -1053,7 +1086,7 @@ impl ArtificialImmuneSystem {
                 }
             }
 
-            if new_leaked.len() > 0 {
+            if new_leaked.len() > 0 && params.leak_fraction > 0.0 {
                 if params.ratio_lock {
                     // let rep_list: Vec<_> = new_leaked
                     //     .into_par_iter()
@@ -1075,12 +1108,12 @@ impl ArtificialImmuneSystem {
                     //     *p_eab = c_eab.clone();
                     // }
                     //
-                         scored_pop = replace_if_better_per_cat(
-                    scored_pop,
-                    new_leaked,
-                    n_to_gen_map,
-                    &mut match_counter,
-                );
+                    scored_pop = replace_if_better_per_cat(
+                        scored_pop,
+                        new_leaked,
+                        n_to_gen_map,
+                        &mut match_counter,
+                    );
                 } else {
                     if i as f64 / params.generations as f64 > 2.5 {
                         scored_pop = replace_if_better(
@@ -1158,7 +1191,6 @@ impl ArtificialImmuneSystem {
                     .collect();
                 let antibodies: Vec<Antibody> =
                     eval_pop.iter().map(|(a, b, c)| c.clone()).collect();
-
 
                 if logger.should_run(ExperimentProperty::TrainAccuracy) {
                     let (n_corr, n_wrong, n_no_detect) = get_pop_acc(antigens, &antibodies, params);

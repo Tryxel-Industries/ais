@@ -218,7 +218,7 @@ fn trail_training() {
     rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
 
 
-    let dataset_used = Datasets::Wine;
+    let dataset_used = Datasets::Diabetes;
     // embedding params
     let use_num_to_fetch = Some(500);
     let max_sentences_per_article = Some(20);
@@ -272,21 +272,21 @@ fn trail_training() {
             boost: 0,
             // -- train params -- //
             // antigen_pop_size: PopSizeType::Fraction(1.0),
-            antigen_pop_size: PopSizeType::BoostingFixed(30),
-            generations: 600,
+            antigen_pop_size: PopSizeType::BoostingFixed(20),
+            generations: 1000,
 
             mutation_offset_weight: 1,
             mutation_multiplier_weight: 1,
-            mutation_multiplier_local_search_weight: 3,
+            mutation_multiplier_local_search_weight: 1,
             mutation_radius_weight: 1,
-            mutation_value_type_weight: 2,
+            mutation_value_type_weight: 0,
 
             mutation_label_weight: 0,
 
-            mutation_value_type_local_search_dim: true,
+            mutation_value_type_local_search_dim: false,
 
             ratio_lock: true,
-            crowding: false,
+            crowding: true,
 
 
             // -- reduction -- //
@@ -306,19 +306,19 @@ fn trail_training() {
 
             correctness_weight: 1.0,
             coverage_weight: 1.0,
-            uniqueness_weight: 0.5,
+            uniqueness_weight: 0.1,
             good_afin_weight: 0.0,
-            bad_afin_weight: 1.0,
+            bad_afin_weight: 0.2,
 
             //selection
-            leak_fraction: 0.5,
+            leak_fraction: 0.0,
             leak_rand_prob: 0.5,
             // replace_frac_type: ReplaceFractionType::Linear(0.5..0.01),
             replace_frac_type: ReplaceFractionType::Linear(0.8..0.3),
             // replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
             // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
             tournament_size: 1,
-            n_parents_mutations: 40,
+            n_parents_mutations: 20,
 
             antibody_init_expand_radius: false,
 

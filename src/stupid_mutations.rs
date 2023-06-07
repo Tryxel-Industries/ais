@@ -4,7 +4,7 @@ use rand::{distributions::Distribution, Rng};
 use rayon::prelude::*;
 
 use crate::params::{MutationType, Params};
-use crate::representation::antibody::{Antibody, DimValueType, LocalSearchBorder};
+use crate::representation::antibody::{Antibody, DimValueType, LocalSearchBorder, LocalSearchBorderType};
 use crate::representation::antigen::AntiGen;
 use crate::representation::evaluated_antibody::EvaluatedAntibody;
 use crate::scoring::score_antibody;
@@ -284,7 +284,7 @@ pub fn mutate_multi_op(params: &Params, genome: &Antibody, fitness_scaler: f64) 
 
 }
 
-fn cor_err_relat(corr: usize, err: usize) -> f64{
+fn cor_err_relat(corr: f64, err: f64) -> f64{
     let corr = (corr as f64 + 2.0).ln() * 1.5;
     let err = (err as f64 + 2.0).ln();
     return (corr)/ ((corr + err).max(1.0))
@@ -297,8 +297,8 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
 
 
     values.sort_by(|a, b| {
-        a.get_value()
-            .partial_cmp(&b.get_value())
+        a.multiplier
+            .partial_cmp(&b.multiplier)
             .unwrap()
     });
 
@@ -307,7 +307,7 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
     let mut end_idx = values.len()-1;
 
     for (idx, lbs) in values.iter().enumerate(){
-        if *lbs.get_value() < *init_multi{
+        if lbs.multiplier < *init_multi{
             neg.push(lbs);
         }else {
             end_idx = idx;
@@ -324,16 +324,21 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
 
     neg.reverse();
 
-    let initial_border = LocalSearchBorder::LeavesAt(*init_multi, false);
+    let initial_border = LocalSearchBorder{
+        border_type: LocalSearchBorderType::LeavesAt,
+        multiplier: *init_multi,
+        same_label: false,
+        boost_value: 1.0,
+    };
 
     let initial_matches_stream = values
         .iter()
-        .filter(|v| v.is_same_type(&initial_border));
+        .filter(|v| v.border_type == LocalSearchBorderType::LeavesAt);
 
     let initial_matches_all = initial_matches_stream.clone()
-        .count();
+        .map(|lsb| lsb.boost_value).sum::<f64>();
 
-    let initial_matches_cor = initial_matches_stream.filter(|lsb| *lsb.is_corr()).count();
+    let initial_matches_cor = initial_matches_stream.filter_map(|lsb| if lsb.same_label{Some(lsb.boost_value)}else { None }).sum::<f64>();
     let initial_matches_err = initial_matches_all - initial_matches_cor;
 
     let mut best_score = cor_err_relat(initial_matches_cor, initial_matches_err);
@@ -356,22 +361,23 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
 
 
     for lsb in neg{
-        match lsb {
-            LocalSearchBorder::EntersAt(v, corr) => {
-                if *corr{
-                   current_count_corr += 1;
-                }else {
-                    current_count_err += 1
-                }
+        match lsb.border_type {
+            LocalSearchBorderType::EntersAt => {
+               if lsb.same_label{
+                   current_count_corr += lsb.boost_value;
+               }else {
+                   current_count_err += lsb.boost_value;
+               }
             }
-            LocalSearchBorder::LeavesAt(v, corr) => {
-                if *corr{
-                    current_count_corr -= 1;
+            LocalSearchBorderType::LeavesAt => {
+                if lsb.same_label{
+                    current_count_corr -= lsb.boost_value;
                 }else {
-                    current_count_err -= 1
+                    current_count_err -= lsb.boost_value;
                 }
             }
         }
+
 
         let score = cor_err_relat(current_count_corr, current_count_err);
         // println!("score {:>3.2?} count {:>5?}/{:<5?}, chk    {:?}", score,current_count_corr, current_count_err, lsb);
@@ -387,23 +393,23 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
     let mut current_count_corr = initial_matches_cor;
     let mut current_count_err = initial_matches_err;
     for lsb in pos {
-        match lsb {
-            LocalSearchBorder::EntersAt(v, corr) => {
-                if *corr{
-                    current_count_corr += 1;
+        match lsb.border_type {
+            LocalSearchBorderType::EntersAt => {
+                if lsb.same_label{
+                    current_count_corr += lsb.boost_value;
                 }else {
-                    current_count_err += 1
+                    current_count_err += lsb.boost_value;
                 }
             }
-            LocalSearchBorder::LeavesAt(v, corr) => {
-                if *corr{
-                    current_count_corr -= 1;
+            LocalSearchBorderType::LeavesAt => {
+                if lsb.same_label{
+                    current_count_corr -= lsb.boost_value;
                 }else {
-                    current_count_err -= 1
+                    current_count_err -= lsb.boost_value;
                 }
             }
-
         }
+
 
 
         // println!("count {:>5?}, chk    {:?}",current_count, lsb);
@@ -476,8 +482,8 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
         }
     }
 */
-    let multi_raw = best_count_at.get_value().clone();
-    let (multi, offset_dela) = if best_count_at.get_value() == init_multi{
+    let multi_raw = best_count_at.multiplier.clone();
+    let (multi, offset_dela) = if best_count_at.multiplier == *init_multi{
         (1.0, 0.0)
     } else{
         if open_dim{
@@ -549,7 +555,7 @@ pub fn mutate_multiplier_local_search_op(
         // .filter(|ag| evaluation.wrongly_matched.binary_search(&ag.id).is_ok())
         // .filter(|ag| ag.class_label != genome.antibody.class_label)
         .filter_map(|ag| genome.get_antigen_local_search_border(dim_to_mutate, ag))
-        .filter(|bdr| bdr.get_value().is_finite())
+        .filter(|bdr| bdr.multiplier.is_finite())
         .collect();
 
     // println!("invalid count {:?}", mapped_ags.iter().filter(|bdr| !bdr.get_value().is_finite()).count());
@@ -591,13 +597,16 @@ pub fn mutate_multiplier_local_search_op(
             .and_then(|v| Option::from(v * 1.001));*/
 
 
+        let mut lsb_list: Vec<_> = mapped_ags;
+        lsb_list.iter_mut().for_each(|lsb| lsb.multiplier = lsb.multiplier.abs());
 
-        let lsb_list: Vec<_> = mapped_ags
-            .iter()
-            .map(|v| match v {
-                LocalSearchBorder::EntersAt(v, corr) => LocalSearchBorder::EntersAt(v.abs(), *corr),
-                LocalSearchBorder::LeavesAt(v, corr) => LocalSearchBorder::LeavesAt(v.abs(), *corr)
-            }).collect();
+        // let lsb_list: Vec<_> = mapped_ags
+        //     .iter()
+        //     .map(|lsb| lsb.multiplier = lsb.multiplier.abs())
+        //     .map(|v| match v {
+        //         LocalSearchBorder::EntersAt(v, corr) => LocalSearchBorder::EntersAt(v.abs(), *corr),
+        //         LocalSearchBorder::LeavesAt(v, corr) => LocalSearchBorder::LeavesAt(v.abs(), *corr)
+        //     }).collect();
 
         find_optimal_open_dim_multi(lsb_list, &multi, false)
         // if let Some(multi) = multi_optn{

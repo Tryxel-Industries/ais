@@ -140,6 +140,7 @@ pub struct MatchCounter {
 
 
     pub boosting_weight_values: Vec<f64>,
+    pub ag_label_boost_sum_map: HashMap<usize,usize>,
     pub class_labels: HashSet<usize>,
     pub frac_map: Vec<(usize,f64)>,
     pub count_map: HashMap<usize,usize>,
@@ -149,9 +150,15 @@ impl MatchCounter {
     pub fn new(antigens: &Vec<AntiGen>) -> MatchCounter {
         let max_id = antigens.iter().max_by_key(|ag| ag.id).unwrap().id;
         let mut ag_weight_map = vec![0.0; max_id + 1];
+        let mut ag_label_boost_sum_map: HashMap<usize,usize> = HashMap::new();
         antigens.iter().for_each(|ag| {
             if let Some(v) = ag_weight_map.get_mut(ag.id){
                 *v = ag.boosting_weight
+            }
+            if let Some(v) = ag_label_boost_sum_map.get_mut(&ag.class_label){
+                *v += 1;
+            }else { 
+                ag_label_boost_sum_map.insert(ag.class_label, 1);
             }
         } );
 
@@ -198,6 +205,7 @@ impl MatchCounter {
             correct_match_counter: vec![0usize; max_id + 1],
             incorrect_match_counter: vec![0usize; max_id + 1],
             boosting_weight_values: ag_weight_map,
+            ag_label_boost_sum_map,
             class_labels,
             frac_map,
             count_map
