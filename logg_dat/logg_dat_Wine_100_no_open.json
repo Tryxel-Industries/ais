@@ -1,0 +1,714 @@
+{
+  "dataset": "Wine",
+  "iter_props": [],
+  "meta_props": [
+    {
+      "prop_values": [
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9930555555555556
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.875,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9930555555555556
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.875,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9930555555555556
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.875,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9930555555555556
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.875,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9938271604938271
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.875,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9375,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 1.0
+          }
+        }
+      ],
+      "property_type": "FoldAccuracy"
+    }
+  ],
+  "params": {
+    "antibody_ag_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_ag_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_ag_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        0
+      ]
+    ],
+    "antibody_init_expand_radius": false,
+    "antibody_rand_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_rand_init_offset_range": {
+      "end": 1.0,
+      "start": 0.0
+    },
+    "antibody_rand_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_rand_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        0
+      ]
+    ],
+    "antigen_pop_size": {
+      "Fraction": 0.5
+    },
+    "bad_afin_weight": 1.8,
+    "boost": 0,
+    "correctness_weight": 0.9,
+    "coverage_weight": 1.5,
+    "crowding": true,
+    "eval_method": "Fraction",
+    "generations": 300,
+    "good_afin_weight": 0.0,
+    "label_valid_mutations": [
+      3,
+      1,
+      2
+    ],
+    "leak_fraction": 0.0,
+    "leak_rand_prob": 0.5,
+    "membership_required": 0.0,
+    "multiplier_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "mutation_label_weight": 0,
+    "mutation_multiplier_local_search_weight": 1,
+    "mutation_multiplier_weight": 1,
+    "mutation_offset_weight": 1,
+    "mutation_radius_weight": 1,
+    "mutation_value_type_local_search_dim": true,
+    "mutation_value_type_weight": 1,
+    "n_parents_mutations": 10,
+    "offset_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "radius_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "ratio_lock": true,
+    "replace_frac_type": {
+      "Linear": {
+        "end": 0.3,
+        "start": 0.8
+      }
+    },
+    "tournament_size": 1,
+    "uniqueness_weight": -0.1,
+    "value_type_valid_mutations": [
+      "Circle",
+      "Disabled"
+    ]
+  }
+}

@@ -1,0 +1,1018 @@
+{
+  "dataset": "Ionosphere",
+  "iter_props": [],
+  "meta_props": [
+    {
+      "prop_values": [
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9495268138801262
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7647058823529411,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9558359621451105
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.9495268138801262
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7333333333333333,
+            "train": 0.9575163398692811
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9495268138801262
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7941176470588235,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9337539432176656
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8888888888888888,
+            "train": 0.9705882352941176
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9463722397476341
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9810725552050473
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9842271293375394
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7647058823529411,
+            "train": 0.9400630914826499
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9211356466876972
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7941176470588235,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8,
+            "train": 0.9509803921568627
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9779179810725552
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9684542586750788
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9558359621451105
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9684542586750788
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7647058823529411,
+            "train": 0.9684542586750788
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8,
+            "train": 0.9509803921568627
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9747634069400631
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9558359621451105
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8,
+            "train": 0.9640522875816994
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9684542586750788
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9684542586750788
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9495268138801262
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7647058823529411,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9747634069400631
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7777777777777778,
+            "train": 0.9444444444444444
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9305993690851735
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9558359621451105
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9495268138801262
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9747634069400631
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9747634069400631
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9779179810725552
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8222222222222222,
+            "train": 0.9640522875816994
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9495268138801262
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7941176470588235,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 1.0,
+            "train": 0.9369085173501577
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8222222222222222,
+            "train": 0.9575163398692811
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9411764705882353,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.917981072555205
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9779179810725552
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8823529411764706,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9747634069400631
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7058823529411765,
+            "train": 0.9779179810725552
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.9716088328075709
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9526813880126183
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8,
+            "train": 0.9640522875816994
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9621451104100947
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9117647058823529,
+            "train": 0.9589905362776026
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8235294117647058,
+            "train": 0.9684542586750788
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.7352941176470589,
+            "train": 0.9652996845425867
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.9705882352941176,
+            "train": 0.943217665615142
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8529411764705882,
+            "train": 0.9369085173501577
+          }
+        },
+        {
+          "MappedFloats": {
+            "test": 0.8222222222222222,
+            "train": 0.954248366013072
+          }
+        }
+      ],
+      "property_type": "FoldAccuracy"
+    },
+    {
+      "prop_values": [
+        {
+          "SingleValue": 1.624116353
+        },
+        {
+          "SingleValue": 1.947829675
+        },
+        {
+          "SingleValue": 2.050398158
+        },
+        {
+          "SingleValue": 2.500006822
+        },
+        {
+          "SingleValue": 2.521579675
+        },
+        {
+          "SingleValue": 2.707678001
+        },
+        {
+          "SingleValue": 2.587877588
+        },
+        {
+          "SingleValue": 2.661465003
+        },
+        {
+          "SingleValue": 2.603480197
+        },
+        {
+          "SingleValue": 2.565899493
+        },
+        {
+          "SingleValue": 2.487271347
+        },
+        {
+          "SingleValue": 2.420706125
+        },
+        {
+          "SingleValue": 2.396289027
+        },
+        {
+          "SingleValue": 2.511238116
+        },
+        {
+          "SingleValue": 2.523788521
+        },
+        {
+          "SingleValue": 2.428906809
+        },
+        {
+          "SingleValue": 2.3850794459999998
+        },
+        {
+          "SingleValue": 2.578206375
+        },
+        {
+          "SingleValue": 2.587658157
+        },
+        {
+          "SingleValue": 2.833980698
+        },
+        {
+          "SingleValue": 2.478687461
+        },
+        {
+          "SingleValue": 2.470436785
+        },
+        {
+          "SingleValue": 2.740672367
+        },
+        {
+          "SingleValue": 2.647142666
+        },
+        {
+          "SingleValue": 2.543175479
+        },
+        {
+          "SingleValue": 2.617518693
+        },
+        {
+          "SingleValue": 2.53731069
+        },
+        {
+          "SingleValue": 2.476562543
+        },
+        {
+          "SingleValue": 2.5052897659999998
+        },
+        {
+          "SingleValue": 2.4016472589999998
+        },
+        {
+          "SingleValue": 2.440227166
+        },
+        {
+          "SingleValue": 2.401772799
+        },
+        {
+          "SingleValue": 2.5297882940000003
+        },
+        {
+          "SingleValue": 2.425562558
+        },
+        {
+          "SingleValue": 2.514892816
+        },
+        {
+          "SingleValue": 2.438131012
+        },
+        {
+          "SingleValue": 2.551520327
+        },
+        {
+          "SingleValue": 2.5263000289999997
+        },
+        {
+          "SingleValue": 2.5741370310000002
+        },
+        {
+          "SingleValue": 2.456781906
+        },
+        {
+          "SingleValue": 2.404508411
+        },
+        {
+          "SingleValue": 2.391596811
+        },
+        {
+          "SingleValue": 2.544014186
+        },
+        {
+          "SingleValue": 2.5018441559999998
+        },
+        {
+          "SingleValue": 2.445981391
+        },
+        {
+          "SingleValue": 2.59888698
+        },
+        {
+          "SingleValue": 2.552530859
+        },
+        {
+          "SingleValue": 2.52655336
+        },
+        {
+          "SingleValue": 2.52570362
+        },
+        {
+          "SingleValue": 2.5059579210000003
+        },
+        {
+          "SingleValue": 2.6141794320000002
+        },
+        {
+          "SingleValue": 2.482068382
+        },
+        {
+          "SingleValue": 2.456649251
+        },
+        {
+          "SingleValue": 2.561771045
+        },
+        {
+          "SingleValue": 2.501049536
+        },
+        {
+          "SingleValue": 2.623226162
+        },
+        {
+          "SingleValue": 2.524419987
+        },
+        {
+          "SingleValue": 2.533648268
+        },
+        {
+          "SingleValue": 2.575659271
+        },
+        {
+          "SingleValue": 2.352952639
+        },
+        {
+          "SingleValue": 2.467182503
+        },
+        {
+          "SingleValue": 2.599953508
+        },
+        {
+          "SingleValue": 2.432742598
+        },
+        {
+          "SingleValue": 2.712686403
+        },
+        {
+          "SingleValue": 2.443906893
+        },
+        {
+          "SingleValue": 2.529920862
+        },
+        {
+          "SingleValue": 2.487992825
+        },
+        {
+          "SingleValue": 2.6452937260000002
+        },
+        {
+          "SingleValue": 2.467616932
+        },
+        {
+          "SingleValue": 2.5340643370000002
+        },
+        {
+          "SingleValue": 2.574291838
+        },
+        {
+          "SingleValue": 2.538651688
+        },
+        {
+          "SingleValue": 2.546545079
+        },
+        {
+          "SingleValue": 2.497674286
+        },
+        {
+          "SingleValue": 2.554048489
+        },
+        {
+          "SingleValue": 2.596725907
+        },
+        {
+          "SingleValue": 2.476808606
+        },
+        {
+          "SingleValue": 2.437595799
+        },
+        {
+          "SingleValue": 2.493649699
+        },
+        {
+          "SingleValue": 2.459789598
+        },
+        {
+          "SingleValue": 2.433210203
+        },
+        {
+          "SingleValue": 2.392933504
+        },
+        {
+          "SingleValue": 2.432918104
+        },
+        {
+          "SingleValue": 2.618796202
+        },
+        {
+          "SingleValue": 2.551896401
+        },
+        {
+          "SingleValue": 2.482472901
+        },
+        {
+          "SingleValue": 2.414344703
+        },
+        {
+          "SingleValue": 2.5112468039999998
+        },
+        {
+          "SingleValue": 2.532681203
+        },
+        {
+          "SingleValue": 2.474931191
+        },
+        {
+          "SingleValue": 2.452057891
+        },
+        {
+          "SingleValue": 2.4364023919999998
+        },
+        {
+          "SingleValue": 2.5945810590000002
+        },
+        {
+          "SingleValue": 2.584356959
+        },
+        {
+          "SingleValue": 2.486300627
+        },
+        {
+          "SingleValue": 2.573263456
+        },
+        {
+          "SingleValue": 2.644639844
+        },
+        {
+          "SingleValue": 2.424252433
+        },
+        {
+          "SingleValue": 2.6269086870000002
+        },
+        {
+          "SingleValue": 2.407128921
+        }
+      ],
+      "property_type": "Runtime"
+    }
+  ],
+  "params": {
+    "antibody_ag_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_ag_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_ag_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        0
+      ]
+    ],
+    "antibody_init_expand_radius": false,
+    "antibody_rand_init_multiplier_range": {
+      "end": 1.2,
+      "start": 0.8
+    },
+    "antibody_rand_init_offset_range": {
+      "end": 1.0,
+      "start": 0.0
+    },
+    "antibody_rand_init_range_range": {
+      "end": 0.4,
+      "start": 0.1
+    },
+    "antibody_rand_init_value_types": [
+      [
+        "Circle",
+        1
+      ],
+      [
+        "Disabled",
+        1
+      ],
+      [
+        "Open",
+        0
+      ]
+    ],
+    "antigen_pop_size": {
+      "Fraction": 0.5
+    },
+    "bad_afin_weight": 1.8,
+    "boost": 0,
+    "correctness_weight": 0.9,
+    "coverage_weight": 1.5,
+    "crowding": true,
+    "eval_method": "Fraction",
+    "generations": 300,
+    "good_afin_weight": 0.1,
+    "label_valid_mutations": [
+      1,
+      0
+    ],
+    "leak_fraction": 0.0,
+    "leak_rand_prob": 0.5,
+    "membership_required": 0.0,
+    "multiplier_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "mutation_label_weight": 0,
+    "mutation_multiplier_local_search_weight": 1,
+    "mutation_multiplier_weight": 1,
+    "mutation_offset_weight": 1,
+    "mutation_radius_weight": 1,
+    "mutation_value_type_local_search_dim": true,
+    "mutation_value_type_weight": 1,
+    "n_parents_mutations": 10,
+    "offset_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "radius_mutation_multiplier_range": {
+      "end": 0.5,
+      "start": -0.5
+    },
+    "ratio_lock": true,
+    "replace_frac_type": {
+      "Linear": {
+        "end": 0.3,
+        "start": 0.8
+      }
+    },
+    "tournament_size": 1,
+    "uniqueness_weight": -0.1,
+    "value_type_valid_mutations": [
+      "Circle",
+      "Disabled"
+    ]
+  }
+}
