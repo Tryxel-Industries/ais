@@ -58,7 +58,7 @@ pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
 }
 
-fn ais_n_fold_test(
+pub fn ais_n_fold_test(
     params: Params,
     mut shelled_antigens: Vec<AntiGenSplitShell>,
     verbosity_params: &VerbosityParams,
@@ -105,7 +105,7 @@ fn ais_n_fold_test(
     // println!("train size: {:?}, test size {:?}", train.len(), test.len());
 }
 
-fn ais_frac_test(
+pub fn ais_frac_test(
     params: Params,
     mut shelled_antigens: Vec<AntiGenSplitShell>,
     verbosity_params: &VerbosityParams,
@@ -214,11 +214,12 @@ fn trail_run_from_ab_csv(){
 
 
 }
+
 fn trail_training() {
-    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
+    rayon::ThreadPoolBuilder::new().num_threads(4).build_global().unwrap();
 
 
-    let dataset_used = Datasets::Wine;
+    let dataset_used = Datasets::PrimaDiabetes;
     // embedding params
     let use_num_to_fetch = Some(500);
     let max_sentences_per_article = Some(20);
@@ -228,16 +229,16 @@ fn trail_training() {
         dataset_used.clone(),
         vec![
             //
-            ExperimentProperty::TrainAccuracy,
-            ExperimentProperty::TestAccuracy,
-            ExperimentProperty::AvgTrainScore,
-            ExperimentProperty::PopLabelMemberships,
-            ExperimentProperty::PopDimTypeMemberships,
+            // ExperimentProperty::TrainAccuracy,
+            // ExperimentProperty::TestAccuracy,
+            // ExperimentProperty::AvgTrainScore,
+            // ExperimentProperty::PopLabelMemberships,
+            // ExperimentProperty::PopDimTypeMemberships,
 
             ExperimentProperty::ScoreComponents,
 
-            //
-            // ExperimentProperty::Runtime,
+            // // //
+            ExperimentProperty::Runtime,
             //
             // ExperimentProperty::BoostAccuracy,
             // ExperimentProperty::BoostAccuracyTest
@@ -253,8 +254,8 @@ fn trail_training() {
 
     println!("Dataset used {:?}", dataset_used.to_string());
 
-    // let mut rng = rand::thread_rng();
-    // antigens.shuffle(&mut rng);
+    let mut rng = rand::thread_rng();
+    antigens.shuffle(&mut rng);
 
 
     let class_labels = antigens
@@ -271,29 +272,29 @@ fn trail_training() {
             eval_method: EvaluationMethod::Fraction,
             boost: 0,
             // -- train params -- //
-            // antigen_pop_size: PopSizeType::Fraction(1.0),
-            antigen_pop_size: PopSizeType::BoostingFixed(30),
-            generations: 600,
+            antigen_pop_size: PopSizeType::Fraction(1.0),
+            // antigen_pop_size: PopSizeType::BoostingFixed(30),
+            generations: 300,
 
             mutation_offset_weight: 1,
-            mutation_multiplier_weight: 1,
-            mutation_multiplier_local_search_weight: 3,
+            mutation_multiplier_weight: 0,
+            mutation_multiplier_local_search_weight: 0,
             mutation_radius_weight: 1,
-            mutation_value_type_weight: 2,
+            mutation_value_type_weight: 1,
 
             mutation_label_weight: 0,
 
-            mutation_value_type_local_search_dim: true,
+            mutation_value_type_local_search_dim: false,
 
             ratio_lock: true,
-            crowding: false,
+            crowding: true,
 
 
             // -- reduction -- //
             membership_required: 0.0,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
-            multiplier_mutation_multiplier_range: -0.5..=0.5,
+            multiplier_mutation_multiplier_range: -0.0..=0.0,
             radius_mutation_multiplier_range: -0.5..=0.5,
 
             value_type_valid_mutations: vec![
@@ -304,26 +305,34 @@ fn trail_training() {
 
             label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
 
-            correctness_weight: 1.0,
+            // correctness_weight: 1.3,
+            // coverage_weight: 1.0,
+            // uniqueness_weight: 0.3,
+            // good_afin_weight: 0.5,
+            // bad_afin_weight: 1.8,
+
+            correctness_weight: 2.5,
             coverage_weight: 1.0,
-            uniqueness_weight: 0.5,
-            good_afin_weight: 0.0,
-            bad_afin_weight: 1.0,
+            uniqueness_weight: 1.2,
+            good_afin_weight: -0.0,
+            bad_afin_weight: 1.4,
+
 
             //selection
-            leak_fraction: 0.5,
+            leak_fraction: 0.0,
             leak_rand_prob: 0.5,
             // replace_frac_type: ReplaceFractionType::Linear(0.5..0.01),
-            replace_frac_type: ReplaceFractionType::Linear(0.8..0.3),
+            replace_frac_type: ReplaceFractionType::Linear(0.6..0.01),
+            // replace_frac_type: ReplaceFractionType::Linear(0.8..0.8),
             // replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
             // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
             tournament_size: 1,
-            n_parents_mutations: 40,
+            n_parents_mutations: 10,
 
             antibody_init_expand_radius: false,
 
             // -- B-cell from antigen initialization -- //
-            antibody_ag_init_multiplier_range: 0.8..=1.2,
+            antibody_ag_init_multiplier_range: 1.0..=1.0,
             antibody_ag_init_value_types: vec![
                 (DimValueType::Circle, 1),
                 (DimValueType::Disabled, 1),
@@ -347,10 +356,10 @@ fn trail_training() {
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: true,
-        // iter_info_interval: None,
-        // full_pop_acc_interval: None,
-        iter_info_interval: Some(50),
-        full_pop_acc_interval: Some(50),
+        iter_info_interval: None,
+        full_pop_acc_interval: None,
+        // iter_info_interval: Some(50),
+        // full_pop_acc_interval: Some(50),
         show_class_info: false,
         make_plots: true,
         display_final_ab_info: true,
@@ -360,11 +369,12 @@ fn trail_training() {
     };
     modify_config_by_args(&mut params);
 
-    if true{
-        ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-        // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 5, translator,&mut logger);
+    if false {
+        // ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
+        ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 3, translator,&mut logger);
     }else {
-        for n in 0..10{
+        for n in 0..10 {
+            println!("Run thingy number {:?}", n);
             ais_n_fold_test(params.clone(), antigens.clone(), &VerbosityParams::n_fold_defaults(), 10, translator.clone() ,&mut logger);
         }
         logger.log_multi_run_acc()

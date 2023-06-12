@@ -6,583 +6,37 @@
       "prop_values": [
         {
           "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9930555555555556
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.875,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9705882352941176,
-            "train": 0.9930555555555556
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.875,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9705882352941176,
-            "train": 0.9930555555555556
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.875,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9930555555555556
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.875,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 0.9938271604938271
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.9375,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
-            "test": 0.875,
-            "train": 1.0
-          }
-        },
-        {
-          "MappedFloats": {
             "test": 1.0,
-            "train": 1.0
+            "train": 0.9916666666666667
           }
         },
         {
           "MappedFloats": {
-            "test": 0.9375,
+            "test": 0.9655172413793104,
             "train": 1.0
           }
         },
         {
           "MappedFloats": {
-            "test": 0.9375,
+            "test": 0.9838709677419355,
             "train": 1.0
           }
         },
         {
           "MappedFloats": {
             "test": 1.0,
-            "train": 1.0
+            "train": 0.9916666666666667
           }
         },
         {
           "MappedFloats": {
-            "test": 1.0,
+            "test": 0.9827586206896551,
             "train": 1.0
           }
         },
         {
           "MappedFloats": {
-            "test": 1.0,
+            "test": 0.967741935483871,
             "train": 1.0
           }
         },
@@ -594,18 +48,50 @@
         },
         {
           "MappedFloats": {
-            "test": 1.0,
+            "test": 0.9827586206896551,
             "train": 1.0
           }
         },
         {
           "MappedFloats": {
-            "test": 1.0,
-            "train": 1.0
+            "test": 0.967741935483871,
+            "train": 0.9913793103448276
           }
         }
       ],
       "property_type": "FoldAccuracy"
+    },
+    {
+      "prop_values": [
+        {
+          "SingleValue": 0.881438219
+        },
+        {
+          "SingleValue": 0.93341552
+        },
+        {
+          "SingleValue": 0.876991719
+        },
+        {
+          "SingleValue": 0.858976118
+        },
+        {
+          "SingleValue": 0.853736618
+        },
+        {
+          "SingleValue": 0.854859918
+        },
+        {
+          "SingleValue": 0.900734119
+        },
+        {
+          "SingleValue": 0.866023133
+        },
+        {
+          "SingleValue": 0.835435632
+        }
+      ],
+      "property_type": "Runtime"
     }
   ],
   "params": {
@@ -670,9 +156,9 @@
     "generations": 300,
     "good_afin_weight": 0.0,
     "label_valid_mutations": [
+      2,
       3,
-      1,
-      2
+      1
     ],
     "leak_fraction": 0.0,
     "leak_rand_prob": 0.5,
@@ -682,7 +168,7 @@
       "start": -0.5
     },
     "mutation_label_weight": 0,
-    "mutation_multiplier_local_search_weight": 1,
+    "mutation_multiplier_local_search_weight": 0,
     "mutation_multiplier_weight": 1,
     "mutation_offset_weight": 1,
     "mutation_radius_weight": 1,
