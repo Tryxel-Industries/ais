@@ -1,6 +1,6 @@
 use crate::evaluation::{evaluate_antibody, MatchCounter};
 use rand::prelude::SliceRandom;
-use rand::{distributions::Distribution, Rng};
+use rand::{distributions::Distribution, Rng, thread_rng};
 use rayon::prelude::*;
 
 use crate::params::{MutationType, Params};
@@ -54,6 +54,7 @@ pub fn mutate_clone_transform(
     let (parent_score,_) = score_antibody(&eval_ab, params, match_counter);;
     let mut best_score = parent_score;
 
+    // let pre = eval_ab.clone();
     //
     // println!("init score: {:}", best_score);
     let parent_cor_matches = eval_ab.evaluation.matched_ids.len();
@@ -77,16 +78,36 @@ pub fn mutate_clone_transform(
         let child_errors_matches = eval_ab.evaluation.wrongly_matched.len();
         let new_multi = eval_ab.antibody.dim_values.get(mut_op.dim).unwrap().multiplier;
 
-        // println!();
-        // println!("parent multi {:>4.4?}, child multi {:>4.4?}, child score: {:>4.4?}, parent score: {:>4.4?}", old_multi, new_multi, new_score, parent_score);
-        // println!("parent matches {:>3?}/{:>3?}, child matches {:>3?}/{:>3?}", parent_cor_matches, parent_errors_matches, child_cor_matches, child_errors_matches);
-        // println!("ab struct for dim {:?} is:\n{:?}", mut_op.dim,eval_ab.antibody.dim_values.get(mut_op.dim).unwrap());
+
 
         eval_ab.transform(antigens, &mut_op, true);
+
+        // eval_ab.update_eval();
+        // let p2 = score_antibody(&eval_ab, params, match_counter).0;
+        // if parent_score != p2{
+        //     println!("op type {:?}", mut_op.mut_type);
+        //     println!("pre: {:?} post:{:?}", parent_score, p2);
+        //
+        //     // println!("pre: \n{:?}\nPost:\n{:?}", pre, eval_ab);
+        //     println!("pre: \n{:?}\nPost:\n{:?}", pre.antibody, eval_ab.antibody);
+        //
+        //     let samy_multi = eval_ab.antibody.dim_values.get(mut_op.dim).unwrap().multiplier;
+        //     println!("multi pre: {:?} post:{:?}", old_multi, samy_multi);
+        //     println!();
+        //     println!("parent multi {:>4.4?}, child multi {:>4.4?}, child score: {:>4.4?}, parent score: {:>4.4?}", old_multi, new_multi, new_score, parent_score);
+        //     println!("parent matches {:>3?}/{:>3?}, child matches {:>3?}/{:>3?}", parent_cor_matches, parent_errors_matches, child_cor_matches, child_errors_matches);
+        //     println!("ab struct for dim {:?} is:\n{:?}", mut_op.dim,eval_ab.antibody.dim_values.get(mut_op.dim).unwrap());
+        //
+        //
+        //     panic!("error")
+        // }
+        //
+
         if new_score > best_score{
             best_score = new_score.clone();
 
             // println!("\nnew best\nlabel {:?}, num cor {:?}  num err {:?} score {:?}\n", eval_ab.antibody.class_label, eval_ab.evaluation.matched_ids.len(), eval_ab.evaluation.wrongly_matched.len(), best_score);
+
             best_op = Some(mut_op);
         }
     }
@@ -101,6 +122,7 @@ pub fn mutate_clone_transform(
             eval_ab.antibody.mutation_counter.insert(winner_op.mut_type, 1);
         }
     } else {
+
         eval_ab.update_eval();
     }
 
@@ -287,7 +309,7 @@ pub fn mutate_multi_op(params: &Params, genome: &Antibody, fitness_scaler: f64) 
 fn cor_err_relat(corr: f64, err: f64) -> f64{
     let corr = (corr as f64 + 2.0).ln() * 1.5;
     let err = (err as f64 + 2.0).ln();
-    return (corr)/ ((corr + err).max(1.0))
+    return ((corr)/ ((corr + err).max(1.0))); //* thread_rng().gen_range(0.8..1.2)
 }
 
 fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &f64, open_dim: bool) -> (f64, f64) {
@@ -379,7 +401,7 @@ fn find_optimal_open_dim_multi(mut values: Vec<LocalSearchBorder>, init_multi: &
         }
 
 
-        let score = cor_err_relat(current_count_corr, current_count_err);
+        let score = cor_err_relat(current_count_corr, current_count_err) ;
         // println!("score {:>3.2?} count {:>5?}/{:<5?}, chk    {:?}", score,current_count_corr, current_count_err, lsb);
         if score > best_score {
             best_score = score;

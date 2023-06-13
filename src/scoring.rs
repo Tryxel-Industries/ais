@@ -16,7 +16,7 @@ fn mod_sigmoid(num: f64) -> f64 {
     return 1.0 - (1.0 / (1.0 + f64::e().powf(num)));
 }
 
-pub fn score_antibody_(
+pub fn score_antibody(
     eval_ab: &EvaluatedAntibody,
     params: &Params,
     match_counter: &MatchCounter,
@@ -170,11 +170,11 @@ pub fn score_antibody_(
 
     let uniqness_score = ((uniqueness * params.uniqueness_weight) - 1.0).abs();
 
-    let mut score = correctness * params.correctness_weight//* uniqueness
-        + coverage * params.coverage_weight //* uniqueness
+    let mut score = correctness * params.correctness_weight* uniqueness
+        + coverage * params.coverage_weight * uniqueness
         + uniqueness * params.uniqueness_weight
-        + good_affinity * params.good_afin_weight //* uniqueness
-        + bad_affinity * params.bad_afin_weight;
+        + good_affinity * params.good_afin_weight * uniqueness
+        + bad_affinity * params.bad_afin_weight * uniqueness;
 
     // let mut score= f1;
     if pred_pos == tot_elements {
@@ -184,8 +184,8 @@ pub fn score_antibody_(
     if !score.is_finite(){
         return (0.0, (0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0));
     }else {
-        return (score, (correctness , coverage,uniqueness, good_affinity, bad_affinity, precession, recall, f1));
-        // return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
+        // return (score, (correctness , coverage,uniqueness, good_affinity, bad_affinity, precession, recall, f1));
+        return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
         //return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
 
     }
@@ -194,7 +194,7 @@ pub fn score_antibody_(
 
 
 
-pub fn score_antibody(
+pub fn score_antibody__(
     eval_ab: &EvaluatedAntibody,
     params: &Params,
     match_counter: &MatchCounter,
@@ -312,7 +312,7 @@ pub fn score_antibody(
     let false_negatives = positives - true_positives;
     let true_negatives = negatives - false_positives;
 
-    let beta: f64 = 0.5f64.powi(2);
+    let beta: f64 = 0.1f64.powi(2);
 
     let f1_divisor = (beta) * true_positives + beta * false_negatives + false_positives;
     let f1_top = (1.0 + beta) * true_positives;
@@ -320,6 +320,9 @@ pub fn score_antibody(
 
     let precession = true_positives/ (true_positives+false_positives).max(1.0) as f64;
     let recall = true_positives/ (true_positives+ false_negatives).max(1.0) as f64;
+
+    // let precession = discounted_match_score/ (discounted_match_score+false_positives).max(1.0) as f64;
+    // let recall = discounted_match_score/ (discounted_match_score+ false_negatives).max(1.0) as f64;
 
     let f1 = ((1.0+beta)* ((precession*recall)/((beta*precession)+ recall)));
 
@@ -354,13 +357,13 @@ pub fn score_antibody(
 
     let uniqness_score = ((uniqueness * params.uniqueness_weight) - 1.0).abs();
 
-    let mut score = correctness * params.correctness_weight//* uniqueness
+    let mut score = correctness * params.correctness_weight //* uniqueness
         + coverage * params.coverage_weight //* uniqueness
         + uniqueness * params.uniqueness_weight
-        + good_affinity * params.good_afin_weight //* uniqueness
+        + good_affinity * params.good_afin_weight// * uniqueness
         + bad_affinity * params.bad_afin_weight;
 
-    let mut score= f1;
+    // let mut score= f1;
     if pred_pos == tot_elements {
         score = -5.0;
     }
@@ -368,8 +371,8 @@ pub fn score_antibody(
     if !score.is_finite(){
         return (0.0, (0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0));
     }else {
-        return (score, (correctness , coverage,uniqueness, good_affinity, bad_affinity, precession, recall, f1));
-        // return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
+        // return (score, (correctness , coverage,uniqueness, good_affinity, bad_affinity, precession, recall, f1));
+        return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
         //return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
 
     }
