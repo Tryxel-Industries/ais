@@ -556,6 +556,7 @@ pub fn mutate_multiplier_local_search_op(
         // .filter(|ag| ag.class_label != genome.antibody.class_label)
         .filter_map(|ag| genome.get_antigen_local_search_border(dim_to_mutate, ag))
         .filter(|bdr| bdr.multiplier.is_finite())
+        .filter(|bdr| bdr.multiplier.abs() < 1000.0)
         .collect();
 
     // println!("invalid count {:?}", mapped_ags.iter().filter(|bdr| !bdr.get_value().is_finite()).count());
