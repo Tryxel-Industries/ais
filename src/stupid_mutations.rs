@@ -82,9 +82,9 @@ pub fn mutate_clone_transform(
 
         eval_ab.transform(antigens, &mut_op, true);
 
-        // eval_ab.update_eval();
-        // let p2 = score_antibody(&eval_ab, params, match_counter).0;
-        // if parent_score != p2{
+        eval_ab.update_eval();
+        let p2 = score_antibody(&eval_ab, params, match_counter).0;
+        // if 0.2<(parent_score - p2).abs(){
         //     println!("op type {:?}", mut_op.mut_type);
         //     println!("pre: {:?} post:{:?}", parent_score, p2);
         //

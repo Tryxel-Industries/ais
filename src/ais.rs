@@ -865,9 +865,12 @@ impl ArtificialImmuneSystem {
                 let label_gen: Vec<_> = if params.crowding {
                     parents
                         .clone()
+                        // .into_iter()
                         .into_par_iter() // TODO: set parallel
                         .map(|idx| {
                             let (score, mut eval_ab) = scored_pop.get(idx).unwrap().clone();
+
+                            // let pre = eval_ab.clone();
 
                             let frac_of_max = (score / max_score).max(0.2).min(1.0);
                             let n_clones =
@@ -893,11 +896,14 @@ impl ArtificialImmuneSystem {
 
                             let score_post = score_antibody(&eval_ab, &params, &match_counter).0;
 
-                            if score_post<score_p{
+                     /*      if 0.5 < score_p - score_post{
                                 println!("score pre {:}", score_p);
                                 println!("score post {:}", score_post );
+                               println!("pre ab {:?}", pre.antibody);
+                               println!("post ab {:?}", eval_ab.antibody);
                                 println!("");
                             }
+                            */
                             return eval_ab;
                         })
                         .collect()
@@ -958,25 +964,25 @@ impl ArtificialImmuneSystem {
             let mut to_add = new_gen_scored;
 
             // =======  selection  ======= //
-            let mut from_sum = 0.0;
-            let mut to_sum = 0.0;
+            // let mut from_sum = 0.0;
+            // let mut to_sum = 0.0;
 
             if params.crowding {
-                let mut pre = 0.0;
-                let mut post = 0.0;
+                // let mut pre = 0.0;
+                // let mut post = 0.0;
                 for idx in parent_idx_vec {
                     // let mut parent_value = scored_pop.get_mut(idx).unwrap();
                     let (p_score, p_eab) = scored_pop.get_mut(idx).unwrap();
                     let (c_score, c_eab) = to_add.pop().unwrap();
-                    pre += *p_score;
-                    post += c_score;
+                    // pre += *p_score;
+                    // post += c_score;
                     std::mem::replace(p_score, c_score);
                     std::mem::replace(p_eab, c_eab);
                 }
-                if -0.5 > pre - post{
+        /*        if -0.5 > pre - post{
                     println!("\n\nERROR!!!!!!");
                     println!("pre  {:?}, \npost {:?}", pre, post);
-                }
+                }*/
             } else {
                 let rep_list: Vec<_> = to_add
                     .into_par_iter()

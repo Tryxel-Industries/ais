@@ -216,7 +216,7 @@ fn trail_run_from_ab_csv(){
 }
 
 fn trail_training() {
-    rayon::ThreadPoolBuilder::new().num_threads(4).build_global().unwrap();
+    rayon::ThreadPoolBuilder::new().num_threads(30).build_global().unwrap();
 
 
     let dataset_used = Datasets::PrimaDiabetes;
@@ -277,14 +277,14 @@ fn trail_training() {
             generations: 300,
 
             mutation_offset_weight: 1,
-            mutation_multiplier_weight: 0,
-            mutation_multiplier_local_search_weight: 0,
+            mutation_multiplier_weight: 1,
+            mutation_multiplier_local_search_weight: 1,
             mutation_radius_weight: 1,
             mutation_value_type_weight: 1,
 
             mutation_label_weight: 0,
 
-            mutation_value_type_local_search_dim: false,
+            mutation_value_type_local_search_dim: true,
 
             ratio_lock: true,
             crowding: true,
@@ -369,9 +369,9 @@ fn trail_training() {
     };
     modify_config_by_args(&mut params);
 
-    if false {
-        // ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-        ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 3, translator,&mut logger);
+    if true {
+        ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
+        // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 3, translator,&mut logger);
     }else {
         for n in 0..10 {
             println!("Run thingy number {:?}", n);
