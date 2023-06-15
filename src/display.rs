@@ -5,6 +5,7 @@ use crate::representation::antibody::{Antibody, DimValueType};
 use crate::representation::antigen::AntiGen;
 use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 use std::collections::HashMap;
+use itertools::Itertools;
 
 //
 //  Antibody info
@@ -79,6 +80,50 @@ impl EvalCounter {
     }
 }
 
+
+struct LabelAcuracyCounter{
+    label_map: HashMap<usize,(usize,usize,usize)>
+}
+
+impl LabelAcuracyCounter {
+    pub fn new() -> LabelAcuracyCounter{
+        LabelAcuracyCounter{
+            label_map: Default::default(),
+        }
+    }
+
+    pub fn add_error(&mut self, label: usize){
+        if let Some((cor, err, no_detect)) = self.label_map.get_mut(&label){
+            *err += 1;
+        }else {
+            self.label_map.insert(label,(0,1,0));
+        }
+    }
+
+    pub fn add_cor(&mut self, label: usize){
+        if let Some((cor, err, no_detect)) = self.label_map.get_mut(&label){
+            *cor += 1;
+        }else {
+            self.label_map.insert(label,(1,0,0));
+        }
+    }
+
+
+    pub fn add_no_detect(&mut self, label: usize){
+        if let Some((cor, err, no_detect)) = self.label_map.get_mut(&label){
+            *no_detect += 1;
+        }else {
+            self.label_map.insert(label,(0,0,1));
+        }
+    }
+
+    pub fn show(self){
+        for (l,(cor, err, no_detect)) in self.label_map.iter().sorted(){
+            println!("Label {:<2?} has counts: {:>4?} is correct. {:>4?} is false. {:>4?} is not detected", l, cor, err, no_detect)
+
+        }
+    }
+}
 pub fn eval_display(
     eval_ag_pop: &Vec<AntiGen>,
     ais: &ArtificialImmuneSystem,
@@ -95,8 +140,11 @@ pub fn eval_display(
 
     let mut translator_vals = Vec::new();
     let mut eval_vals = Vec::new();
+    let mut label_counters = Vec::new();
+
 
     for eval_method in &eval_types {
+        let mut label_counter = LabelAcuracyCounter::new();
         let mut eval_translator_vals = Vec::new();
         let mut eval_count = EvalCounter::new();
         for antigen in eval_ag_pop {
@@ -105,14 +153,18 @@ pub fn eval_display(
             if let Some(corr_pred) = pred {
                 if corr_pred {
                     eval_count.true_count += 1;
+                    label_counter.add_cor(antigen.class_label);
                 } else {
                     eval_count.false_count += 1;
+                    label_counter.add_error(antigen.class_label);
                 }
             } else {
                 eval_count.no_reg_count += 1;
+                label_counter.add_no_detect(antigen.class_label);
             }
         }
 
+        label_counters.push(label_counter);
         translator_vals.push(eval_translator_vals);
         eval_vals.push(eval_count);
     }
@@ -136,7 +188,7 @@ pub fn eval_display(
 
     let mut return_eval = 0.0;
 
-    for ((eval_method, evals), eval_counts) in eval_types.iter().zip(translator_vals).zip(eval_vals)
+    for (((eval_method, evals), eval_counts), label_counter) in eval_types.iter().zip(translator_vals).zip(eval_vals).zip(label_counters)
     {
         let translator_formatted = evals.into_iter().zip(eval_ag_pop).collect();
 
@@ -160,7 +212,8 @@ pub fn eval_display(
         );
         translator.get_show_ag_acc(translator_formatted, true);
         if verbose {
-            println!()
+            label_counter.show();
+            println!();
         }
     }
 

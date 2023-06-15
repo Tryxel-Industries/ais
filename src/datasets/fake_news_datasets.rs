@@ -141,6 +141,14 @@ fn pick_n_fairly(embeddings: Vec<NewsEntryEmbeddings>, n_to_pick: usize) -> Vec<
 //
 
 
+pub fn read_kaggle_semantic() -> Vec<AntiGenSplitShell>{
+    read_semantic_dataset("kaggle")
+}
+
+pub fn read_fnn_semantic() -> Vec<AntiGenSplitShell>{
+    read_semantic_dataset("fnn")
+}
+
 pub fn read_buzfeed_semantic() -> Vec<AntiGenSplitShell>{
     read_semantic_dataset("buzfeed")
 }
@@ -196,7 +204,7 @@ fn read_semantic_dataset(dir: &str) -> Vec<AntiGenSplitShell>{
 
             let mut feature_values: Vec<f64> = Vec::new();
             res_map.entries_mut().for_each(|(k, v)| {
-                let f_val = v.remove("featureValue").as_f64().unwrap();
+                let f_val = v.remove("featureValue").as_f64().unwrap_or(0.0);
                 feature_values.push(f_val);
             });
 
