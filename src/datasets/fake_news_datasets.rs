@@ -1,13 +1,15 @@
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{BufRead, BufReader};
 use std::net::Shutdown::Read;
 use bytes::buf;
+use json::JsonValue;
 use prost::{DecodeError, Message};
 use prost_types::field_descriptor_proto::Type::Bytes;
 use rand::prelude::SliceRandom;
 use rand::thread_rng;
+use crate::datasets::util::normalize_features_ag;
 use crate::entities;
 use crate::entities::{DatasetEmbeddings, NewsEntryEmbeddings};
 use crate::representation::antibody::Antibody;
@@ -137,7 +139,13 @@ fn pick_n_fairly(embeddings: Vec<NewsEntryEmbeddings>, n_to_pick: usize) -> Vec<
 //
 //   Fake news
 //
-/*
+
+
+pub fn read_buzfeed_semantic() -> Vec<AntiGenSplitShell>{
+    read_semantic_dataset("buzfeed")
+}
+
+
 fn read_json(path: &str) -> JsonValue {
     let mut lines: Vec<String> = Vec::new();
 
@@ -164,11 +172,11 @@ fn read_json(path: &str) -> JsonValue {
     return js_obj;
 }
 
-pub fn read_kaggle_semantic() -> Vec<AntiGen> {
-    let path = format!(
-        "{}/kaggle/semantic_features_kaggle.json",
-        FAKE_NEWS_DATASET_DIR
-    );
+
+fn read_semantic_dataset(dir: &str) -> Vec<AntiGenSplitShell>{
+
+    let path = format!("./datasets/fake_news/{}/semantic_features_{}.json", dir,dir);
+
     let mut json_value = read_json(path.as_str());
 
     json_value.entries().for_each(|(k, v)| println!("{:?}", k));
@@ -201,6 +209,5 @@ pub fn read_kaggle_semantic() -> Vec<AntiGen> {
     }
 
     news_entries = normalize_features_ag(news_entries);
-    return news_entries;
+    return AntiGenSplitShell::build_from_entry_list(news_entries);
 }
-*/
