@@ -310,7 +310,7 @@ impl ArtificialImmuneSystem {
                 multiunzip(scored_pop);
 
             ////////////////////////////////////////// TEST
-            // /*
+             /*
 
             let weighted_registered_antigens: Vec<_> = antigens
                 .par_iter()
@@ -467,7 +467,8 @@ impl ArtificialImmuneSystem {
             ////////////////////////////////////////// TEST END
             // get predictor error
 
-            /*       let mut reg_w_sum = 0.0;
+            // /*
+            let mut reg_w_sum = 0.0;
                         let weighted_error_count: f64 = antigens
                             .iter()
                             .map(|antigen| {
@@ -556,7 +557,7 @@ impl ArtificialImmuneSystem {
                             antigen.boosting_weight = antigen.boosting_weight * val.exp();
                         }
 
-            */
+            // */
             let boost_weight_avg = antigens.iter().map(|ag| ag.boosting_weight).mean();
             println!("Bosting weight mean: {:?}", boost_weight_avg);
 
@@ -837,7 +838,7 @@ impl ArtificialImmuneSystem {
             // println!("scored pre {:?}", scored_pop.iter().map(|(score, _)| score).sum::<f64>());
             // calculate and preform the replacement selection/mutation for each ab label separately to maintain the label ratios
             for (label, fraction) in &match_counter.frac_map.clone() {
-                let replace_count_for_label = (n_to_replace as f64 * fraction).ceil() as usize;
+                let replace_count_for_label = (n_to_replace as f64 * fraction).floor() as usize;
 
                 if replace_count_for_label <= 0
                 // || (*match_counter.count_map.get(label).unwrap() < replace_count_for_label)
@@ -890,9 +891,9 @@ impl ArtificialImmuneSystem {
                                 n_clones,
                             );
 
-                            if best_score < score {
-                                println!("\nISSUE")
-                            }
+                            // if best_score < score {
+                            //     println!("\nISSUE")
+                            // }
 
                             let score_post = score_antibody(&eval_ab, &params, &match_counter).0;
 

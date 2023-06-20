@@ -20,25 +20,32 @@ use crate::representation::news_article_mapper::NewsArticleAntigenTranslator;
 
 
 
-pub fn read_kaggle_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
-    read_embeddings("kaggle", num_to_read, sentence_limit,translator, use_whitened)
+pub fn read_kaggle_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, s_type: SemanticType) -> Vec<AntiGenSplitShell>{
+    read_embeddings("kaggle", num_to_read, sentence_limit,translator, s_type)
 }
 
-pub fn read_fnn_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
-    read_embeddings("fnn", num_to_read, sentence_limit,translator, use_whitened)
+pub fn read_politifact_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, s_type: SemanticType) -> Vec<AntiGenSplitShell>{
+    read_embeddings("politifact", num_to_read, sentence_limit,translator, s_type)
 }
 
-pub fn read_buzfeed_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
-    read_embeddings("buzfeed", num_to_read, sentence_limit,translator, use_whitened)
+pub fn read_gosipcop_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, s_type: SemanticType) -> Vec<AntiGenSplitShell>{
+    read_embeddings("gosipcop", num_to_read, sentence_limit,translator, s_type)
 }
 
-fn read_embeddings(dir: &str, num_to_read: Option<usize>,sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, use_whitened: bool) -> Vec<AntiGenSplitShell>{
+pub fn read_buzfeed_embeddings(num_to_read: Option<usize>, sentence_limit: Option<usize>,translator: &mut NewsArticleAntigenTranslator, s_type: SemanticType) -> Vec<AntiGenSplitShell>{
+    read_embeddings("buzfeed", num_to_read, sentence_limit,translator, s_type)
+}
 
-    let path = if use_whitened{
-        format!("./datasets/fake_news/{}/embeddings_proto.bin.whitened", dir)
-    } else {
-        format!("./datasets/fake_news/{}/embeddings_proto.bin", dir)
+fn read_embeddings(dir: &str, num_to_read: Option<usize>,sentence_limit: Option<usize>, translator: &mut NewsArticleAntigenTranslator, s_type: SemanticType) -> Vec<AntiGenSplitShell>{
+
+    let postfix = match s_type {
+        SemanticType::Full => {""}
+        SemanticType::Whiten90 => {".whitened_90"}
+        SemanticType::Whiten265 => {".whitened_256"}
     };
+    
+    let path = format!("./datasets/fake_news/{}/embeddings_proto.bin{}", dir, postfix);
+    
     let f = File::open(path.clone()).unwrap();
     let b = match std::fs::read(path) {
         Ok(bytes) => {bytes}
@@ -140,15 +147,23 @@ fn pick_n_fairly(embeddings: Vec<NewsEntryEmbeddings>, n_to_pick: usize) -> Vec<
 //   Fake news
 //
 
+pub enum SemanticType{
+    Full,
+    Whiten90,
+    Whiten265,
 
+}
 pub fn read_kaggle_semantic() -> Vec<AntiGenSplitShell>{
     read_semantic_dataset("kaggle")
 }
 
-pub fn read_fnn_semantic() -> Vec<AntiGenSplitShell>{
-    read_semantic_dataset("fnn")
+pub fn read_politifact_semantic() -> Vec<AntiGenSplitShell>{
+    read_semantic_dataset("politifact")
 }
 
+pub fn read_gosipcop_semantic() -> Vec<AntiGenSplitShell>{
+    read_semantic_dataset("gossipcop")
+}
 pub fn read_buzfeed_semantic() -> Vec<AntiGenSplitShell>{
     read_semantic_dataset("buzfeed")
 }
@@ -182,6 +197,8 @@ fn read_json(path: &str) -> JsonValue {
 
 
 fn read_semantic_dataset(dir: &str) -> Vec<AntiGenSplitShell>{
+
+
 
     let path = format!("./datasets/fake_news/{}/semantic_features_{}.json", dir,dir);
 

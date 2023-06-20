@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use strum_macros::{Display, EnumString};
-use crate::datasets::fake_news_datasets::{read_buzfeed_embeddings, read_buzfeed_semantic, read_fnn_embeddings, read_fnn_semantic, read_kaggle_embeddings, read_kaggle_semantic};
+use crate::datasets::fake_news_datasets::{read_buzfeed_embeddings, read_buzfeed_semantic, read_gosipcop_embeddings, read_gosipcop_semantic, read_kaggle_embeddings, read_kaggle_semantic, read_politifact_embeddings, read_politifact_semantic, SemanticType};
 use crate::datasets::reference_datasets::{read_diabetes, read_glass, read_ionosphere, read_iris, read_iris_snipped, read_pima_diabetes, read_sonar, read_spirals, read_wine};
 use crate::params::{Params, PopSizeType, ReplaceFractionType};
 use crate::prediction::EvaluationMethod;
@@ -30,22 +30,27 @@ pub enum Datasets{
 
     SemanticKaggle,
     SemanticBuzfeed,
-    SemanticFnn,
+    SemanticPolitifact,
+    SemanticGosipcop,
+
+    SemanticKaggleW90,
+    SemanticBuzfeedW90,
+    SemanticPolitifactW90,
+    SemanticGosipcopW90,
+
+    SemanticKaggleW256,
+    SemanticBuzfeedW256,
+    SemanticPolitifactW256,
+    SemanticGosipcopW256,
+
 
     EmbeddingKaggle,
     EmbeddingBuzfeed,
-    EmbeddingFnn
+    EmbeddingPolitifact,
+    EmbeddingGosipcop
 }
 
-impl Datasets {
-    pub fn is_embedding_set(&self)-> bool{
-        match self {
-            Datasets::EmbeddingKaggle | Datasets::EmbeddingFnn => {true}
-            _ => {false}
-        }
-    }
 
-}
 
 
 
@@ -64,11 +69,24 @@ pub fn get_dataset(dataset: Datasets, num_to_read: Option<usize>, sentence_limit
         // semantic sets
         Datasets::SemanticKaggle => {read_kaggle_semantic()},
         Datasets::SemanticBuzfeed => {read_buzfeed_semantic()},
-        Datasets::SemanticFnn => {read_fnn_semantic()},
+        Datasets::SemanticPolitifact => {read_politifact_semantic()}
+        Datasets::SemanticGosipcop => {read_gosipcop_semantic()}
+
         // embedding sets
-        Datasets::EmbeddingKaggle => {read_kaggle_embeddings(num_to_read, sentence_limit, translator,use_whitened)},
-        Datasets::EmbeddingBuzfeed => {read_buzfeed_embeddings(num_to_read, sentence_limit, translator,use_whitened)},
-        Datasets::EmbeddingFnn => {read_fnn_embeddings(num_to_read, sentence_limit, translator,use_whitened)},
+        Datasets::EmbeddingKaggle => {read_kaggle_embeddings(num_to_read, sentence_limit, translator,SemanticType::Full)},
+        Datasets::EmbeddingBuzfeed => {read_buzfeed_embeddings(num_to_read, sentence_limit, translator,SemanticType::Full)},
+        Datasets::EmbeddingPolitifact => {read_politifact_embeddings(num_to_read, sentence_limit, translator,SemanticType::Full)}
+        Datasets::EmbeddingGosipcop => {read_gosipcop_embeddings(num_to_read, sentence_limit, translator,SemanticType::Full)}
+
+        Datasets::SemanticKaggleW90 => {read_kaggle_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten90)}
+        Datasets::SemanticBuzfeedW90 => {read_buzfeed_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten90)}
+        Datasets::SemanticPolitifactW90 => {read_politifact_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten90)}
+        Datasets::SemanticGosipcopW90 => {read_gosipcop_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten90)}
+
+        Datasets::SemanticKaggleW256 => {read_kaggle_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten265)}
+        Datasets::SemanticBuzfeedW256 => {read_buzfeed_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten265)}
+        Datasets::SemanticPolitifactW256 => {read_politifact_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten265)}
+        Datasets::SemanticGosipcopW256 => {read_gosipcop_embeddings(num_to_read, sentence_limit, translator,SemanticType::Whiten265)}
     }
 
 }

@@ -78,7 +78,7 @@ pub fn score_antibody(
 
         false_positives += 1.0;
         let sharers = *error_merged_mask.get(*mid).unwrap_or(&0) as f64;
-        let cor_shares = *merged_mask.get(*mid).unwrap_or(&0) as f64;
+        let cor_shares: f64 = *merged_mask.get(*mid).unwrap_or(&0) as f64;
 
         // when the amount of wrong predictivness goes up the value goes down
         error_problem_magnitude += cor_shares / (cor_shares + sharers).max(1.0);
@@ -110,7 +110,7 @@ pub fn score_antibody(
 
     // ##################### F1 stuff #####################
 
-    let label_tot_count = *count_map.get(&cell.class_label).unwrap() as f64;
+    let label_tot_count = *count_map.get(&cell.class_label).unwrap_or(&0) as f64;
     let tot_elements = count_map.values().sum::<usize>() as f64;
 
     let pred_pos = true_positives + false_positives;
@@ -170,11 +170,11 @@ pub fn score_antibody(
 
     let uniqness_score = ((uniqueness * params.uniqueness_weight) - 1.0).abs();
 
-    let mut score = correctness * params.correctness_weight* uniqueness
-        + coverage * params.coverage_weight * uniqueness
+    let mut score = correctness * params.correctness_weight //* uniqueness
+        + coverage * params.coverage_weight // * uniqueness
         + uniqueness * params.uniqueness_weight
-        + good_affinity * params.good_afin_weight * uniqueness
-        + bad_affinity * params.bad_afin_weight * uniqueness;
+        + good_affinity * params.good_afin_weight // * uniqueness
+        + bad_affinity * params.bad_afin_weight; //* uniqueness;
 
     // let mut score= f1;
     if pred_pos == tot_elements {
@@ -184,8 +184,8 @@ pub fn score_antibody(
     if !score.is_finite(){
         return (0.0, (0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,0.0));
     }else {
-        // return (score, (correctness , coverage,uniqueness, good_affinity, bad_affinity, precession, recall, f1));
-        return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
+        return (score, (correctness , coverage,uniqueness, good_affinity, bad_affinity, precession, recall, f1));
+        // return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness*params.uniqueness_weight, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
         //return (score, (correctness*params.correctness_weight,coverage* params.coverage_weight , uniqueness, good_affinity*params.good_afin_weight, bad_affinity* params.bad_afin_weight, precession, recall, f1));
 
     }

@@ -219,7 +219,7 @@ fn trail_training() {
     rayon::ThreadPoolBuilder::new().num_threads(30).build_global().unwrap();
 
 
-    let dataset_used = Datasets::PrimaDiabetes;
+    let dataset_used = Datasets::SemanticKaggle;
     // embedding params
     let use_num_to_fetch = Some(500);
     let max_sentences_per_article = Some(20);
@@ -229,19 +229,19 @@ fn trail_training() {
         dataset_used.clone(),
         vec![
             //
-            // ExperimentProperty::TrainAccuracy,
-            // ExperimentProperty::TestAccuracy,
-            // ExperimentProperty::AvgTrainScore,
-            // ExperimentProperty::PopLabelMemberships,
-            // ExperimentProperty::PopDimTypeMemberships,
+            ExperimentProperty::TrainAccuracy,
+            ExperimentProperty::TestAccuracy,
+            ExperimentProperty::AvgTrainScore,
+            ExperimentProperty::PopLabelMemberships,
+            ExperimentProperty::PopDimTypeMemberships,
 
             ExperimentProperty::ScoreComponents,
 
-            // // //
+            //
             ExperimentProperty::Runtime,
             //
-            // ExperimentProperty::BoostAccuracy,
-            // ExperimentProperty::BoostAccuracyTest
+            ExperimentProperty::BoostAccuracy,
+            ExperimentProperty::BoostAccuracyTest,
 
             ExperimentProperty::FoldAccuracy,
         ],
@@ -252,7 +252,8 @@ fn trail_training() {
     let mut translator = NewsArticleAntigenTranslator::new();
     let mut antigens =  get_dataset(dataset_used.clone(), use_num_to_fetch, max_sentences_per_article,&mut translator, use_whitening);
 
-    println!("Dataset used {:?}", dataset_used.to_string());
+    println!("Dataset used {:?}\nSize: {:?}", dataset_used.to_string(), antigens.len());
+    antigens.truncate(800);
 
     let mut rng = rand::thread_rng();
     antigens.shuffle(&mut rng);
@@ -273,8 +274,8 @@ fn trail_training() {
             boost: 0,
             // -- train params -- //
             antigen_pop_size: PopSizeType::Fraction(1.0),
-            // antigen_pop_size: PopSizeType::BoostingFixed(30),
-            generations: 300,
+            // antigen_pop_size: PopSizeType::BoostingFixed(500),
+            generations: 1000,
 
             mutation_offset_weight: 1,
             mutation_multiplier_weight: 1,
@@ -294,7 +295,7 @@ fn trail_training() {
             membership_required: 0.0,
 
             offset_mutation_multiplier_range: -0.5..=0.5,
-            multiplier_mutation_multiplier_range: -0.0..=0.0,
+            multiplier_mutation_multiplier_range: -0.5..=0.5,
             radius_mutation_multiplier_range: -0.5..=0.5,
 
             value_type_valid_mutations: vec![
@@ -318,13 +319,20 @@ fn trail_training() {
             bad_afin_weight: 1.4,
 
 
+            // correctness_weight: 3.0,
+            // coverage_weight: 1.2,
+            // uniqueness_weight: 1.8,
+            // good_afin_weight: 0.0,
+            // bad_afin_weight: 1.8,
+
+
             //selection
             leak_fraction: 0.0,
             leak_rand_prob: 0.5,
             // replace_frac_type: ReplaceFractionType::Linear(0.5..0.01),
-            replace_frac_type: ReplaceFractionType::Linear(0.6..0.01),
+            // replace_frac_type: ReplaceFractionType::Linear(0.6..0.01),
             // replace_frac_type: ReplaceFractionType::Linear(0.8..0.8),
-            // replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
+            replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
             // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
             tournament_size: 1,
             n_parents_mutations: 10,
@@ -332,7 +340,8 @@ fn trail_training() {
             antibody_init_expand_radius: false,
 
             // -- B-cell from antigen initialization -- //
-            antibody_ag_init_multiplier_range: 1.0..=1.0,
+            // antibody_ag_init_multiplier_range: 1.0..=1.0,
+            antibody_ag_init_multiplier_range: 0.8..=1.2,
             antibody_ag_init_value_types: vec![
                 (DimValueType::Circle, 1),
                 (DimValueType::Disabled, 1),
@@ -356,14 +365,14 @@ fn trail_training() {
 
     let frac_verbosity_params = VerbosityParams {
         show_initial_pop_info: true,
-        iter_info_interval: None,
-        full_pop_acc_interval: None,
-        // iter_info_interval: Some(50),
-        // full_pop_acc_interval: Some(50),
+        // iter_info_interval: None,
+        // full_pop_acc_interval: None,
+        iter_info_interval: Some(5),
+        full_pop_acc_interval: Some(25),
         show_class_info: false,
         make_plots: true,
         display_final_ab_info: true,
-        display_detailed_error_info: true,
+        display_detailed_error_info: false,
         display_final_acc_info: true,
         print_boost_info: true,
     };
@@ -371,7 +380,7 @@ fn trail_training() {
 
     if true {
         ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-        // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 3, translator,&mut logger);
+        // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
     }else {
         for n in 0..10 {
             println!("Run thingy number {:?}", n);

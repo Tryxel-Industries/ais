@@ -340,7 +340,7 @@ pub fn elitism_selection(
     // return res_cells.drain(..num).collect();
 
     let select: Vec<_> = res_cells
-        .drain((res_cells.len() - num)..res_cells.len())
+        .drain(((std::cmp::max(res_cells.len(), *num) - num))..res_cells.len())
         .collect();
 
     return select;

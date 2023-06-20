@@ -156,6 +156,7 @@ fn build_trackers(active_properties: &Vec<ExperimentProperty>) -> HashMap<Experi
     return properties_map;
 }
 
+
 impl  ExperimentLogger {
     pub fn new(dataset_used: Datasets, tracked_props: Vec<ExperimentProperty>, run_every_n_step: usize) -> ExperimentLogger {
 
