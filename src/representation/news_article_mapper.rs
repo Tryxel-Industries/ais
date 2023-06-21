@@ -124,9 +124,9 @@ impl NewsArticleAntigenTranslator {
         return antigens;
     }
 
-    pub fn get_show_ag_acc(&self, mut pred_res: Vec<(Option<bool>, &AntiGen)>, table: bool) {
+    pub fn get_show_ag_acc(&self, mut pred_res: Vec<(Option<bool>, &AntiGen)>, table: bool) -> Option<f64> {
         if self.id_counter == 0 {
-            return;
+            return None;
         }
         pred_res.sort_by_key(|(_, ag)| ag.id);
 
@@ -296,7 +296,8 @@ impl NewsArticleAntigenTranslator {
             }
         }*/
 
-        println!("| num cor {:?}, num false {:?}, num no detect {:?}, accuracy: {:.4}%\n|", true_positive, false_positive, nodetect_positive, (true_positive as f64/(true_positive+false_positive+nodetect_positive) as f64))
+        println!("| num cor {:?}, num false {:?}, num no detect {:?}, accuracy: {:.4}%\n|", true_positive, false_positive, nodetect_positive, (true_positive as f64/(true_positive+false_positive+nodetect_positive) as f64));
+        return Some(true_positive as f64/(true_positive+false_positive+nodetect_positive) as f64)
 
         // let num_cor = true_positive + true_negative;
         // let num_false = false_positive + false_negative;

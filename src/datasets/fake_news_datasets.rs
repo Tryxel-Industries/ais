@@ -43,9 +43,9 @@ fn read_embeddings(dir: &str, num_to_read: Option<usize>,sentence_limit: Option<
         SemanticType::Whiten90 => {".whitened_90"}
         SemanticType::Whiten265 => {".whitened_256"}
     };
-    
+
     let path = format!("./datasets/fake_news/{}/embeddings_proto.bin{}", dir, postfix);
-    
+
     let f = File::open(path.clone()).unwrap();
     let b = match std::fs::read(path) {
         Ok(bytes) => {bytes}
@@ -162,7 +162,7 @@ pub fn read_politifact_semantic() -> Vec<AntiGenSplitShell>{
 }
 
 pub fn read_gosipcop_semantic() -> Vec<AntiGenSplitShell>{
-    read_semantic_dataset("gossipcop")
+    read_semantic_dataset("gosipcop")
 }
 pub fn read_buzfeed_semantic() -> Vec<AntiGenSplitShell>{
     read_semantic_dataset("buzfeed")

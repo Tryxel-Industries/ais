@@ -138,7 +138,7 @@ pub fn split_train_test(
             .filter(|ag| ag.class_label == class)
             .cloned()
             .collect();
-        let num_test = (of_class.len() as f64 * test_frac) as usize;
+        let num_test = (of_class.len() as f64 * test_frac).ceil() as usize;
         println!(
             "in class {:?} -> train: {:?} - test: {:?}",
             of_class.len(),
@@ -192,14 +192,22 @@ pub fn split_train_test_n_fold(
             .filter(|ag| ag.class_label == class)
             .cloned()
             .collect();
-        let class_fold_size = (of_class.len() as f64 * fold_frac).floor() as usize;
+        let class_fold_size = (of_class.len() as f64 * fold_frac).ceil() as usize;
 
         // println!("class {:?} has {:?} elements per fold", class, class_fold_size);
         for n in 0..(n_folds - 1) {
-            let new_vals = of_class.drain(..class_fold_size);
+            if of_class.len() == 0{
+                continue
+            }else if of_class.len() < class_fold_size {
+                let new_vals = of_class.drain(0..);
+                let mut fold_vec = folds.get_mut(n).unwrap();
+                fold_vec.extend(new_vals);
+            }else {
+                let new_vals = of_class.drain(..class_fold_size);
+                let mut fold_vec = folds.get_mut(n).unwrap();
+                fold_vec.extend(new_vals)
+            }
 
-            let mut fold_vec = folds.get_mut(n).unwrap();
-            fold_vec.extend(new_vals)
         }
 
         folds.get_mut(n_folds - 1).unwrap().extend(of_class);

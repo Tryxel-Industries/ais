@@ -99,6 +99,83 @@ fn gen_initial_population(
     };
 }
 
+
+
+fn gen_fancy_initial_population(
+    antigens: &Vec<AntiGen>,
+    params: &Params,
+    cell_factory: &AntibodyFactory,
+    pop_size: &usize,
+    match_counter: &MatchCounter,
+) -> Vec<Antibody> {
+    let mut rng = rand::thread_rng();
+
+               // let mut rng = rand::thread_rng();
+               //
+               //              let new_ag = filtered
+               //                  .choose_weighted(&mut rng, |v| v.1 + 1)
+               //                  .unwrap()
+               //                  .0
+               //                  .clone();
+    let abc =
+
+    return if *pop_size == antigens.len() {
+        antigens
+            .par_iter()
+            .map(|ag| cell_factory.generate_from_antigen(ag))
+            .map(|cell| {
+                if params.antibody_init_expand_radius {
+                    expand_antibody_radius_until_hit(cell, &antigens)
+                } else {
+                    cell
+                }
+            })
+            .collect()
+    } else {
+        antigens.iter()
+        .map(|ag| (ag.boosting_weight, ag))
+        .collect::<Vec<_>>()
+        .choose_multiple_weighted(&mut rng,*pop_size,|(w,ag)| *w)
+        .unwrap()
+        .collect::<Vec<_>>()
+        .iter()
+        .map(|(w,ag)| cell_factory.generate_from_antigen(ag))
+        .collect::<Vec<_>>()
+
+
+        // match_counter
+        //     .frac_map
+        //     .iter()
+        //     .flat_map(|(label, frac)| {
+        //         let replace_count_for_label = (*pop_size as f64 * frac).ceil() as usize;
+        //
+        //         let filtered: Vec<_> = antigens
+        //             .iter()
+        //             .filter(|ag| ag.class_label == *label)
+        //             .collect();
+        //
+        //         return (0..replace_count_for_label)
+        //             .par_bridge()
+        //             .map(|_| {
+        //                 cell_factory.generate_from_antigen(
+        //                     filtered.choose(&mut rand::thread_rng()).unwrap(),
+        //                 )
+        //             })
+        //             .map(|cell| {
+        //                 if params.antibody_init_expand_radius {
+        //                     expand_antibody_radius_until_hit(cell, &antigens)
+        //                 } else {
+        //                     cell
+        //                 }
+        //             })
+        //             .collect::<Vec<_>>();
+        //     })
+        //     .collect()
+
+    };
+}
+
+
 // fn evaluate_print_population(
 //     antigens: &Vec<AntiGen>,
 //     antibodies: &Vec<Antibody>,
@@ -203,6 +280,12 @@ impl ArtificialImmuneSystem {
         logger: &mut ExperimentLogger,
     ) -> (Vec<f64>, Vec<f64>, Vec<(f64, Evaluation, Antibody)>) {
         let mut antigens = input_antigens.clone();
+
+        let class_labels = antigens
+            .iter()
+            .map(|x| x.class_label)
+            .collect::<HashSet<_>>();
+
 
         let train_per_round = if let PopSizeType::BoostingFixed(count) = params.antigen_pop_size {
             count
@@ -489,10 +572,10 @@ impl ArtificialImmuneSystem {
                             .sum();
 
                         let weight_sum: f64 = antigens.iter().map(|ag| ag.boosting_weight).sum();
-                        println!(
-                            "Error count {:?} reg_w sum {:?}, full_w sum {:?}",
-                            weighted_error_count, reg_w_sum, weight_sum
-                        );
+                        // println!(
+                        //     "Error count {:?} reg_w sum {:?}, full_w sum {:?}",
+                        //     weighted_error_count, reg_w_sum, weight_sum
+                        // );
                         let mut error = weighted_error_count / reg_w_sum;
 
                         // calculate alpha weight for model
@@ -500,15 +583,15 @@ impl ArtificialImmuneSystem {
                             println!("hit!");
                             1.0
                         } else {
-                            ((1.0 - error) / error).ln()
+                            ((1.0 - error) / error).ln() + (class_labels.len() as f64 - 1.0).ln()
                         };
 
-                        println!(
-                            "Error is {:?}, Alpha is {:?}, exp alpha is {:}",
-                            error,
-                            alpha_m,
-                            alpha_m.exp()
-                        );
+                        // println!(
+                        //     "Error is {:?}, Alpha is {:?}, exp alpha is {:}",
+                        //     error,
+                        //     alpha_m,
+                        //     alpha_m.exp()
+                        // );
 
                         if alpha_m <= 0.0 {
                             println!(
@@ -559,7 +642,7 @@ impl ArtificialImmuneSystem {
 
             // */
             let boost_weight_avg = antigens.iter().map(|ag| ag.boosting_weight).mean();
-            println!("Bosting weight mean: {:?}", boost_weight_avg);
+            // println!("Bosting weight mean: {:?}", boost_weight_avg);
 
             if logger.should_run(ExperimentProperty::BoostAccuracy) {
                 logger.log_prop(
@@ -594,6 +677,7 @@ impl ArtificialImmuneSystem {
                     &translator,
                     "TRAIN".to_string(),
                     false,
+                    false,
                     Some(&params.eval_method),
                 );
                 let test_acc = eval_display(
@@ -601,6 +685,7 @@ impl ArtificialImmuneSystem {
                     &_ais,
                     &translator,
                     "TEST".to_string(),
+                    true,
                     false,
                     Some(&params.eval_method),
                 );
@@ -641,11 +726,37 @@ impl ArtificialImmuneSystem {
         }
         self.antibodies = ab_pool.clone();
 
+        // logging
+        let mut _ais = ArtificialImmuneSystem::new();
+        _ais.antibodies = ab_pool.clone();
+
+        let train_acc = eval_display(
+            &antigens,
+            &_ais,
+            &translator,
+            "TRAIN".to_string(),
+            true,
+            true,
+            Some(&params.eval_method),
+        );
+        let test_acc = eval_display(
+            &highly_dubious_practices,
+            &_ais,
+            &translator,
+            "TEST".to_string(),
+            true,
+            true,
+            Some(&params.eval_method),
+        );
+        // logging
+
         let mut match_counter = MatchCounter::new(&antigens);
         let evaluated_pop = evaluate_population(params, ab_pool, &antigens);
         match_counter.add_evaluations(&evaluated_pop);
 
         let scored_pop = score_antibodies(params, evaluated_pop, &match_counter);
+
+
 
         // println!(
         //     "########## boost mask \n{:?}",
@@ -698,7 +809,8 @@ impl ArtificialImmuneSystem {
 
         // =======  set up population  ======= //
         let initial_population: Vec<Antibody> =
-            gen_initial_population(antigens, params, &cell_factory, &pop_size, &match_counter);
+            gen_fancy_initial_population(antigens, params, &cell_factory, &pop_size, &match_counter);
+        // gen_initial_population(antigens, params, &cell_factory, &pop_size, &match_counter);
 
         // the evaluated pop is the population where the ab -> ag matches has been calculated but not scored
         let mut evaluated_pop: Vec<EvaluatedAntibody> = Vec::with_capacity(pop_size);
@@ -846,12 +958,18 @@ impl ArtificialImmuneSystem {
                     continue;
                 }
 
-                let parents = labeled_tournament_pick(
+                let parents_optn = labeled_tournament_pick(
                     &scored_pop,
                     &replace_count_for_label,
                     &params.tournament_size,
                     Some(label),
                 );
+
+                if parents_optn.is_none(){
+                    continue
+                }
+
+                let parents = parents_optn.unwrap();
 
                 parent_idx_vec.extend(parents.clone());
 
@@ -1061,6 +1179,7 @@ impl ArtificialImmuneSystem {
                                 .unwrap()
                                 .0
                                 .clone();
+
                             let mut new_antibody = if rng.gen_bool(1.0 - params.leak_rand_prob) {
                                 cell_factory.generate_from_antigen(&new_ag)
                             } else {

@@ -147,6 +147,8 @@ pub struct ExperimentLogger{
 
     run_every_n_step: usize,
     params: Option<Params>,
+    full_dataset_acc: Option<f64>,
+
 
 }
 fn build_trackers(active_properties: &Vec<ExperimentProperty>) -> HashMap<ExperimentProperty, TrackedProperty>{
@@ -178,6 +180,7 @@ impl  ExperimentLogger {
             current_run: 0,
             run_every_n_step,
             params: None,
+            full_dataset_acc: None
         }
     }
 
@@ -255,11 +258,13 @@ impl  ExperimentLogger {
         let meta_props = get_as_sorted_json_string(&self.meta_properties_map);
         let iter_props = self.map_hist.iter().map(|hist_elm| get_as_sorted_json_string(hist_elm)).collect::<Vec<_>>();
 
+
         let json = json!({
             "dataset": self.dataset_used.to_string(),
             "meta_props": meta_props,
             "iter_props": iter_props,
             "params": self.params.as_ref().map(|p| serde_json::to_value(&p).unwrap()).unwrap_or(serde_json::Value::Null),
+            "full_dataset_acc": self.full_dataset_acc.map(|p| serde_json::to_value(&p).unwrap()).unwrap_or(serde_json::Value::Null),
         });
 
         serde_json::to_writer_pretty(writer, &json);
@@ -267,7 +272,11 @@ impl  ExperimentLogger {
     pub fn log_params(&mut self, params: &Params){
         self.params = Some(params.clone());
     }
-    
+
+    pub fn log_full_dataset_acc(&mut self, acc: f64){
+        self.full_dataset_acc = Some(acc)
+
+    }
     pub fn log_multi_run_acc(&self){
         if let Some(tp) = self.meta_properties_map.get(&ExperimentProperty::FoldAccuracy){
             let (test_acc_vec, train_acc_vec): (Vec<f64>, Vec<f64>) = tp.prop_values.iter().map(|lv| {

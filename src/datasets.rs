@@ -16,7 +16,7 @@ mod fake_news_datasets;
 const REF_DATASET_DIR: &str = "./datasets/reference";
 const FAKE_NEWS_DATASET_DIR: &str = "./datasets/fake_news";
 
-#[derive(Clone, EnumString, Display, Debug)]
+#[derive(Clone, EnumString, Display, Debug, Copy)]
 pub enum Datasets{
     Iris,
     IrisSnipped,

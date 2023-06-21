@@ -17,15 +17,26 @@ use rand::prelude::SliceRandom;
 use rand::Rng;
 use statrs::statistics::Statistics;
 
-use crate::ais::{ ArtificialImmuneSystem};
+use crate::ais::ArtificialImmuneSystem;
 use crate::bucket_empire::BucketKing;
 
-use crate::datasets::{Datasets, get_dataset, get_dataset_optimal_params};
-use crate::display::{eval_display, show_ab_dim_multipliers, show_ab_dim_offsets, show_ab_dim_value_types};
+use crate::datasets::Datasets::{
+    Diabetes, EmbeddingBuzfeed, EmbeddingGosipcop, EmbeddingKaggle, EmbeddingPolitifact, Glass,
+    Ionosphere, Iris, IrisSnipped, PrimaDiabetes, SemanticBuzfeed, SemanticBuzfeedW256,
+    SemanticBuzfeedW90, SemanticGosipcop, SemanticGosipcopW256, SemanticGosipcopW90,
+    SemanticKaggle, SemanticKaggleW256, SemanticKaggleW90, SemanticPolitifact,
+    SemanticPolitifactW256, SemanticPolitifactW90, Sonar, Spirals, Wine,
+};
+use crate::datasets::{get_dataset, get_dataset_optimal_params, Datasets};
+use crate::display::{
+    eval_display, show_ab_dim_multipliers, show_ab_dim_offsets, show_ab_dim_value_types,
+};
 use crate::evaluation::MatchCounter;
-use crate::experiment_logger::{ExperimentLogger, ExperimentProperty, LoggedValue};
 use crate::experiment_logger::ExperimentProperty::{BoostAccuracyTest, FoldAccuracy};
-use crate::params::{modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams};
+use crate::experiment_logger::{ExperimentLogger, ExperimentProperty, LoggedValue};
+use crate::params::{
+    modify_config_by_args, Params, PopSizeType, ReplaceFractionType, VerbosityParams,
+};
 use crate::plotting::plot_hist;
 use crate::prediction::EvaluationMethod;
 use crate::representation::antibody::{Antibody, DimValueType};
@@ -37,22 +48,22 @@ use crate::util::{split_train_test, split_train_test_n_fold};
 
 mod ais;
 mod bucket_empire;
+mod datasets;
+mod display;
 mod evaluation;
+mod experiment_logger;
+mod experiments;
 pub mod mutations;
 mod params;
 mod plotting;
+mod prediction;
 pub mod representation;
 mod result_export;
 mod scoring;
 mod selection;
+mod stupid_mutations;
 mod testing;
 mod util;
-mod datasets;
-mod experiment_logger;
-mod prediction;
-mod display;
-mod stupid_mutations;
-mod experiments;
 
 pub mod entities {
     include!(concat!(env!("OUT_DIR"), "/protobuf.entities.rs"));
@@ -69,23 +80,35 @@ pub fn ais_n_fold_test(
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
     let folds = split_train_test_n_fold(&shelled_antigens, n_folds);
-    let antigens = shelled_antigens.into_iter().flat_map(|ag| ag.upack()).collect();
+    let antigens = shelled_antigens
+        .into_iter()
+        .flat_map(|ag| ag.upack())
+        .collect();
 
     let mut fold_score_estimator = vec![1f64; folds.len()];
-
 
     let mut train_acc_vals = Vec::new();
     let mut test_acc_vals = Vec::new();
     for (n, (train, test)) in folds.iter().enumerate() {
-        let (train_acc, test_acc) = ais_test(&antigens, train, test, verbosity_params, &params, &translator, logger);
-
+        let (train_acc, test_acc) = ais_test(
+            &antigens,
+            train,
+            test,
+            verbosity_params,
+            &params,
+            &translator,
+            logger,
+        );
 
         let estm = fold_score_estimator.get_mut(n).unwrap();
         std::mem::replace(estm, test_acc);
         train_acc_vals.push(train_acc);
         test_acc_vals.push(test_acc);
-        if logger.should_run(FoldAccuracy){
-            logger.log_prop(FoldAccuracy, LoggedValue::gen_train_test(train_acc, test_acc))
+        if logger.should_run(FoldAccuracy) {
+            logger.log_prop(
+                FoldAccuracy,
+                LoggedValue::gen_train_test(train_acc, test_acc),
+            )
         }
 
         println!(
@@ -120,11 +143,21 @@ pub fn ais_frac_test(
 
     // println!("antigens values    {:?}", antigens.iter().map(|v| &v.values).collect::<Vec<_>>());
 
-
     let (train_slice, test) = split_train_test(&shelled_antigens, test_frac);
-    let antigens = shelled_antigens.into_iter().flat_map(|ag| ag.upack()).collect();
+    let antigens = shelled_antigens
+        .into_iter()
+        .flat_map(|ag| ag.upack())
+        .collect();
 
-    let (train_acc, test_acc) = ais_test(&antigens, &train_slice, &test, verbosity_params, &params, &translator, logger);
+    let (train_acc, test_acc) = ais_test(
+        &antigens,
+        &train_slice,
+        &test,
+        verbosity_params,
+        &params,
+        &translator,
+        logger,
+    );
 
     println!("train_acc: {:?} test_acc: {:?} ", train_acc, test_acc)
 }
@@ -156,14 +189,19 @@ fn ais_test(
 
     let mut ais = ArtificialImmuneSystem::new();
 
-
-    let (train_acc_hist, train_score_hist, init_scored_pop) =if params.boost > 0{
-        ais.train_immunobosting(&train, &params, verbosity_params, params.boost, &test, translator, logger)
-    }else {
+    let (train_acc_hist, train_score_hist, init_scored_pop) = if params.boost > 0 {
+        ais.train_immunobosting(
+            &train,
+            &params,
+            verbosity_params,
+            params.boost,
+            &test,
+            translator,
+            logger,
+        )
+    } else {
         ais.train(&train, &params, verbosity_params, logger, &test)
     };
-
-
 
     if verbosity_params.make_plots {
         plot_hist(train_acc_hist, "acuracy");
@@ -171,228 +209,333 @@ fn ais_test(
     }
     let duration = start.elapsed();
 
-
-    let train_acc = eval_display(&train, &ais , &translator, "TRAIN".to_string(), true, Some(&params.eval_method));
-    let test_acc = eval_display(&test, &ais, &translator, "TEST".to_string(), true, Some(&params.eval_method));
+    let show_tbl = params.boost == 0;
+    let train_acc = eval_display(
+        &train,
+        &ais,
+        &translator,
+        "TRAIN".to_string(),
+        true,
+        show_tbl,
+        Some(&params.eval_method),
+    );
+    let test_acc = eval_display(
+        &test,
+        &ais,
+        &translator,
+        "TEST".to_string(),
+        true,
+        show_tbl,
+        Some(&params.eval_method),
+    );
     // eval_display(&train, &ais, &params, &translator, "Train".to_string())
 
-
     dump_to_csv(antigens, &ais.antibodies);
-
 
     return (train_acc, test_acc);
     // ais.pred_class(test.get(0).unwrap());
 }
 
 
-fn trail_run_from_ab_csv(){
+fn trail_run_from_ab_csv_internal(dataset_used: Datasets, eval_type: &EvaluationMethod)-> f64 {
     let ab_file_path = "out/antibodies.csv";
 
-
-    let dataset_used = Datasets::EmbeddingBuzfeed;
-    // embedding params
-    // let use_num_to_fetch = Some(1000);
     let use_num_to_fetch = None;
     let use_whitening = true;
 
-
     let mut translator = NewsArticleAntigenTranslator::new();
-    let mut shelled_antigens =  get_dataset(dataset_used, use_num_to_fetch, None,&mut translator, use_whitening);
-    let mut antigens: Vec<_> = shelled_antigens.into_iter().flat_map(|sag| sag.upack()).collect();
+    let mut shelled_antigens = get_dataset(
+        dataset_used,
+        use_num_to_fetch,
+        None,
+        &mut translator,
+        use_whitening,
+    );
+    let mut antigens: Vec<_> = shelled_antigens
+        .into_iter()
+        .flat_map(|sag| sag.upack())
+        .collect();
 
     let antibodies = read_ab_csv(ab_file_path.parse().unwrap());
 
     let mut ais = ArtificialImmuneSystem::new();
     ais.antibodies = antibodies;
 
+    let train_acc = eval_display(
+        &antigens,
+        &ais,
+        &translator,
+        "Full SET".to_string(),
+        false,
+        false,
+        Some(eval_type),
+    );
 
+    return train_acc;
 
+}
 
-    let train_acc = eval_display(&antigens, &ais, &translator, "Full SET".to_string(),true, None);
+fn trail_run_from_ab_csv() {
+    let ab_file_path = "out/antibodies.csv";
 
+    let dataset_used = Datasets::SemanticPolitifactW90;
+    // embedding params
+    // let use_num_to_fetch = Some(1000);
+    let use_num_to_fetch = None;
+    let use_whitening = true;
 
+    let mut translator = NewsArticleAntigenTranslator::new();
+    let mut shelled_antigens = get_dataset(
+        dataset_used,
+        use_num_to_fetch,
+        None,
+        &mut translator,
+        use_whitening,
+    );
+    let mut antigens: Vec<_> = shelled_antigens
+        .into_iter()
+        .flat_map(|sag| sag.upack())
+        .collect();
 
+    let antibodies = read_ab_csv(ab_file_path.parse().unwrap());
 
+    let mut ais = ArtificialImmuneSystem::new();
+    ais.antibodies = antibodies;
+
+    let train_acc = eval_display(
+        &antigens,
+        &ais,
+        &translator,
+        "Full SET".to_string(),
+        true,
+        true,
+        None,
+    );
 }
 
 fn trail_training() {
-    rayon::ThreadPoolBuilder::new().num_threads(30).build_global().unwrap();
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(30)
+        .build_global()
+        .unwrap();
 
 
-    let dataset_used = Datasets::SemanticKaggle;
-    // embedding params
-    let use_num_to_fetch = Some(500);
-    let max_sentences_per_article = Some(20);
-    let use_whitening = true;
+    for dataset_used in vec![
+        // Iris,
+        // IrisSnipped,
+        // Wine,
+        // Diabetes,
+        // Spirals,
+        // PrimaDiabetes,
+        // Sonar,
+        // Glass,
+        // Ionosphere,
+        //
+        // SemanticKaggle,
+        // SemanticBuzfeed,
+        // SemanticPolitifact,
+        // SemanticGosipcop,
+        //
+        SemanticKaggleW90,
+        // SemanticBuzfeedW90,
+        // SemanticPolitifactW90,
+        // SemanticGosipcopW90,
+        //
+        // SemanticKaggleW256,
+        // SemanticBuzfeedW256,
+        // SemanticPolitifactW256,
+        // SemanticGosipcopW256,
+        //
+        // EmbeddingKaggle,
+        // EmbeddingBuzfeed,
+        // EmbeddingPolitifact,
+        // EmbeddingGosipcop,
+    ] {
+        // embedding params
+        let use_num_to_fetch = Some(2000);
+        let max_sentences_per_article = Some(20);
+        let use_whitening = true;
 
-    let mut logger = ExperimentLogger::new(
-        dataset_used.clone(),
-        vec![
-            //
-            ExperimentProperty::TrainAccuracy,
-            ExperimentProperty::TestAccuracy,
-            ExperimentProperty::AvgTrainScore,
-            ExperimentProperty::PopLabelMemberships,
-            ExperimentProperty::PopDimTypeMemberships,
-
-            ExperimentProperty::ScoreComponents,
-
-            //
-            ExperimentProperty::Runtime,
-            //
-            ExperimentProperty::BoostAccuracy,
-            ExperimentProperty::BoostAccuracyTest,
-
-            ExperimentProperty::FoldAccuracy,
-        ],
-        10
-    );
-
-
-    let mut translator = NewsArticleAntigenTranslator::new();
-    let mut antigens =  get_dataset(dataset_used.clone(), use_num_to_fetch, max_sentences_per_article,&mut translator, use_whitening);
-
-    println!("Dataset used {:?}\nSize: {:?}", dataset_used.to_string(), antigens.len());
-    antigens.truncate(800);
-
-    let mut rng = rand::thread_rng();
-    antigens.shuffle(&mut rng);
-
-
-    let class_labels = antigens
-        .iter()
-        .map(|x| x.class_label)
-        .collect::<HashSet<_>>();
-
-    let log_file_name = format!("./logg_dat/logg_dat_{:?}.json", dataset_used);
-
-    let mut params =  if false{
-        get_dataset_optimal_params(dataset_used, class_labels)
-    } else {
-        Params {
-            eval_method: EvaluationMethod::Fraction,
-            boost: 0,
-            // -- train params -- //
-            antigen_pop_size: PopSizeType::Fraction(1.0),
-            // antigen_pop_size: PopSizeType::BoostingFixed(500),
-            generations: 1000,
-
-            mutation_offset_weight: 1,
-            mutation_multiplier_weight: 1,
-            mutation_multiplier_local_search_weight: 1,
-            mutation_radius_weight: 1,
-            mutation_value_type_weight: 1,
-
-            mutation_label_weight: 0,
-
-            mutation_value_type_local_search_dim: true,
-
-            ratio_lock: true,
-            crowding: true,
-
-
-            // -- reduction -- //
-            membership_required: 0.0,
-
-            offset_mutation_multiplier_range: -0.5..=0.5,
-            multiplier_mutation_multiplier_range: -0.5..=0.5,
-            radius_mutation_multiplier_range: -0.5..=0.5,
-
-            value_type_valid_mutations: vec![
-                DimValueType::Circle,
-                DimValueType::Disabled,
-                DimValueType::Open,
+        let mut logger = ExperimentLogger::new(
+            dataset_used.clone(),
+            vec![
+                //
+                // ExperimentProperty::TrainAccuracy,
+                // ExperimentProperty::TestAccuracy,
+                ExperimentProperty::AvgTrainScore,
+                // ExperimentProperty::PopLabelMemberships,
+                // ExperimentProperty::PopDimTypeMemberships,
+                ExperimentProperty::ScoreComponents,
+                //
+                ExperimentProperty::Runtime,
+                //
+                ExperimentProperty::BoostAccuracy,
+                ExperimentProperty::BoostAccuracyTest,
+                ExperimentProperty::FoldAccuracy,
             ],
+            10,
+        );
 
-            label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
+        let mut translator = NewsArticleAntigenTranslator::new();
+        let mut antigens = get_dataset(
+            dataset_used.clone(),
+            use_num_to_fetch,
+            max_sentences_per_article,
+            &mut translator,
+            use_whitening,
+        );
 
-            // correctness_weight: 1.3,
-            // coverage_weight: 1.0,
-            // uniqueness_weight: 0.3,
-            // good_afin_weight: 0.5,
-            // bad_afin_weight: 1.8,
+        println!(
+            "Dataset used {:?}\nSize: {:?}",
+            dataset_used.to_string(),
+            antigens.len()
+        );
 
-            correctness_weight: 2.5,
-            coverage_weight: 1.0,
-            uniqueness_weight: 1.2,
-            good_afin_weight: -0.0,
-            bad_afin_weight: 1.4,
+        let mut rng = rand::thread_rng();
+        antigens.shuffle(&mut rng);
 
+        // antigens.truncate(5000);
 
-            // correctness_weight: 3.0,
-            // coverage_weight: 1.2,
-            // uniqueness_weight: 1.8,
-            // good_afin_weight: 0.0,
-            // bad_afin_weight: 1.8,
+        let class_labels = antigens
+            .iter()
+            .map(|x| x.class_label)
+            .collect::<HashSet<_>>();
 
+        let log_file_name = format!("./logg_dat/logg_dat_{:?}.json", dataset_used);
 
-            //selection
-            leak_fraction: 0.0,
-            leak_rand_prob: 0.5,
-            // replace_frac_type: ReplaceFractionType::Linear(0.5..0.01),
-            // replace_frac_type: ReplaceFractionType::Linear(0.6..0.01),
-            // replace_frac_type: ReplaceFractionType::Linear(0.8..0.8),
-            replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
-            // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
-            tournament_size: 1,
-            n_parents_mutations: 10,
+        let mut params = if false {
+            get_dataset_optimal_params(dataset_used, class_labels)
+        } else {
+            Params {
+                eval_method: EvaluationMethod::Fraction,
+                boost: 10,
+                // -- train params -- //
+                // antigen_pop_size: PopSizeType::Fraction(1.0),
+                antigen_pop_size: PopSizeType::BoostingFixed(200),
+                generations: 300,
 
-            antibody_init_expand_radius: false,
+                mutation_offset_weight: 1,
+                mutation_multiplier_weight: 1,
+                mutation_multiplier_local_search_weight: 1,
+                mutation_radius_weight: 1,
+                mutation_value_type_weight: 1,
 
-            // -- B-cell from antigen initialization -- //
-            // antibody_ag_init_multiplier_range: 1.0..=1.0,
-            antibody_ag_init_multiplier_range: 0.8..=1.2,
-            antibody_ag_init_value_types: vec![
-                (DimValueType::Circle, 1),
-                (DimValueType::Disabled, 1),
-                (DimValueType::Open, 1),
-            ],
-            antibody_ag_init_range_range: 0.1..=0.4,
+                mutation_label_weight: 0,
 
-            // -- B-cell from random initialization -- //
-            antibody_rand_init_offset_range: 0.0..=1.0,
-            antibody_rand_init_multiplier_range: 0.8..=1.2,
-            antibody_rand_init_value_types: vec![
-                (DimValueType::Circle, 1),
-                (DimValueType::Disabled, 1),
-                (DimValueType::Open, 1),
-            ],
-            antibody_rand_init_range_range: 0.1..=0.4,
+                mutation_value_type_local_search_dim: true,
+
+                ratio_lock: true,
+                crowding: true,
+
+                // -- reduction -- //
+                membership_required: 0.0,
+
+                offset_mutation_multiplier_range: -0.5..=0.5,
+                multiplier_mutation_multiplier_range: -0.5..=0.5,
+                radius_mutation_multiplier_range: -0.5..=0.5,
+
+                value_type_valid_mutations: vec![
+                    DimValueType::Circle,
+                    DimValueType::Disabled,
+                    DimValueType::Open,
+                ],
+
+                label_valid_mutations: class_labels.clone().into_iter().collect::<Vec<usize>>(),
+
+                // correctness_weight: 1.3,
+                // coverage_weight: 1.0,
+                // uniqueness_weight: 0.3,
+                // good_afin_weight: 0.5,
+                // bad_afin_weight: 1.8,
+                correctness_weight: 2.5,
+                coverage_weight: 1.0,
+                uniqueness_weight: 1.2,
+                good_afin_weight: -0.0,
+                bad_afin_weight: 0.0,
+
+                // correctness_weight: 3.0,
+                // coverage_weight: 1.2,
+                // uniqueness_weight: 1.8,
+                // good_afin_weight: 0.0,
+                // bad_afin_weight: 1.8,
+
+                //selection
+                leak_fraction: 0.0,
+                leak_rand_prob: 0.5,
+                // replace_frac_type: ReplaceFractionType::Linear(0.5..0.01),
+                replace_frac_type: ReplaceFractionType::Linear(0.6..0.01),
+                // replace_frac_type: ReplaceFractionType::Linear(0.8..0.8),
+                // replace_frac_type: ReplaceFractionType::Linear(0.6..0.5),
+                // replace_frac_type: ReplaceFractionType::MaxRepFrac(0.8),
+                tournament_size: 1,
+                n_parents_mutations: 10,
+
+                antibody_init_expand_radius: false,
+
+                // -- B-cell from antigen initialization -- //
+                // antibody_ag_init_multiplier_range: 1.0..=1.0,
+                antibody_ag_init_multiplier_range: 0.8..=1.2,
+                antibody_ag_init_value_types: vec![
+                    // (DimValueType::Circle, 1),
+                    // (DimValueType::Disabled, 1),
+                    (DimValueType::Open, 1),
+                ],
+                antibody_ag_init_range_range: 0.1..=0.4,
+
+                // -- B-cell from random initialization -- //
+                antibody_rand_init_offset_range: 0.0..=1.0,
+                antibody_rand_init_multiplier_range: 0.8..=1.2,
+                antibody_rand_init_value_types: vec![
+                    // (DimValueType::Circle, 1),
+                    // (DimValueType::Disabled, 1),
+                    (DimValueType::Open, 1),
+                ],
+                antibody_rand_init_range_range: 0.1..=0.4,
+            }
+        };
+        logger.log_params(&params);
+
+        let frac_verbosity_params = VerbosityParams {
+            show_initial_pop_info: true,
+            iter_info_interval: None,
+            full_pop_acc_interval: None,
+            // iter_info_interval: Some(100),
+            // full_pop_acc_interval: Some(100),
+            show_class_info: false,
+            make_plots: true,
+            display_final_ab_info: true,
+            display_detailed_error_info: false,
+            display_final_acc_info: true,
+            print_boost_info: true,
+        };
+        modify_config_by_args(&mut params);
+
+        if true {
+            ais_frac_test(params.clone(), antigens, &frac_verbosity_params, 0.1, translator, &mut logger, );
+            // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
+        } else {
+            for n in 0..10 {
+                println!("Run thingy number {:?}", n);
+                ais_n_fold_test(
+                    params.clone(),
+                    antigens.clone(),
+                    &VerbosityParams::n_fold_defaults(),
+                    10,
+                    translator.clone(),
+                    &mut logger,
+                );
+            }
+            logger.log_multi_run_acc()
         }
-    };
-    logger.log_params(&params);
 
+        let full_acc = trail_run_from_ab_csv_internal(dataset_used, &params.eval_method);
+        logger.log_full_dataset_acc(full_acc);
 
-    let frac_verbosity_params = VerbosityParams {
-        show_initial_pop_info: true,
-        // iter_info_interval: None,
-        // full_pop_acc_interval: None,
-        iter_info_interval: Some(5),
-        full_pop_acc_interval: Some(25),
-        show_class_info: false,
-        make_plots: true,
-        display_final_ab_info: true,
-        display_detailed_error_info: false,
-        display_final_acc_info: true,
-        print_boost_info: true,
-    };
-    modify_config_by_args(&mut params);
-
-    if true {
-        ais_frac_test(params, antigens, &frac_verbosity_params, 0.1, translator, &mut logger);
-        // ais_n_fold_test(params, antigens, &VerbosityParams::n_fold_defaults(), 10, translator,&mut logger);
-    }else {
-        for n in 0..10 {
-            println!("Run thingy number {:?}", n);
-            ais_n_fold_test(params.clone(), antigens.clone(), &VerbosityParams::n_fold_defaults(), 10, translator.clone() ,&mut logger);
-        }
-        logger.log_multi_run_acc()
+        logger.dump_to_json_file(log_file_name);
     }
-
-    logger.dump_to_json_file(log_file_name);
 }
 
-fn main(){
+fn main() {
     // trail_run_from_ab_csv();
     trail_training();
 }

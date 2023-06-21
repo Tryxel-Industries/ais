@@ -417,7 +417,7 @@ pub fn labeled_tournament_pick(
     num_to_pick: &usize,
     tournament_size: &usize,
     label_to_filter: Option<&usize>,
-) -> Vec<usize> {
+) -> Option<Vec<usize>> {
     let mut rng = rand::thread_rng();
 
     let pop_s: usize; // = population.len();
@@ -452,6 +452,9 @@ pub fn labeled_tournament_pick(
             .collect();
         pop_s = population.len();
     }
+    if idx_list.len() == 0{
+        return None;
+    }
     let mut picks: Vec<usize> = Vec::with_capacity(*num_to_pick);
 
     for _ in 0..*num_to_pick {
@@ -477,7 +480,7 @@ pub fn labeled_tournament_pick(
         }
     }
 
-    return picks;
+    return Some(picks);
 }
 
 pub fn tournament_pick(
@@ -485,5 +488,5 @@ pub fn tournament_pick(
     num_to_pick: &usize,
     tournament_size: &usize,
 ) -> Vec<usize> {
-    return labeled_tournament_pick(population, num_to_pick, tournament_size, None);
+    return labeled_tournament_pick(population, num_to_pick, tournament_size, None).unwrap();
 }

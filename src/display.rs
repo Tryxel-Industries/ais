@@ -130,6 +130,7 @@ pub fn eval_display(
     translator: &NewsArticleAntigenTranslator,
     display_headline: String,
     verbose: bool,
+    show_table: bool,
     return_eval_type: Option<&EvaluationMethod>,
 ) -> f64 {
     let eval_types = vec![
@@ -192,9 +193,15 @@ pub fn eval_display(
     {
         let translator_formatted = evals.into_iter().zip(eval_ag_pop).collect();
 
-        let acc = eval_counts.true_count as f64 / (eval_ag_pop.len() as f64);
+        let mut acc = eval_counts.true_count as f64 / (eval_ag_pop.len() as f64);
         let precession = eval_counts.true_count as f64
             / (eval_counts.false_count as f64 + eval_counts.true_count as f64).max(1.0);
+
+        let acc_opt = translator.get_show_ag_acc(translator_formatted, show_table);
+
+        if acc_opt.is_some(){
+            acc = acc_opt.unwrap();
+        }
 
         if let Some(eval_type) = return_eval_type {
             if eval_type == eval_method {
@@ -210,7 +217,7 @@ pub fn eval_display(
             "{:<11}: corr {:>2?}, false {:>3?}, no_detect {:>3?}, presission: {:>2.3?}, frac: {:2.3?}",
             eval_method.to_string(),eval_counts.true_count, eval_counts.false_count, eval_counts.no_reg_count,precession, acc
         );
-        translator.get_show_ag_acc(translator_formatted, true);
+
         if verbose {
             label_counter.show();
             println!();
